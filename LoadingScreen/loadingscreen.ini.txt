@@ -1,0 +1,37 @@
+﻿;Mod: Loading Screen
+[Internal]
+;Version of settings file
+SettingsVersion = 1.1
+;Sorting depth of the loading screen on GUI
+;DU panels use the 0 layer, so this should be negative
+GuiDepth = -2
+
+;Use different splash screens according to season
+;Min time in seconds the splash screen will be displayed on screen. Set to 0 to disable this feature
+;Show press-any-key screen after loading
+[SplashScreen]
+UseSeason = False
+ShowForMinimum = 1
+PressAnyKey = False
+
+;Show Loading label on the bottom-right corner
+;Size of font of Loading label
+;Color of Loading label
+;Text of loading label
+;Text of press-any-key label
+[LoadingLabel]
+LoadingCounter = True
+LoadingfontSize = 30
+GuiColor = ffff00ff
+LabelText = Loading
+LabelTextFinish = Continue
+
+;Show death screen after video
+;Disable video
+[DeathScreen]
+ShowDeathScreen = False
+DisableVideo = False
+
+;Show tips on the world of Daggerfall
+[Experimental]
+Tips = False
