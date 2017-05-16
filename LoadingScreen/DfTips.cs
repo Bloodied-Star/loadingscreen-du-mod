@@ -9,6 +9,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game;
 
 namespace LoadingScreen
 {
@@ -69,6 +70,22 @@ namespace LoadingScreen
                 "Witch covens can be found in some dungeons and houses"
             };
         }
+
+        /// <summary>
+        /// Tips for dungeons.
+        /// </summary>
+        private static List<string> dungeonTips = new List<string>()
+        {
+            NULL
+        };
+
+        /// <summary>
+        /// Tips for exteriors, towns and buildings.
+        /// </summary>
+        private static List<string> exteriorTips = new List<string>()
+        {
+            NULL
+        };
 
         /// <summary>
         /// Save-specific tips.
@@ -139,17 +156,57 @@ namespace LoadingScreen
         #region Algorithm
 
         /// <summary>
-        /// Get a tip to show on screen.
+        /// Get a tip to show on screen for save loading.
         /// </summary>
         /// <param name="saveData">Save being loaded.</param>
         /// <returns>Tip</returns>
         public static string GetTip(SaveData_v1 saveData)
         {
-            // Fields
-            PlayerEntityData_v1 playerEntityData = saveData.playerData.playerEntity;
+            SetSeed();
+            switch (Random.Range(0, 3))
+            {
+                case 0:
+                    // Save specific
+                    return RandomTip(SaveTips(saveData));
+                case 1:
+                    // Location
+                    return RandomTip(LocationTips(saveData.playerData.playerPosition.insideDungeon));
+                default:
+                    // Generic tips
+                    return RandomTip(GetGenericTips());
+            }
+        }
 
-            // Generic tips
-            var tips = new List<string>(GetGenericTips());
+        /// <summary>
+        /// Get a tip to show on screen for entering/exiting.
+        /// </summary>
+        /// <param name="transitionType">Transition in action.</param>
+        /// <returns>Tip</returns>
+        public static string GetTip(PlayerEnterExit.TransitionType transitionType)
+        {
+            // Get a generic tip or one specific to transitioning
+            SetSeed();
+            const int maxValue = 3; // the higher, the more probable it will be specific
+            switch (Random.Range(0, maxValue))
+            {
+                case 0:
+                    return RandomTip(GetGenericTips());
+                default:
+                    bool inDungeon = (transitionType == PlayerEnterExit.TransitionType.ToDungeonInterior);
+                    return RandomTip(LocationTips(inDungeon));
+            }
+        }
+
+        /// <summary>
+        /// Get tips seeking information from the savegame.
+        /// </summary>
+        /// <param name="saveData">Save.</param>
+        /// <returns>List of tips.</returns>
+        private static List<string> SaveTips(SaveData_v1 saveData)
+        {
+            // Fields
+            var tips = new List<string>();
+            PlayerEntityData_v1 playerEntityData = saveData.playerData.playerEntity;
 
             // Health
             if (playerEntityData.currentHealth < (playerEntityData.maxHealth / 4))
@@ -188,10 +245,37 @@ namespace LoadingScreen
             if (playerEntityData.wagonItems.Length == 0)
                 tips.Add(WAGON);
 
-            // Choose one tip randomly
+            return tips;
+        }
+
+        /// <summary>
+        /// Get tip specific to location
+        /// </summary>
+        /// <param name="inDungeon">Dungeon or exteriors?</param>
+        /// <returns>List of tips</returns>
+        private static List<string> LocationTips(bool inDungeon)
+        {
+            const int maxValue = 6; // the higher, the more probable it will be specific
+            switch (Random.Range(0, maxValue))
+            {
+                case 0:
+                    return dungeonTips;
+                case 1:
+                    return exteriorTips;
+                default:
+                    return inDungeon ? dungeonTips : exteriorTips;
+            }
+        }
+
+        /// <summary>
+        /// Get one tip from a list.
+        /// </summary>
+        /// <param name="tips">List of tips.</param>
+        /// <returns>One tip.</returns>
+        private static string RandomTip(List<string> tips)
+        {
             try
             {
-                Random.InitState((int)Time.time);
                 int index = Random.Range(0, tips.Count);
                 return tips[index];
             }
@@ -205,7 +289,12 @@ namespace LoadingScreen
         #endregion
 
         #region Private Methods
-        
+
+        private static void SetSeed()
+        {
+            Random.InitState((int)Time.time);
+        }
+
         /// <summary>
         /// Print error to log and return default string.
         /// </summary>

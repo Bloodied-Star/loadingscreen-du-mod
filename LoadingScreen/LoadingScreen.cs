@@ -221,8 +221,8 @@ namespace LoadingScreen
                     || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior))
             {
                 LoadImage();
-                //if (tips)
-                //    tipLabel = DfTips.GetTip(saveData);
+                if (tips)
+                    tipLabel = DfTips.GetTip(args.TransitionType);
                 DrawLoadingScreen = true;
                 isLoading = true;
                 StartCoroutine(ShowLoadingScreenOnGui());
