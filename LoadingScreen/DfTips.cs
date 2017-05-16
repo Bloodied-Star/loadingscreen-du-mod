@@ -7,9 +7,16 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using DaggerfallWorkshop.Game.Serialization;
-using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Serialization;
+
+/*
+ * TODO:
+ * - Improve dungeonTips.
+ * - Improve GenderTip().
+ * - Seek informations from quests.
+ */
 
 namespace LoadingScreen
 {
@@ -24,59 +31,55 @@ namespace LoadingScreen
 
         /// <summary>
         /// Generic tips.
-        /// These strings are used for all saves.
         /// </summary>
-        /// <returns></returns>
-        private static List<string> GetGenericTips()
+        private static List<string> genericTips = new List<string>()
         {
-            return new List<string>
-            {
-                // Travel
-                "Try visiting a town in a different season, if you're not in the desert...",
-                "Casting a Recall spell inside a dungeon is a great way for a quick exit",
-                "The first cast of Recall sets the anchor, the second teleports caster back",
-                "Daggerfall horses make travel shorter and faster, even more than a cart",
-                "Ask people if you can't find your horse",
-                "Carts are cheaper alternatives to horses, buy one in a shop",
-                "Horses can be even faster with levitation...",
-                "Unlike Fast Travel, Teleportation is instantaneous. It's magic after all",
-                "Explore the Iliac Bay to find dungeons; or get a dungeon map",
-                "Many want to send you in a dungeon, some consider it a recompensation",
+            // Travel
+            "Try visiting a town in a different season, if you're not in the desert...",
+            "Casting a Recall spell inside a dungeon is a great way for a quick exit",
+            "Daggerfall horses make travel shorter and faster, even more than a cart",
+            "Ask people if you can't find your horse",
+            "Carts are cheaper alternatives to horses, buy one in a shop",
+            "Horses can be even faster with levitation...",
+            "Unlike Fast Travel, Teleportation is instantaneous. It's magic after all",
+            "Explore the Iliac Bay to find dungeons; or get a dungeon map",
+            "Many want to send you in a dungeon, some consider it a recompensation",
 
-                // NPCs
-                "People will react differently according to your reputation",
-                "Improve your reputation doing quests",
-                "Shop owners and guild members will give you quests if you ask them",
-                "If you're lost, ask people in town for directions",
-                "Sometimes you get a Random Map from dead monsters...",
-                "If you can't find you house, someone in town might be able to help",
-                
-                // Combat
-                "Levitation allows a ranged attack from the air",
-                "Diagonal Slashes, Horizontal Slashes, Vertical Chops and Thrust Forward",
+            // NPCs
+            "People will react differently according to your reputation",
+            "Improve your reputation doing quests",
+            "Shop owners and guild members will give you quests if you ask them",
+            "If you're lost, ask people in town for directions",
+            "Sometimes you get a Random Map from dead monsters...",
+            "If you can't find you house, someone in town might be able to help",
 
-                // Factions
-                "If you're looking for work, there are various knightly orders around",
-                "If you're interested in the job of mercenary, you can join the Fighters Guild",
-                "The Mages Guild is the best place to study the world of magicka",
-                "Burglars, prostitutes, professional criminals, you can find them all in the Thieves Guild",
-                "If you are interested in thief, try something little and you will be rewarded eventually...",
-                "The members of the Dark Brotherhood are said to be Daedra worshipper",
-                "The Dark Brotherhood has been declared illegal by many, yet persists...",
-                "Eight Divines, eight temples",
-                "Templar Knightly Orders are associated with the worshipper of the Eight Divine",
-                "To advance in a faction, you need good reputation and willing to work",
-                "Legends talk about an Order of the Lamp, but nobody can prove its existence...",
-                "Witch covens can be found in some dungeons and houses"
-            };
-        }
+            // Combat
+            "Levitation allows a ranged attack from the air",
+            "Diagonal Slashes, Horizontal Slashes, Vertical Chops and Thrust Forward",
+
+            // Factions
+            "If you're looking for work, there are various knightly orders around",
+            "If you're interested in the job of mercenary, you can join the Fighters Guild",
+            "The Mages Guild is the best place to study the world of magicka",
+            "Burglars, prostitutes, professional criminals, you can find them all in the Thieves Guild",
+            "If you are interested in thief, try something little and you will be rewarded eventually...",
+            "The members of the Dark Brotherhood are said to be Daedra worshipper",
+            "The Dark Brotherhood has been declared illegal by many, yet persists...",
+            "Eight Divines, eight temples",
+            "Templar Knightly Orders are associated with the worshipper of the Eight Divine",
+            "To advance in a faction, you need good reputation and willing to work",
+            "Legends talk about an Order of the Lamp, but nobody can prove its existence...",
+            "Witch covens can be found in some dungeons and houses"
+        };
 
         /// <summary>
         /// Tips for dungeons.
+        /// TODO: expand with more tips.
         /// </summary>
         private static List<string> dungeonTips = new List<string>()
         {
-            NULL
+            "Explore the dungeon, you may find a different exit",
+            "Cementeries and holds are shown on the map, but many other dungeons are to be discovered"
         };
 
         /// <summary>
@@ -84,7 +87,20 @@ namespace LoadingScreen
         /// </summary>
         private static List<string> exteriorTips = new List<string>()
         {
-            NULL
+            "If you can't find a shop, try in a bigger town",
+            "Glenmorial Coven adepts may offer you quests",
+            "Some services are only available through guilds",
+            "You can read a book in a library, but not buy it. This is what bookstores are for",
+            "Daedra worshipper often see one another at libraries",
+            "Furniture Stores are not the place for honest purchases",
+            "Not all temples are found inside towns",
+            "There are severs shrines dedicated to the Aedra in the iliac bay",
+            "Some towns are walled, try at a different time",
+            "If you want to get inside a town at night, either climb or levitate",
+            "Gem Stores don't sell enchanted items, but they buy them",
+            "Knights are offered free lodgings at taverns",
+            "Buy a drink in a tavern to restore health",
+            "Taverns are the best place to seek work"
         };
 
         /// <summary>
@@ -106,7 +122,7 @@ namespace LoadingScreen
         /// Race-specific tips
         /// </summary>
         /// <param name="race">Race of player charachter.</param>
-        /// <returns></returns>
+        /// <returns>Tip for race</returns>
         private static string RaceTip(Races race)
         {
             switch (race)
@@ -138,7 +154,8 @@ namespace LoadingScreen
         /// TODO: something more useful?
         /// </summary>
         /// <param name="gender">Gender of charachter.</param>
-        private static string Gender(Genders gender)
+        /// <returns>Tip for gender</returns>
+        private static string GenderTip(Genders gender)
         {
             switch (gender)
             {
@@ -173,7 +190,7 @@ namespace LoadingScreen
                     return RandomTip(LocationTips(saveData.playerData.playerPosition.insideDungeon));
                 default:
                     // Generic tips
-                    return RandomTip(GetGenericTips());
+                    return RandomTip(genericTips);
             }
         }
 
@@ -190,7 +207,7 @@ namespace LoadingScreen
             switch (Random.Range(0, maxValue))
             {
                 case 0:
-                    return RandomTip(GetGenericTips());
+                    return RandomTip(genericTips);
                 default:
                     bool inDungeon = (transitionType == PlayerEnterExit.TransitionType.ToDungeonInterior);
                     return RandomTip(LocationTips(inDungeon));
@@ -239,7 +256,7 @@ namespace LoadingScreen
             tips.Add(RaceTip((Races)playerEntityData.raceTemplate.ID));
 
             // Gender
-            tips.Add(Gender(playerEntityData.gender));
+            tips.Add(GenderTip(playerEntityData.gender));
 
             // Wagon
             if (playerEntityData.wagonItems.Length == 0)
@@ -288,7 +305,7 @@ namespace LoadingScreen
 
         #endregion
 
-        #region Private Methods
+        #region Utilities
 
         private static void SetSeed()
         {
