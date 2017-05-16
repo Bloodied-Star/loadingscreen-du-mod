@@ -73,6 +73,9 @@ namespace LoadingScreen
 
         static bool tips;
 
+        const bool dungeons = true;
+        const bool buildings = true;
+
         #endregion
 
         #region Properties
@@ -143,6 +146,22 @@ namespace LoadingScreen
             // Suscribe to Loading
             SaveLoadManager.OnStartLoad += StartLoadingScreen;
             SaveLoadManager.OnLoad += StopLoadingScreen;
+            if (dungeons || buildings)
+            {
+                PlayerEnterExit.OnPreTransition += StartLoadingScreen;
+
+                if (dungeons)
+                {
+                    PlayerEnterExit.OnTransitionDungeonInterior += StopLoadingScreen;
+                    PlayerEnterExit.OnTransitionDungeonExterior += StopLoadingScreen;
+                }
+
+                if (buildings)
+                {
+                    PlayerEnterExit.OnTransitionInterior += StopLoadingScreen;
+                    PlayerEnterExit.OnTransitionExterior += StopLoadingScreen;
+                }
+            }
 
             // Suscribe to Death
             if (showDeathScreen)
@@ -178,7 +197,7 @@ namespace LoadingScreen
         #region Loading Screen
 
         /// <summary>
-        /// Start showing splash screen.
+        /// Start showing splash screen (LoadSave).
         /// </summary>
         /// <param name="saveData">Save game being loaded.</param>
         private void StartLoadingScreen(SaveData_v1 saveData)
@@ -192,10 +211,37 @@ namespace LoadingScreen
         }
 
         /// <summary>
+        /// Start showing splash screen (enter/exit transition).
+        /// </summary>
+        private void StartLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
+        {
+            if (((dungeons) && (args.TransitionType == PlayerEnterExit.TransitionType.ToDungeonInterior 
+                || args.TransitionType == PlayerEnterExit.TransitionType.ToDungeonExterior)) ||
+                    ((buildings) && args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingInterior 
+                    || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior))
+            {
+                LoadImage();
+                //if (tips)
+                //    tipLabel = DfTips.GetTip(saveData);
+                DrawLoadingScreen = true;
+                isLoading = true;
+                StartCoroutine(ShowLoadingScreenOnGui());
+            }
+        }
+
+        /// <summary>
         /// Check end of loading.
         /// </summary>
         /// <param name="saveData">Save game loaded.</param>
         private void StopLoadingScreen(SaveData_v1 saveData)
+        {
+            isLoading = false;
+        }
+
+        /// <summary>
+        /// Check end of loading.
+        /// </summary>
+        private void StopLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
             isLoading = false;
         }
