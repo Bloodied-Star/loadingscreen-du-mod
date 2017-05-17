@@ -440,16 +440,17 @@ namespace LoadingScreen
             LoadingLabel = LabelText;
 
             // Label rect
-            LoadingCounterRect = new Rect(Screen.width - (5 * LoadingfontSize), Screen.height - (2 * LoadingfontSize), 50, 10);
+            LoadingCounterRect = new Rect(Screen.width - 100, Screen.height - 30, 50, 10);
 
             // Label style
             style = new GUIStyle();
-            style.alignment = TextAnchor.UpperLeft;
+            style.alignment = TextAnchor.LowerRight;
             style.fontSize = LoadingfontSize;
             style.normal.textColor = GuiColor;
 
             // Tips rect
-            tipRect = new Rect(200, Screen.height - 100, 100, 20);
+            const int tipX = 180, tipY = 100;
+            tipRect = new Rect(tipX, Screen.height - tipY, 100, 20);
 
             // Tips style
             tipStyle = new GUIStyle();
