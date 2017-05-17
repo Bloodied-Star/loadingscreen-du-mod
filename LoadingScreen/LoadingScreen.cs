@@ -55,26 +55,31 @@ namespace LoadingScreen
 
         #region Settings
 
-        // Settings
+        // Internal
         static int guiDepth;
 
+        // Splash screen
+        static bool dungeons;
+        static bool buildings;
         static bool UseSeason;
-		static float MinimumWait;
+        static float MinimumWait;
 		static bool PressAnyKey;
 
+        // Label
         static bool LoadingCounter;
         static int LoadingfontSize;
         static Color GuiColor;
         static string LabelText;
         static string LabelTextFinish;
 
+        // Death screen
         static bool showDeathScreen;
         static bool DisableVideo;
 
+        // Experimental
         static bool tips;
-
-        const bool dungeons = true;
-        const bool buildings = true;
+        static int tipsFontSize;
+        static Color tipsFontColor;
 
         #endregion
 
@@ -217,8 +222,8 @@ namespace LoadingScreen
         {
             if (((dungeons) && (args.TransitionType == PlayerEnterExit.TransitionType.ToDungeonInterior 
                 || args.TransitionType == PlayerEnterExit.TransitionType.ToDungeonExterior)) ||
-                    ((buildings) && args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingInterior 
-                    || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior))
+                    ((buildings) && (args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingInterior 
+                    || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior)))
             {
                 LoadImage();
                 if (tips)
@@ -400,6 +405,8 @@ namespace LoadingScreen
 
             // Splash screen
             const string SplashScreenSection = "SplashScreen";
+            dungeons = settings.GetBool(SplashScreenSection, "Dungeons");
+            buildings = settings.GetBool(SplashScreenSection, "Buildings");
             UseSeason = settings.GetBool(SplashScreenSection, "UseSeason");
             MinimumWait = settings.GetFloat(SplashScreenSection, "ShowForMinimum");
             PressAnyKey = settings.GetBool(SplashScreenSection, "PressAnyKey");
@@ -418,7 +425,10 @@ namespace LoadingScreen
             DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
 
             // Tips
-            tips = settings.GetBool("Experimental", "Tips");
+            const string Experimental =  "Experimental";
+            tips = settings.GetBool(Experimental, "Tips");
+            tipsFontSize = settings.GetInt(Experimental, "TipsSize");
+            tipsFontColor = settings.GetColor(Experimental, "TipsColor");
         }
 
         /// <summary>
@@ -444,8 +454,8 @@ namespace LoadingScreen
             // Tips style
             tipStyle = new GUIStyle();
             tipStyle.alignment = TextAnchor.UpperLeft;
-            tipStyle.fontSize = 30;
-            tipStyle.normal.textColor = Color.black;
+            tipStyle.fontSize = tipsFontSize;
+            tipStyle.normal.textColor = tipsFontColor;
         }
 
         /// <summary>

@@ -1,15 +1,19 @@
 ﻿;Mod: Loading Screen
 [Internal]
 ;Version of settings file
-SettingsVersion = 1.1
+SettingsVersion = 1.2
 ;Sorting depth of the loading screen on GUI
 ;DU panels use the 0 layer, so this should be negative
 GuiDepth = -2
 
+;Show loading screen entering/exiting dungeons
+;Show loading screen entering/exiting buildings
 ;Use different splash screens according to season
 ;Min time in seconds the splash screen will be displayed on screen. Set to 0 to disable this feature
 ;Show press-any-key screen after loading
 [SplashScreen]
+Dungeons = False
+Buildings = False
 UseSeason = False
 ShowForMinimum = 1
 PressAnyKey = False
@@ -33,5 +37,9 @@ ShowDeathScreen = False
 DisableVideo = False
 
 ;Show tips on the world of Daggerfall
+;Size of font for tips
+;Color of font for tips
 [Experimental]
 Tips = False
+TipsSize = 30
+TipsColor = ffffffff
