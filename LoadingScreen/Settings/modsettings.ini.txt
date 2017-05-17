@@ -39,7 +39,9 @@ DisableVideo = False
 ;Show tips on the world of Daggerfall
 ;Size of font for tips
 ;Color of font for tips
+;Name of language file
 [Experimental]
 Tips = False
 TipsSize = 30
 TipsColor = ffffffff
+TipsLanguage = en

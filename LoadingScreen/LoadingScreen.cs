@@ -18,6 +18,8 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using IniParser;
+using IniParser.Model;
 
 namespace LoadingScreen
 {
@@ -80,6 +82,7 @@ namespace LoadingScreen
         static bool tips;
         static int tipsFontSize;
         static Color tipsFontColor;
+        static string tipsLanguage;
 
         #endregion
 
@@ -171,6 +174,24 @@ namespace LoadingScreen
             // Suscribe to Death
             if (showDeathScreen)
                 PlayerDeath.OnPlayerDeath += ShowDeathScreen;
+
+            // Load tips
+            if(tips)
+            {
+                string path = Path.Combine(LoadingScreenMod.DirPath, "Tips");
+                path = Path.Combine(path, tipsLanguage + ".ini");
+                try
+                {
+                    var parser = new FileIniDataParser();
+                    DfTips.tips = parser.ReadFile(path);
+                }
+                catch (FileNotFoundException e)
+                {
+                    Debug.LogError(string.Format("Loading Screen: Failed to read file {0}\n" +
+                        "Cannot display tips without language file\n{1}", path, e));
+                    tips = false;
+                }
+            }
         }
 
         /// <summary>
@@ -429,6 +450,7 @@ namespace LoadingScreen
             tips = settings.GetBool(Experimental, "Tips");
             tipsFontSize = settings.GetInt(Experimental, "TipsSize");
             tipsFontColor = settings.GetColor(Experimental, "TipsColor");
+            tipsLanguage = settings.GetString(Experimental, "TipsLanguage");
         }
 
         /// <summary>
