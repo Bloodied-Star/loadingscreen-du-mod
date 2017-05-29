@@ -18,8 +18,6 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
-using IniParser;
-using IniParser.Model;
 
 namespace LoadingScreen
 {
@@ -152,46 +150,11 @@ namespace LoadingScreen
             LoadingScreenMod.MessageReciver = MessageReceiver;
 
             // Suscribe to Loading
-            SaveLoadManager.OnStartLoad += StartLoadingScreen;
-            SaveLoadManager.OnLoad += StopLoadingScreen;
-            if (dungeons || buildings)
-            {
-                PlayerEnterExit.OnPreTransition += StartLoadingScreen;
-
-                if (dungeons)
-                {
-                    PlayerEnterExit.OnTransitionDungeonInterior += StopLoadingScreen;
-                    PlayerEnterExit.OnTransitionDungeonExterior += StopLoadingScreen;
-                }
-
-                if (buildings)
-                {
-                    PlayerEnterExit.OnTransitionInterior += StopLoadingScreen;
-                    PlayerEnterExit.OnTransitionExterior += StopLoadingScreen;
-                }
-            }
-
-            // Suscribe to Death
-            if (showDeathScreen)
-                PlayerDeath.OnPlayerDeath += ShowDeathScreen;
+            SubscribeToLoading();
 
             // Load tips
             if(tips)
-            {
-                string path = Path.Combine(LoadingScreenMod.DirPath, "Tips");
-                path = Path.Combine(path, tipsLanguage + ".ini");
-                try
-                {
-                    var parser = new FileIniDataParser();
-                    DfTips.tips = parser.ReadFile(path);
-                }
-                catch (FileNotFoundException e)
-                {
-                    Debug.LogError(string.Format("Loading Screen: Failed to read file {0}\n" +
-                        "Cannot display tips without language file\n{1}", path, e));
-                    tips = false;
-                }
-            }
+                tips = DfTips.Init(Path.Combine(LoadingScreenMod.DirPath, "Tips"), tipsLanguage);
         }
 
         /// <summary>
@@ -228,12 +191,9 @@ namespace LoadingScreen
         /// <param name="saveData">Save game being loaded.</param>
         private void StartLoadingScreen(SaveData_v1 saveData)
         {
-            LoadImage();
             if (tips)
                 tipLabel = DfTips.GetTip(saveData);
-            DrawLoadingScreen = true;
-            isLoading = true;
-            StartCoroutine(ShowLoadingScreenOnGui());
+            StartLoadingScreen();
         }
 
         /// <summary>
@@ -246,28 +206,27 @@ namespace LoadingScreen
                     ((buildings) && (args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingInterior 
                     || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior)))
             {
-                LoadImage();
                 if (tips)
                     tipLabel = DfTips.GetTip(args.TransitionType);
-                DrawLoadingScreen = true;
-                isLoading = true;
-                StartCoroutine(ShowLoadingScreenOnGui());
+                StartLoadingScreen();
             }
         }
 
         /// <summary>
-        /// Check end of loading.
+        /// Start showing splash screen.
         /// </summary>
-        /// <param name="saveData">Save game loaded.</param>
-        private void StopLoadingScreen(SaveData_v1 saveData)
+        private void StartLoadingScreen()
         {
-            isLoading = false;
+            LoadImage();
+            DrawLoadingScreen = true;
+            isLoading = true;
+            StartCoroutine(ShowLoadingScreenOnGui());
         }
 
         /// <summary>
         /// Check end of loading.
         /// </summary>
-        private void StopLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
+        private void StopLoadingScreen<T>(T args)
         {
             isLoading = false;
         }
@@ -399,7 +358,7 @@ namespace LoadingScreen
             // Show death screen
             screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
             LoadingLabel = LabelTextFinish;
-            tipLabel = "";
+            tipLabel = tips ? DfTips.GetTip() : "";
             DrawLoadingScreen = true;
 
             // Wait for imput
@@ -482,6 +441,68 @@ namespace LoadingScreen
         }
 
         /// <summary>
+        /// Subscribe to loading as per user settings.
+        /// </summary>
+        private void SubscribeToLoading()
+        {
+            SaveLoadManager.OnStartLoad += StartLoadingScreen;
+            SaveLoadManager.OnLoad += StopLoadingScreen;
+
+            if (dungeons || buildings)
+            {
+                PlayerEnterExit.OnPreTransition += StartLoadingScreen;
+
+                if (dungeons)
+                {
+                    PlayerEnterExit.OnTransitionDungeonInterior += StopLoadingScreen;
+                    PlayerEnterExit.OnTransitionDungeonExterior += StopLoadingScreen;
+                }
+
+                if (buildings)
+                {
+                    PlayerEnterExit.OnTransitionInterior += StopLoadingScreen;
+                    PlayerEnterExit.OnTransitionExterior += StopLoadingScreen;
+                }
+            }
+
+            if (showDeathScreen)
+                PlayerDeath.OnPlayerDeath += ShowDeathScreen;
+
+            Debug.Log("LoadingScreen: subscribed to loadings as per user settings.");
+        }
+
+        /// <summary>
+        /// Unsubscribe from all loadings.
+        /// </summary>
+        private void UnsubscribeFromLoading()
+        {
+            SaveLoadManager.OnStartLoad -= StartLoadingScreen;
+            SaveLoadManager.OnLoad -= StopLoadingScreen;
+
+            if (dungeons || buildings)
+            {
+                PlayerEnterExit.OnPreTransition -= StartLoadingScreen;
+
+                if (dungeons)
+                {
+                    PlayerEnterExit.OnTransitionDungeonInterior -= StopLoadingScreen;
+                    PlayerEnterExit.OnTransitionDungeonExterior -= StopLoadingScreen;
+                }
+
+                if (buildings)
+                {
+                    PlayerEnterExit.OnTransitionInterior -= StopLoadingScreen;
+                    PlayerEnterExit.OnTransitionExterior -= StopLoadingScreen;
+                }
+            }
+
+            if (showDeathScreen)
+                PlayerDeath.OnPlayerDeath -= ShowDeathScreen;
+
+            Debug.Log("LoadingScreen: unsubscribed from all loadings.");
+        }
+
+        /// <summary>
         /// Import image from disk.
         /// </summary>
         private void LoadImage()
@@ -534,7 +555,9 @@ namespace LoadingScreen
 
         #region Mod Messages
 
-        // Uses DFModMessageReceiver delegate to share info between mods.
+        /// <summary>
+        /// Exchange messages with other mods.
+        /// </summary>
         private void MessageReceiver(string message, object data = null, DFModMessageCallback callback = null)
         {
             try

@@ -11,6 +11,9 @@ using IniParser.Model;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
+using System.IO;
+using IniParser;
+using IniParser.Exceptions;
 
 /*
  * TODO:
@@ -33,7 +36,7 @@ namespace LoadingScreen
         /// <summary>
         /// All tips from language-specific file.
         /// </summary>
-        public static IniData tips { get; set; }
+        public static IniData tips;
 
         /// <summary>
         /// Generic tips.
@@ -112,6 +115,11 @@ namespace LoadingScreen
             }
         }
 
+        /// <summary>
+        /// Tips for player death.
+        /// </summary>
+        static List<string> deathTips { get { return tips.Sections.GetSectionData("Death").Comments; } }
+
         #endregion
 
         #region Algorithm
@@ -151,10 +159,35 @@ namespace LoadingScreen
             switch (Random.Range(0, maxValue))
             {
                 case 0:
+                    // Generic tips
                     return RandomTip(genericTips);
                 default:
+                    // Location
                     bool inDungeon = (transitionType == PlayerEnterExit.TransitionType.ToDungeonInterior);
                     return RandomTip(LocationTips(inDungeon));
+            }
+        }
+
+        /// <summary>
+        /// Get a tip to show on screen for Death Screen.
+        /// </summary>
+        /// <returns>Tip</returns>
+        public static string GetTip()
+        {
+            SetSeed();
+            switch (Random.Range(0, 6))
+            {
+                case 0:
+                    // Generic tips
+                    return RandomTip(genericTips);
+                case 1:
+                case 2:
+                    // Location
+                    bool inDungeon = GameManager.Instance.IsPlayerInsideDungeon;
+                    return RandomTip(LocationTips(inDungeon));
+                default:
+                    // Death
+                    return RandomTip(deathTips);
             }
         }
 
@@ -243,7 +276,7 @@ namespace LoadingScreen
             catch (System.Exception e)
             {
                 Debug.LogError("LoadingScreen: Failed to get a tip string\n" + e);
-                return NULL;
+                return string.Format("Something wrong with your tips file...({0})", e.Message);
             }
         }
 
@@ -251,6 +284,34 @@ namespace LoadingScreen
 
         #region Utilities
 
+        /// <summary>
+        /// Load tips from file on disk.
+        /// English file is used as fallback.
+        /// </summary>
+        /// <param name="path">Folder with language files.</param>
+        /// <param name="language">Name of language file without extension.</param>
+        /// <returns>True if tips can be used.</returns>
+        public static bool Init(string path, string language)
+        {
+            try
+            {
+                var parser = new FileIniDataParser();
+                tips = parser.ReadFile(Path.Combine(path, language + ".ini"));
+                return true;
+            }
+            catch (ParsingException e)
+            {
+                string message = e.InnerException != null ? e.InnerException.Message : e.Message;
+                Debug.LogError(string.Format("Loading Screen: Failed to parse file with '{0}' tips, " +
+                    "cannot display tips without this file!\n{1}", language, message));
+
+                return language != "en" ? Init(path, "en") : false;
+            }
+        }
+
+        /// <summary>
+        /// Init seed for random methods.
+        /// </summary>
         private static void SetSeed()
         {
             Random.InitState((int)Time.time);
