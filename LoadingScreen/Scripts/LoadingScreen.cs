@@ -61,7 +61,8 @@ namespace LoadingScreen
         // Splash screen
         static bool dungeons;
         static bool buildings;
-        static bool UseSeason;
+        static bool useLocation;
+        static bool useSeason;
         static float MinimumWait;
 		static bool PressAnyKey;
 
@@ -208,16 +209,16 @@ namespace LoadingScreen
             {
                 if (tips)
                     tipLabel = DfTips.GetTip(args.TransitionType);
-                StartLoadingScreen();
+                StartLoadingScreen(args.TransitionType);
             }
         }
 
         /// <summary>
         /// Start showing splash screen.
         /// </summary>
-        private void StartLoadingScreen()
+        private void StartLoadingScreen(PlayerEnterExit.TransitionType transitionType = PlayerEnterExit.TransitionType.NotDefined)
         {
-            LoadImage();
+            LoadImage(transitionType);
             DrawLoadingScreen = true;
             isLoading = true;
             StartCoroutine(ShowLoadingScreenOnGui());
@@ -387,7 +388,8 @@ namespace LoadingScreen
             const string SplashScreenSection = "SplashScreen";
             dungeons = settings.GetBool(SplashScreenSection, "Dungeons");
             buildings = settings.GetBool(SplashScreenSection, "Buildings");
-            UseSeason = settings.GetBool(SplashScreenSection, "UseSeason");
+            useLocation = settings.GetBool(SplashScreenSection, "UseLocation");
+            useSeason = settings.GetBool(SplashScreenSection, "UseSeason");
             MinimumWait = settings.GetFloat(SplashScreenSection, "ShowForMinimum");
             PressAnyKey = settings.GetBool(SplashScreenSection, "PressAnyKey");
 
@@ -505,11 +507,15 @@ namespace LoadingScreen
         /// <summary>
         /// Import image from disk.
         /// </summary>
-        private void LoadImage()
+        private void LoadImage(PlayerEnterExit.TransitionType transitionType)
         {
             // Get path
-            string path = Path.Combine(TextureReplacement.TexturesPath, "LoadingScreens");
-            if (UseSeason)
+            string path = Path.Combine(LoadingScreenMod.DirPath, "Images");
+            if (useLocation && transitionType == PlayerEnterExit.TransitionType.ToBuildingInterior)
+                path = Path.Combine(path, "Building");
+            else if (useLocation && transitionType == PlayerEnterExit.TransitionType.ToDungeonInterior)
+                path = Path.Combine(path, "Dungeon");
+            else if (useSeason)
             {
                 if (GameManager.Instance.PlayerGPS.ClimateSettings.ClimateType == DaggerfallConnect.DFLocation.ClimateBaseType.Desert)
                     path = Path.Combine(path, "Desert");

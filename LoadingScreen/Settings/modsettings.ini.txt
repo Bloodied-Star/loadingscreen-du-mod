@@ -8,12 +8,14 @@ GuiDepth = -2
 
 ;Show loading screen entering/exiting dungeons
 ;Show loading screen entering/exiting buildings
+;Use different splash screens when entering buildings/dungeons
 ;Use different splash screens according to season
 ;Min time in seconds the splash screen will be displayed on screen. Set to 0 to disable this feature
 ;Show press-any-key screen after loading
 [SplashScreen]
 Dungeons = False
 Buildings = False
+UseLocation = False
 UseSeason = False
 ShowForMinimum = 1
 PressAnyKey = False
@@ -42,6 +44,6 @@ DisableVideo = False
 ;Name of language file
 [Experimental]
 Tips = False
-TipsSize = 30
+TipsSize = 25
 TipsColor = ffffffff
 TipsLanguage = en

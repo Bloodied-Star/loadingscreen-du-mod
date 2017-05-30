@@ -12,19 +12,22 @@ Daggerfall Unity 0.4.12 or higher.
 
 Installation
 ------------
-Place 'loadingscreen.dfmod' inside '\DaggerfallUnity_Data\StreamingAssets\Mods'.
+1. Move 'LoadingScreen' folder inside 'StreamingAssets/Mods'.
+2. Pick the correct 'loadingscreen.dfmod' for your OS and place it inside the 'LoadingScreen' folder.
 
 Customization
 -------------
 This mod randomly picks any .png image found inside this folder and uses it as splash screen:
 
-- DaggerfallUnity_Data\StreamingAssets\Textures\LoadingScreens
+- \StreamingAssets\Mods\LoadingScreen\Images
 
 Alternatively, enable 'UseSeason' inside the mod settings and place textures in the appropriate folders:
 
-- Textures\LoadingScreens\Desert
-- Textures\LoadingScreens\Summer
-- Textures\LoadingScreens\Winter
+- Images\Desert
+- Images\Summer
+- Images\Winter
+
+You can also enable 'UseLocation' to use 'Images\Building' and 'Images\Dungeon' when entering one.
 
 Settings
 --------
@@ -54,6 +57,7 @@ Changelog
 * 1.4
 - Improvements
 - (optional) Show tips
+- (optional) Use Location
 
 * 1.3
 - Minor improvements.
