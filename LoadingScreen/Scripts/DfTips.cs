@@ -17,7 +17,7 @@ using IniParser.Exceptions;
 
 /*
  * TODO:
- * - Improve dungeonTips.
+ * - Add more dungeonTips, basicTips and advancedTips.
  * - Improve GenderTip().
  * - Seek informations from quests.
  */
@@ -45,7 +45,6 @@ namespace LoadingScreen
 
         /// <summary>
         /// Tips for dungeons.
-        /// TODO: expand with more tips.
         /// </summary>
         static List<string> dungeonTips { get { return tips.Sections.GetSectionData("Dungeon").Comments; } }
 
@@ -59,7 +58,7 @@ namespace LoadingScreen
         /// These strings are used when "requested" by the save.
         /// </summary>
         const string careerTips = "Career";
-        static string NULL { get { return tips[careerTips]["NULL"]; } }
+        const string NULL = "";
         static string LOWHELTH { get { return tips[careerTips]["LOWHELTH"]; } }
         static string LOWGOLD0 { get { return tips[careerTips]["LOWGOLD0"]; } }
         static string LOWGOLD1 { get { return tips[careerTips]["LOWGOLD1"]; } }
@@ -116,6 +115,16 @@ namespace LoadingScreen
         }
 
         /// <summary>
+        /// These are shown with more frequency at lower levels.
+        /// </summary>
+        static List<string> basicTips { get { return tips.Sections.GetSectionData("Basic").Comments; } }
+
+        /// <summary>
+        /// These are shown with more frequency at higher levels.
+        /// </summary>
+        static List<string> advancedTips { get { return tips.Sections.GetSectionData("Advanced").Comments; } }
+
+        /// <summary>
         /// Tips for player death.
         /// </summary>
         static List<string> deathTips { get { return tips.Sections.GetSectionData("Death").Comments; } }
@@ -132,12 +141,18 @@ namespace LoadingScreen
         public static string GetTip(SaveData_v1 saveData)
         {
             SetSeed();
-            switch (Random.Range(0, 3))
+            switch (Random.Range(0, 6))
             {
                 case 0:
                     // Save specific
                     return RandomTip(SaveTips(saveData));
                 case 1:
+                case 2:
+                    // Scaled on level
+                    int playerLevel = saveData.playerData.playerEntity.level;
+                    return RandomTip(ScaledTips(playerLevel));
+                case 3:
+                case 4:
                     // Location
                     return RandomTip(LocationTips(saveData.playerData.playerPosition.insideDungeon));
                 default:
@@ -153,14 +168,18 @@ namespace LoadingScreen
         /// <returns>Tip</returns>
         public static string GetTip(PlayerEnterExit.TransitionType transitionType)
         {
-            // Get a generic tip or one specific to transitioning
             SetSeed();
-            const int maxValue = 3; // the higher, the more probable it will be specific
+            const int maxValue = 5;
             switch (Random.Range(0, maxValue))
             {
                 case 0:
                     // Generic tips
                     return RandomTip(genericTips);
+                case 1:
+                case 2:
+                    // Scaled on level
+                    int playerLevel = GameManager.Instance.PlayerEntity.Level;
+                    return RandomTip(ScaledTips(playerLevel));
                 default:
                     // Location
                     bool inDungeon = (transitionType == PlayerEnterExit.TransitionType.ToDungeonInterior);
@@ -259,6 +278,16 @@ namespace LoadingScreen
                 default:
                     return inDungeon ? dungeonTips : exteriorTips;
             }
+        }
+
+        /// <summary>
+        /// Choose tips according to player level.
+        /// </summary>
+        /// <param name="playerLevel">Level of player in game.</param>
+        /// <returns>List of tips</returns>
+        private static List<string> ScaledTips(int playerLevel)
+        {
+            return Random.Range(0, 33) > playerLevel ? basicTips : advancedTips;
         }
 
         /// <summary>
