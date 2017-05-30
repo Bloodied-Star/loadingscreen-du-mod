@@ -13,7 +13,7 @@ bothering the player with notions that have already been found in game.
 TheLacus
 
 ## Info
-+ Version: 1.3
++ Version: 1.4
 + Daggerfall Unity Version: 0.4.12
 + [LoadingScreen on Daggerfall Unity forums](http://forums.dfworkshop.net/viewtopic.php?f=14&t=469)
 + [Download](http://forums.dfworkshop.net/viewtopic.php?f=22&t=456)
