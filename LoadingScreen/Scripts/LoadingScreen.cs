@@ -4,7 +4,7 @@
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
 // Original Author: TheLacus (TheLacus@yandex.com)
 // Contributors:    
-// Version:         1.4 for Daggerfall Unity 0.4.12
+// Version:         1.5 for Daggerfall Unity 0.4.12
 
 using System.IO;
 using System.Collections;
@@ -21,6 +21,15 @@ using DaggerfallWorkshop.Utility.AssetInjection;
 
 namespace LoadingScreen
 {
+    struct LoadingType
+    {
+        public const int 
+            
+            Default = 0,
+            Building = 1,
+            Dungeon = 2;
+    }
+
     /// <summary>
     /// Implement a loading screen in Daggerfall Unity.
     /// Use settings and image files from disk for customization.
@@ -68,20 +77,25 @@ namespace LoadingScreen
 
         // Label
         static bool LoadingCounter;
-        static int LoadingfontSize;
+        static int labelFontSize;
         static Color GuiColor;
-        static string LabelText;
-        static string LabelTextFinish;
+        static int labelFontStyle;
+        static Tuple<float, float> labelPosition;
+        static string labelText;
+        static string labelTextFinish;
+
+        // Tips
+        static bool tips;
+        static int tipsFontSize;
+        static Color tipsFontColor;
+        static int tipsFontStyle;
+        static Tuple<float, float> tipsPosition;
+        Tuple<float, float> tipsSize;
+        static string tipsLanguage;
 
         // Death screen
         static bool showDeathScreen;
         static bool DisableVideo;
-
-        // Experimental
-        static bool tips;
-        static int tipsFontSize;
-        static Color tipsFontColor;
-        static string tipsLanguage;
 
         #endregion
 
@@ -194,7 +208,8 @@ namespace LoadingScreen
         {
             if (tips)
                 tipLabel = DfTips.GetTip(saveData);
-            StartLoadingScreen();
+            int loadingType = useLocation ? GetLoadingType(saveData.playerData.playerPosition) : LoadingType.Default;
+            StartLoadingScreen(loadingType);
         }
 
         /// <summary>
@@ -209,16 +224,17 @@ namespace LoadingScreen
             {
                 if (tips)
                     tipLabel = DfTips.GetTip(args.TransitionType);
-                StartLoadingScreen(args.TransitionType);
+                int loadingType = useLocation ? GetLoadingType(args.TransitionType) : LoadingType.Default;
+                StartLoadingScreen(loadingType);
             }
         }
 
         /// <summary>
         /// Start showing splash screen.
         /// </summary>
-        private void StartLoadingScreen(PlayerEnterExit.TransitionType transitionType = PlayerEnterExit.TransitionType.NotDefined)
+        private void StartLoadingScreen(int loadingType = LoadingType.Default)
         {
-            LoadImage(transitionType);
+            LoadImage(loadingType);
             DrawLoadingScreen = true;
             isLoading = true;
             StartCoroutine(ShowLoadingScreenOnGui());
@@ -269,7 +285,7 @@ namespace LoadingScreen
                 fadeFromBlack = true;
 
                 // Display new string and pause the game
-                LoadingLabel = LabelTextFinish;
+                LoadingLabel = labelTextFinish;
                 GameManager.Instance.PauseGame(true, true);
 
                 // Wait for imput
@@ -282,7 +298,7 @@ namespace LoadingScreen
 
             // Terminate loading screen
             DrawLoadingScreen = false;
-            LoadingLabel = LabelText;
+            LoadingLabel = labelText;
             if (fadeFromBlack)
             {
                 DaggerfallUI.Instance.FadeHUDFromBlack(0.5f);
@@ -358,7 +374,7 @@ namespace LoadingScreen
 
             // Show death screen
             screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            LoadingLabel = LabelTextFinish;
+            LoadingLabel = labelTextFinish;
             tipLabel = tips ? DfTips.GetTip() : "";
             DrawLoadingScreen = true;
 
@@ -368,13 +384,13 @@ namespace LoadingScreen
 
             // Remove death screen
             DrawLoadingScreen = false;
-            LoadingLabel = LabelText;
+            LoadingLabel = labelText;
             AudioListener.pause = false;
         }
 
         #endregion
 
-        #region Private Methods
+        #region Setup Methods
 
         /// <summary>
         /// Load settings from ModSettings.
@@ -396,22 +412,27 @@ namespace LoadingScreen
             // Loading label
             const string LoadingLabelSection = "LoadingLabel";
             LoadingCounter = settings.GetBool(LoadingLabelSection, "LoadingCounter");
-            LoadingfontSize = settings.GetInt(LoadingLabelSection, "LoadingfontSize");
+            labelFontSize = settings.GetInt(LoadingLabelSection, "LoadingfontSize");
             GuiColor = settings.GetColor(LoadingLabelSection, "GuiColor");
-            LabelText = settings.GetString(LoadingLabelSection, "LabelText");
-            LabelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
+            labelFontStyle = settings.GetInt(LoadingLabelSection, "LabelStyle", 0, 3);
+            labelPosition = settings.GetTupleFloat(LoadingLabelSection, "Position");
+            labelText = settings.GetString(LoadingLabelSection, "LabelText");
+            labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
+
+            // Tips
+            const string TipsSection =  "Tips";
+            tips = settings.GetBool(TipsSection, "Tips");
+            tipsFontSize = settings.GetInt(TipsSection, "FontSize");
+            tipsFontColor = settings.GetColor(TipsSection, "FontColor");
+            tipsFontStyle = settings.GetInt(TipsSection, "FontStyle", 0, 3);
+            tipsPosition = settings.GetTupleFloat(TipsSection, "Position");
+            tipsSize = settings.GetTupleFloat(TipsSection, "Size");
+            tipsLanguage = settings.GetString(TipsSection, "Language");
 
             // Death Screen
             const string DeathScreenSection = "DeathScreen";
             showDeathScreen = settings.GetBool(DeathScreenSection, "ShowDeathScreen");
             DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
-
-            // Tips
-            const string Experimental =  "Experimental";
-            tips = settings.GetBool(Experimental, "Tips");
-            tipsFontSize = settings.GetInt(Experimental, "TipsSize");
-            tipsFontColor = settings.GetColor(Experimental, "TipsColor");
-            tipsLanguage = settings.GetString(Experimental, "TipsLanguage");
         }
 
         /// <summary>
@@ -420,26 +441,28 @@ namespace LoadingScreen
         private void InitGUiElements()
         {
             // Label
-            LoadingLabel = LabelText;
+            LoadingLabel = labelText;
 
             // Label rect
-            LoadingCounterRect = new Rect(Screen.width - 100, Screen.height - 30, 50, 10);
+            LoadingCounterRect = new Rect(Screen.width - labelPosition.First, Screen.height - labelPosition.Second, 50, 10);
 
             // Label style
             style = new GUIStyle();
             style.alignment = TextAnchor.LowerRight;
-            style.fontSize = LoadingfontSize;
+            style.fontSize = labelFontSize;
             style.normal.textColor = GuiColor;
+            style.fontStyle = (FontStyle)labelFontStyle;
 
             // Tips rect
-            const int tipX = 180, tipY = 100;
-            tipRect = new Rect(tipX, Screen.height - tipY, 100, 20);
+            tipRect = new Rect(tipsPosition.First, Screen.height - tipsPosition.Second, tipsSize.First, tipsSize.Second);
 
             // Tips style
             tipStyle = new GUIStyle();
             tipStyle.alignment = TextAnchor.UpperLeft;
             tipStyle.fontSize = tipsFontSize;
             tipStyle.normal.textColor = tipsFontColor;
+            tipStyle.fontStyle = (FontStyle)tipsFontStyle;
+            tipStyle.wordWrap = true;
         }
 
         /// <summary>
@@ -503,17 +526,47 @@ namespace LoadingScreen
 
             Debug.Log("LoadingScreen: unsubscribed from all loadings.");
         }
+        
+        #endregion
+
+        #region Private Methods
+
+        private int GetLoadingType(PlayerPositionData_v1 playerPosition)
+        {
+            if (playerPosition.insideBuilding)
+                return LoadingType.Building;
+
+            if (playerPosition.insideDungeon)
+                return LoadingType.Dungeon;
+
+            return LoadingType.Default;
+        }
+
+        private int GetLoadingType(PlayerEnterExit.TransitionType transitionType)
+        {
+            switch (transitionType)
+            {
+                case PlayerEnterExit.TransitionType.ToBuildingInterior:
+                    return LoadingType.Building;
+
+                case PlayerEnterExit.TransitionType.ToDungeonInterior:
+                    return LoadingType.Dungeon;
+
+                default:
+                    return LoadingType.Default;
+            }
+        }
 
         /// <summary>
         /// Import image from disk.
         /// </summary>
-        private void LoadImage(PlayerEnterExit.TransitionType transitionType)
+        private void LoadImage(int loadingType)
         {
             // Get path
             string path = Path.Combine(LoadingScreenMod.DirPath, "Images");
-            if (useLocation && transitionType == PlayerEnterExit.TransitionType.ToBuildingInterior)
+            if (loadingType == LoadingType.Building)
                 path = Path.Combine(path, "Building");
-            else if (useLocation && transitionType == PlayerEnterExit.TransitionType.ToDungeonInterior)
+            else if (loadingType == LoadingType.Dungeon)
                 path = Path.Combine(path, "Dungeon");
             else if (useSeason)
             {

@@ -6,14 +6,14 @@
 // Contributors:    
 
 using UnityEngine;
+using System.IO;
 using System.Collections.Generic;
+using IniParser;
 using IniParser.Model;
+using IniParser.Exceptions;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
-using System.IO;
-using IniParser;
-using IniParser.Exceptions;
 
 /*
  * TODO:
@@ -76,42 +76,20 @@ namespace LoadingScreen
         private static string RaceTip(Races race)
         {
             const string raceSection = "Race";
-            try
-            {
-                string tip = tips[raceSection][race.ToString()];
-                if (tip != null)
-                    return tip;
-                else
-                    throw new System.Exception();
-            }
-            catch
-            {
-                UnknownItem(raceSection, race.ToString());
-                return tips[raceSection]["Unknown"];
-            }
+            string tip = tips[raceSection][race.ToString()];
+            return tip != null ? tip : (EmptyItem(raceSection, race.ToString(), race!=Races.None ? RaceTip(Races.None) : ""));
         }
 
         /// <summary>
         /// Gender-specific tips
-        /// TODO: something more useful?
         /// </summary>
         /// <param name="gender">Gender of charachter.</param>
         /// <returns>Tip for gender</returns>
         private static string GenderTip(Genders gender)
         {
             const string genderSection = "Gender";
-            try
-            {
-                string tip = tips[genderSection][gender.ToString()];
-                if (tip != null)
-                    return tip;
-                else
-                    throw new System.Exception();
-            }
-            catch
-            {
-                return UnknownItem(genderSection, gender.ToString());
-            }
+            string tip = tips[genderSection][gender.ToString()];
+            return tip != null ? tip : EmptyItem(genderSection, gender.ToString());
         }
 
         /// <summary>
@@ -128,6 +106,11 @@ namespace LoadingScreen
         /// Tips for player death.
         /// </summary>
         static List<string> deathTips { get { return tips.Sections.GetSectionData("Death").Comments; } }
+
+        /// <summary>
+        /// Fallback tip.
+        /// </summary>
+        const string fallbackTip = "Something wrong with your tips file...";
 
         #endregion
 
@@ -305,7 +288,7 @@ namespace LoadingScreen
             catch (System.Exception e)
             {
                 Debug.LogError("LoadingScreen: Failed to get a tip string\n" + e);
-                return string.Format("Something wrong with your tips file...({0})", e.Message);
+                return string.Format("{0}({1})", fallbackTip, e.Message);
             }
         }
 
@@ -347,14 +330,14 @@ namespace LoadingScreen
         }
 
         /// <summary>
-        /// Print error to log and return default string.
+        /// Print error to log and return fallback string.
         /// </summary>
         /// <param name="itemClass">Item description</param>
         /// <param name="item">Item.ToString()</param>
-        static private string UnknownItem (string itemClass, string item)
+        static private string EmptyItem (string itemClass, string item, string fallback = fallbackTip)
         {
-            Debug.LogError(string.Format("LoadingScreen: Failed to get {0} of player\nGot: {1}", itemClass, item));
-            return NULL;
+            Debug.LogError(string.Format("LoadingScreen: Failed to read {0} ({1})", itemClass, item));
+            return fallback;
         }
         
         #endregion

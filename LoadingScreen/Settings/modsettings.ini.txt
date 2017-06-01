@@ -1,7 +1,7 @@
 ﻿;Mod: Loading Screen
 [Internal]
 ;Version of settings file
-SettingsVersion = 1.2
+SettingsVersion = 1.3
 ;Sorting depth of the loading screen on GUI
 ;DU panels use the 0 layer, so this should be negative
 GuiDepth = -2
@@ -23,27 +23,36 @@ PressAnyKey = False
 ;Show Loading label on the bottom-right corner
 ;Size of font of Loading label
 ;Color of Loading label
+;0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic
+;Position on screen (-x,-y)
 ;Text of loading label
 ;Text of press-any-key label
 [LoadingLabel]
 LoadingCounter = True
 LoadingfontSize = 30
 GuiColor = ffff00ff
+LabelStyle = 1
+Position = 100<,>30
 LabelText = Loading
 LabelTextFinish = Continue
+
+;Show tips on the world of Daggerfall
+;Size of font for tips
+;Color of font for tips
+;0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic
+;Position on screen (x,-y)
+;Name of language file
+[Tips]
+Tips = True
+FontSize = 25
+FontColor = ffffffff
+FontStyle = 2
+Position = 180<,>100
+Size = 100<,>20
+Language = en
 
 ;Show death screen after video
 ;Disable video
 [DeathScreen]
 ShowDeathScreen = False
 DisableVideo = False
-
-;Show tips on the world of Daggerfall
-;Size of font for tips
-;Color of font for tips
-;Name of language file
-[Experimental]
-Tips = False
-TipsSize = 25
-TipsColor = ffffffff
-TipsLanguage = en
