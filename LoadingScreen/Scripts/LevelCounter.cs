@@ -27,7 +27,7 @@ namespace LoadingScreen.Plugins
         /// <param name="upperCase">Upper case text.</param>
         public static string GetLevelCounter (SaveData_v1 saveData, bool upperCase = false)
         {
-            return GetLevelCounter(saveData.playerData.playerEntity.level);
+            return GetLevelCounter(saveData.playerData.playerEntity.level, upperCase);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace LoadingScreen.Plugins
         public static string GetLevelCounter(bool upperCase = false)
         {
             var playerEntity = GameManager.Instance.PlayerEntity;
-            return GetLevelCounter(playerEntity.Level);
+            return GetLevelCounter(playerEntity.Level, upperCase);
         }
 
         /// <summary>

@@ -29,9 +29,9 @@ PressAnyKey = False
 ;Text of press-any-key label
 [LoadingLabel]
 LoadingCounter = True
-LoadingfontSize = 30
-GuiColor = ffff00ff
-LabelStyle = 1
+FontSize = 30
+FontColor = ffff00ff
+FontStyle = 1
 Position = 100<,>30
 LabelText = Loading
 LabelTextFinish = Continue
@@ -60,6 +60,9 @@ DisableVideo = False
 
 [Experimental]
 QuestMessages = False
+QuestColor = ffffffff
 QuestPosition = 100<,>170
 LevelCounter = False
 LcUppercase = False
+LevelColor = ffffffff
+LevelPosition = -300<,>120

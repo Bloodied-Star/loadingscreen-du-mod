@@ -64,9 +64,11 @@ namespace LoadingScreen
 
         string questMessage;
         Rect questRect;
+        GUIStyle questMessagesStyle;
 
         string levelCounterLabel;
         GUIStyle levelCounterStyle;
+        Rect levelCounterRect;
 
         DeathScreen deathScreen;
 
@@ -108,10 +110,13 @@ namespace LoadingScreen
         static bool DisableVideo;
 
         // Experimental
-        static bool questMessages = true;
+        static bool questMessages;
+        static Color questMessagesColor;
         static Tuple<float, float> questPosition;
         static bool levelCounter = true;
-        bool levelCounterUppercase;
+        static bool levelCounterUppercase;
+        static Color levelCounterColor;
+        static Tuple<float, float> levelPosition;
 
         PluginsStatus settingsPluginsStatus;
 
@@ -227,7 +232,7 @@ namespace LoadingScreen
 
                 // Level Counter
                 if (levelCounter)
-                    GUI.Box(new Rect(Screen.width - 300, 120, 50, 10), levelCounterLabel, levelCounterStyle);
+                    GUI.Box(levelCounterRect, levelCounterLabel, levelCounterStyle);
             }
         }
 
@@ -400,9 +405,9 @@ namespace LoadingScreen
             // Loading label
             const string LoadingLabelSection = "LoadingLabel";
             LoadingCounter = settings.GetBool(LoadingLabelSection, "LoadingCounter");
-            labelFontSize = settings.GetInt(LoadingLabelSection, "LoadingfontSize");
-            GuiColor = settings.GetColor(LoadingLabelSection, "GuiColor");
-            labelFontStyle = settings.GetInt(LoadingLabelSection, "LabelStyle", 0, 3);
+            labelFontSize = settings.GetInt(LoadingLabelSection, "FontSize");
+            GuiColor = settings.GetColor(LoadingLabelSection, "FontColor");
+            labelFontStyle = settings.GetInt(LoadingLabelSection, "FontStyle", 0, 3);
             labelPosition = settings.GetTupleFloat(LoadingLabelSection, "Position");
             labelText = settings.GetString(LoadingLabelSection, "LabelText");
             labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
@@ -425,9 +430,12 @@ namespace LoadingScreen
             // Experimental
             const string experimentalSection = "Experimental";
             questMessages = settings.GetBool(experimentalSection, "QuestMessages");
+            questMessagesColor = settings.GetColor(experimentalSection, "QuestColor");
             questPosition = settings.GetTupleFloat(experimentalSection, "QuestPosition");
             levelCounter = settings.GetBool(experimentalSection, "LevelCounter");
             levelCounterUppercase = settings.GetBool(experimentalSection, "LcUppercase");
+            levelCounterColor = settings.GetColor(experimentalSection, "LevelColor");
+            levelPosition = settings.GetTupleFloat(experimentalSection, "LevelPosition");
 
             settingsPluginsStatus = new PluginsStatus()
             {
@@ -479,18 +487,26 @@ namespace LoadingScreen
 
             // Quest Message
             if (questMessages)
-                questRect = new Rect(questPosition.First, questPosition.Second, 1000, 100);
+            {
+                TextAnchor questMessagesAlignment;
+                questRect = GetRect(questPosition, 1000, 100, out questMessagesAlignment);
+                questMessagesStyle = tipStyle;
+                questMessagesStyle.alignment = questMessagesAlignment;
+                questMessagesStyle.normal.textColor = questMessagesColor;
+            }
 
             // Level Counter
             if (levelCounter)
             {
+                TextAnchor levelCounterAlignment;
+                levelCounterRect = GetRect(levelPosition, 50, 10, out levelCounterAlignment);
                 levelCounterStyle = new GUIStyle()
                 {
                     fontSize = 35,
                     fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleRight
+                    alignment = levelCounterAlignment
                 };
-                levelCounterStyle.normal.textColor = Color.white;
+                levelCounterStyle.normal.textColor = levelCounterColor;
             }
         }
 
