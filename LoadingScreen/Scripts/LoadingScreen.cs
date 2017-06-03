@@ -13,11 +13,8 @@ using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using DaggerfallWorkshop.Game.UserInterface;
-using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Utility.AssetInjection;
 using LoadingScreen.Plugins;
 
 namespace LoadingScreen
@@ -29,6 +26,15 @@ namespace LoadingScreen
             Default = 0,
             Building = 1,
             Dungeon = 2;
+    }
+
+    public struct PluginsStatus
+    {
+        public bool
+            LoadingCounter,
+            tips,
+            questMessages,
+            levelCounter;
     }
 
     /// <summary>
@@ -43,21 +49,16 @@ namespace LoadingScreen
         public static Mod LoadingScreenMod;
 
         // Draw the splash screen on GUI
-        static bool DrawLoadingScreen = false;
-
+        bool DrawLoadingScreen = false;
         bool isLoading = false;
 
         // Fade from black to clear after the splash screen
         bool fadeFromBlack = false;
 
         // Gui elements
-        static Texture2D screenTexture;
-
-        string LoadingLabel;
         Rect LoadingCounterRect;
         GUIStyle style;
 
-        string tipLabel;
         Rect tipsRect;
         GUIStyle tipStyle;
 
@@ -66,6 +67,8 @@ namespace LoadingScreen
 
         string levelCounterLabel;
         GUIStyle levelCounterStyle;
+
+        DeathScreen deathScreen;
 
         #endregion
 
@@ -110,9 +113,21 @@ namespace LoadingScreen
         static bool levelCounter = true;
         bool levelCounterUppercase;
 
+        PluginsStatus settingsPluginsStatus;
+
         #endregion
 
         #region Properties
+
+        // Gui elements
+        public Texture2D screenTexture { get; set; }
+        public string LoadingLabel { get; set; }
+        public string tipLabel { get; set; }
+
+        /// <summary>
+        /// Plugins
+        /// </summary>
+        public PluginsStatus SettingsPluginsStatus { get { return settingsPluginsStatus; }}
 
         /// <summary>
         /// Is the loading screen on GUI.
@@ -171,6 +186,9 @@ namespace LoadingScreen
             // Load settings
             LoadSettings();
 
+            // Initialize plugins
+            InitPlugins();
+
             // Initialize Gui Elements
             InitGUiElements();
 
@@ -179,10 +197,6 @@ namespace LoadingScreen
 
             // Suscribe to Loading
             SubscribeToLoading();
-
-            // Load tips
-            if(tips)
-                tips = DfTips.Init(Path.Combine(LoadingScreenMod.DirPath, "Tips"), tipsLanguage);
         }
 
         /// <summary>
@@ -215,6 +229,34 @@ namespace LoadingScreen
                 if (levelCounter)
                     GUI.Box(new Rect(Screen.width - 300, 120, 50, 10), levelCounterLabel, levelCounterStyle);
             }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Change status of specific plugins.
+        /// Use SettingsPluginsStatus to get user settings,
+        /// RestorePluginsStatus() to restore them.
+        /// </summary>
+        public void SetPluginStatus(PluginsStatus newPluginsStatus)
+        {
+            LoadingCounter = newPluginsStatus.LoadingCounter;
+            tips = newPluginsStatus.tips;
+            questMessages = newPluginsStatus.questMessages;
+            levelCounter = newPluginsStatus.levelCounter;
+        }
+
+        /// <summary>
+        /// Restore status of plugins as user settings.
+        /// </summary>
+        public void RestorePluginsStatus()
+        {
+            LoadingCounter = settingsPluginsStatus.LoadingCounter;
+            tips = settingsPluginsStatus.tips;
+            questMessages = settingsPluginsStatus.questMessages;
+            levelCounter = settingsPluginsStatus.levelCounter;
         }
 
         #endregion
@@ -336,87 +378,6 @@ namespace LoadingScreen
 
         #endregion
 
-        #region Death Screen
-
-        /// <summary>
-        /// Show death screen.
-        /// </summary>
-        private void ShowDeathScreen(object sender, System.EventArgs e)
-        {
-            StartCoroutine(ShowDeathScreenOnGUI());
-        }
-
-        /// <summary>
-        /// Show death screen.
-        /// </summary>
-        private IEnumerator ShowDeathScreenOnGUI()
-        {
-            // Wait for user death
-            var playerDeath = GameManager.Instance.PlayerDeath;
-            while (playerDeath.DeathInProgress)
-                yield return null;
-
-            // Death video
-            if (!DisableVideo)
-            {
-                // Let the video starts
-                float timeCounter = 0;
-                while (timeCounter < 1)
-                {
-                    timeCounter += Time.unscaledDeltaTime;
-                    yield return null;
-                }
-
-                // Get video
-                DaggerfallVidPlayerWindow vidWindow;
-                try
-                {
-                    vidWindow = (DaggerfallVidPlayerWindow)DaggerfallUI.Instance.UserInterfaceManager.TopWindow;
-                }
-                catch
-                {
-                    Debug.LogError("Loading Screen: current top window is not a videoplayer, failed to get death video.\n" +
-                        "Expecting: DaggerfallWorkshop.Game.UserInterfaceWindows.DaggerfallVidPlayerWindow\nGot: " +
-                        DaggerfallUI.Instance.UserInterfaceManager.TopWindow.ToString());
-                    yield break;
-                }
-
-                // Wait for end of video
-                if (vidWindow.CustomVideo)
-                {
-                    CustomVideoPlayer video = vidWindow.CustomVideo;
-                    while (video.Playing)
-                        yield return null;
-                }
-                else
-                {
-                    DaggerfallVideo video = vidWindow.Video;
-                    while (video.Playing)
-                        yield return null;
-                }
-            }
-
-            // Disable background audio
-            AudioListener.pause = true;
-
-            // Show death screen
-            screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            LoadingLabel = labelTextFinish;
-            tipLabel = tips ? DfTips.GetTip() : "";
-            DrawLoadingScreen = true;
-
-            // Wait for imput
-            while (!Input.anyKey)
-                yield return null;
-
-            // Remove death screen
-            DrawLoadingScreen = false;
-            LoadingLabel = labelText;
-            AudioListener.pause = false;
-        }
-
-        #endregion
-
         #region Setup Methods
 
         /// <summary>
@@ -447,7 +408,7 @@ namespace LoadingScreen
             labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
 
             // Tips
-            const string TipsSection =  "Tips";
+            const string TipsSection = "Tips";
             tips = settings.GetBool(TipsSection, "Tips");
             tipsFontSize = settings.GetInt(TipsSection, "FontSize");
             tipsFontColor = settings.GetColor(TipsSection, "FontColor");
@@ -467,6 +428,23 @@ namespace LoadingScreen
             questPosition = settings.GetTupleFloat(experimentalSection, "QuestPosition");
             levelCounter = settings.GetBool(experimentalSection, "LevelCounter");
             levelCounterUppercase = settings.GetBool(experimentalSection, "LcUppercase");
+
+            settingsPluginsStatus = new PluginsStatus()
+            {
+                LoadingCounter = LoadingCounter,
+                tips = tips,
+                questMessages = questMessages,
+                levelCounter = levelCounter
+            };
+        }
+
+        private void InitPlugins()
+        {
+            if (showDeathScreen)
+                deathScreen = new DeathScreen(this, DisableVideo, tips, labelText, labelTextFinish);
+
+            if (tips)
+                tips = DfTips.Init(Path.Combine(LoadingScreenMod.DirPath, "Tips"), tipsLanguage);
         }
 
         /// <summary>
@@ -583,7 +561,7 @@ namespace LoadingScreen
             }
 
             if (showDeathScreen)
-                PlayerDeath.OnPlayerDeath += ShowDeathScreen;
+                PlayerDeath.OnPlayerDeath += deathScreen.ShowDeathScreen;
 
             Debug.Log("LoadingScreen: subscribed to loadings as per user settings.");
         }
@@ -614,7 +592,7 @@ namespace LoadingScreen
             }
 
             if (showDeathScreen)
-                PlayerDeath.OnPlayerDeath -= ShowDeathScreen;
+                PlayerDeath.OnPlayerDeath -= deathScreen.ShowDeathScreen;
 
             Debug.Log("LoadingScreen: unsubscribed from all loadings.");
         }
