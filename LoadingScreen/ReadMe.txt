@@ -1,6 +1,6 @@
-LOADING SCREEN
+﻿LOADING SCREEN
 
-Version: 1.4
+Version: 1.5
 
 Description 
 -----------
@@ -31,7 +31,6 @@ You can also enable 'UseLocation' to use 'Images\Building' and 'Images\Dungeon' 
 
 Settings
 --------
-
 - LoadingLabel
 A loading label with three dots that show a rough progress of the loading.
 You can customize size and color, other than the text itself.
@@ -48,12 +47,29 @@ Show a death screen wich was present in the prototype demo but eventually remove
 By default it appears after the death video, but you can disable the latter with 'DisableVideo'.
 To customize the death screen, place 'DIE_00I0.IMG.png' inside 'StreamingAssets\Textures\img\'.
 
-Known Issues
-------------
-The loading screen doesn't work on the first save you load.
+Common settings keys
+--------------------
+- Position
+Affects position on screen of the element in question. The first value is the X (left), the second is the Y (up).
+Negatives values are subtracted from the size of the screen: -X is right, -Y is bottom. 
+The Alignment of the text is determinated automatically.
+
+- Size
+The size of the rect that contains the text. The first value is the Width, the second is the Height.
+The Width affects where is the endline, meaning that determines the width of the paragraph.
+
+- FontStyle
+A number from 0 to 4 -> 0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic.
+
+- Color
+A color in hexadecimal format. 
+The first six digits affects RGB, the last two affect alpha; 00 is full transparency, ff is full opacity.
 
 Changelog
 ---------
+* 1.5
+- (optional) Show active quests messages 
+
 * 1.4
 - Improvements
 - (optional) Show tips

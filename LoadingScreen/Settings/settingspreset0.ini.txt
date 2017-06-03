@@ -1,7 +1,7 @@
 ﻿[Internal]
 PresetName = Big dots
-Description = A simple loading screen.
-SettingsVersion = 1.2
+Description = A simple and clean loading screen.
+SettingsVersion = 1.3
 
 [LoadingLabel]
 LoadingCounter = True
@@ -9,3 +9,10 @@ LoadingfontSize = 120
 GuiColor = ffff00ff
 LabelText = 
 LabelTextFinish = ....
+
+[Tips]
+Tips = False
+
+[Experimental]
+QuestMessages = False
+LevelCounter = False

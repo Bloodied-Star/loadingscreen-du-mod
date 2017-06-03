@@ -1,0 +1,26 @@
+﻿[Internal]
+PresetName = Dishonored 2
+Description = A loading screen inspired by Dishonored 2
+SettingsVersion = 1.3
+
+[LoadingLabel]
+LoadingCounter = True
+LoadingfontSize = 30
+GuiColor = ffffffff
+LabelStyle = 1
+Position = 100<,>30
+LabelText = Loading
+LabelTextFinish = Continue
+
+[Tips]
+Tips = True
+FontSize = 20
+FontColor = ffffffff
+FontStyle = 2
+Position = 180<,>-100
+Size = 600<,>30
+
+[Experimental]
+QuestMessages = True
+QuestPosition = 180<,>170
+LevelCounter = False

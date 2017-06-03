@@ -24,7 +24,7 @@ PressAnyKey = False
 ;Size of font of Loading label
 ;Color of Loading label
 ;0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic
-;Position on screen (-x,-y)
+;Position on screen (x,y)
 ;Text of loading label
 ;Text of press-any-key label
 [LoadingLabel]
@@ -40,15 +40,16 @@ LabelTextFinish = Continue
 ;Size of font for tips
 ;Color of font for tips
 ;0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic
-;Position on screen (x,-y)
+;Position on screen (x,y)
+;Size
 ;Name of language file
 [Tips]
 Tips = True
 FontSize = 25
 FontColor = ffffffff
 FontStyle = 2
-Position = 180<,>100
-Size = 100<,>20
+Position = 180<,>-100
+Size = 600<,>30
 Language = en
 
 ;Show death screen after video
@@ -56,3 +57,9 @@ Language = en
 [DeathScreen]
 ShowDeathScreen = False
 DisableVideo = False
+
+[Experimental]
+QuestMessages = False
+QuestPosition = 100<,>170
+LevelCounter = False
+LcUppercase = False

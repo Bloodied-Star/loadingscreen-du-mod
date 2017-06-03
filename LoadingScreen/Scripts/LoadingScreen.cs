@@ -18,6 +18,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using LoadingScreen.Plugins;
 
 namespace LoadingScreen
 {
@@ -53,12 +54,18 @@ namespace LoadingScreen
         static Texture2D screenTexture;
 
         string LoadingLabel;
-        static Rect LoadingCounterRect;
-        static GUIStyle style;
+        Rect LoadingCounterRect;
+        GUIStyle style;
 
         string tipLabel;
-        static Rect tipRect;
-        static GUIStyle tipStyle;
+        Rect tipsRect;
+        GUIStyle tipStyle;
+
+        string questMessage;
+        Rect questRect;
+
+        string levelCounterLabel;
+        GUIStyle levelCounterStyle;
 
         #endregion
 
@@ -90,12 +97,18 @@ namespace LoadingScreen
         static Color tipsFontColor;
         static int tipsFontStyle;
         static Tuple<float, float> tipsPosition;
-        Tuple<float, float> tipsSize;
+        static Tuple<float, float> tipsSize;
         static string tipsLanguage;
 
         // Death screen
         static bool showDeathScreen;
         static bool DisableVideo;
+
+        // Experimental
+        static bool questMessages = true;
+        static Tuple<float, float> questPosition;
+        static bool levelCounter = true;
+        bool levelCounterUppercase;
 
         #endregion
 
@@ -192,7 +205,15 @@ namespace LoadingScreen
 
                 // Tips
                 if (tips)
-                    GUI.Box(tipRect, tipLabel, tipStyle);
+                    GUI.Box(tipsRect, tipLabel, tipStyle);
+
+                // Quest Messages
+                if (questMessages)
+                    GUI.Box(questRect, questMessage, tipStyle);
+
+                // Level Counter
+                if (levelCounter)
+                    GUI.Box(new Rect(Screen.width - 300, 120, 50, 10), levelCounterLabel, levelCounterStyle);
             }
         }
 
@@ -208,6 +229,8 @@ namespace LoadingScreen
         {
             if (tips)
                 tipLabel = DfTips.GetTip(saveData);
+            if (levelCounter)
+                levelCounterLabel = LevelCounter.GetLevelCounter(saveData, levelCounterUppercase);
             int loadingType = useLocation ? GetLoadingType(saveData.playerData.playerPosition) : LoadingType.Default;
             StartLoadingScreen(loadingType);
         }
@@ -224,6 +247,8 @@ namespace LoadingScreen
             {
                 if (tips)
                     tipLabel = DfTips.GetTip(args.TransitionType);
+                if (levelCounter)
+                    levelCounterLabel = LevelCounter.GetLevelCounter(levelCounterUppercase);
                 int loadingType = useLocation ? GetLoadingType(args.TransitionType) : LoadingType.Default;
                 StartLoadingScreen(loadingType);
             }
@@ -234,6 +259,8 @@ namespace LoadingScreen
         /// </summary>
         private void StartLoadingScreen(int loadingType = LoadingType.Default)
         {
+            if (questMessages)
+                questMessage = QuestsMessages.GetQuestMessage();
             LoadImage(loadingType);
             DrawLoadingScreen = true;
             isLoading = true;
@@ -433,36 +460,101 @@ namespace LoadingScreen
             const string DeathScreenSection = "DeathScreen";
             showDeathScreen = settings.GetBool(DeathScreenSection, "ShowDeathScreen");
             DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
+
+            // Experimental
+            const string experimentalSection = "Experimental";
+            questMessages = settings.GetBool(experimentalSection, "QuestMessages");
+            questPosition = settings.GetTupleFloat(experimentalSection, "QuestPosition");
+            levelCounter = settings.GetBool(experimentalSection, "LevelCounter");
+            levelCounterUppercase = settings.GetBool(experimentalSection, "LcUppercase");
         }
 
         /// <summary>
         /// Initialize GUI elements.
+        /// Settings must already be loaded.
         /// </summary>
         private void InitGUiElements()
         {
             // Label
             LoadingLabel = labelText;
-
-            // Label rect
             LoadingCounterRect = new Rect(Screen.width - labelPosition.First, Screen.height - labelPosition.Second, 50, 10);
-
-            // Label style
             style = new GUIStyle();
             style.alignment = TextAnchor.LowerRight;
             style.fontSize = labelFontSize;
             style.normal.textColor = GuiColor;
             style.fontStyle = (FontStyle)labelFontStyle;
 
-            // Tips rect
-            tipRect = new Rect(tipsPosition.First, Screen.height - tipsPosition.Second, tipsSize.First, tipsSize.Second);
+            // Tips
+            if (tips)
+            {
+                TextAnchor tipsAlignment;
+                tipsRect = GetRect(tipsPosition, tipsSize.First, tipsSize.Second, out tipsAlignment);
+                tipStyle = new GUIStyle()
+                {
+                    alignment = tipsAlignment,
+                    fontSize = tipsFontSize,
+                    fontStyle = (FontStyle)tipsFontStyle,
+                    wordWrap = true,
+                };
+                tipStyle.normal.textColor = tipsFontColor;
+            }
 
-            // Tips style
-            tipStyle = new GUIStyle();
-            tipStyle.alignment = TextAnchor.UpperLeft;
-            tipStyle.fontSize = tipsFontSize;
-            tipStyle.normal.textColor = tipsFontColor;
-            tipStyle.fontStyle = (FontStyle)tipsFontStyle;
-            tipStyle.wordWrap = true;
+            // Quest Message
+            if (questMessages)
+                questRect = new Rect(questPosition.First, questPosition.Second, 1000, 100);
+
+            // Level Counter
+            if (levelCounter)
+            {
+                levelCounterStyle = new GUIStyle()
+                {
+                    fontSize = 35,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleRight
+                };
+                levelCounterStyle.normal.textColor = Color.white;
+            }
+        }
+
+        /// <summary>
+        /// Get Rect and text alignment.
+        /// Positives values starts from the left/up side of the screen,
+        /// Negatives values starts from the right/bottom side.
+        /// </summary>
+        private Rect GetRect (Tuple<float, float> position, float width, float height, out TextAnchor textAlignment)
+        {
+            float rectX, rectY;
+
+            if (position.First > 0)
+            {
+                rectX = position.First;
+                if (position.Second > 0)
+                {
+                    rectY = position.Second;
+                    textAlignment = TextAnchor.UpperLeft;
+                }
+                else
+                {
+                    rectY = Screen.height + position.Second;
+                    textAlignment = TextAnchor.LowerLeft;
+                }
+            }
+            else
+            {
+                rectX = Screen.width + position.First;
+                if (position.Second > 0)
+                {
+                    rectY = position.Second;
+                    textAlignment = TextAnchor.UpperRight;
+                }
+                else
+                {
+                    rectY = Screen.height + position.Second;
+                    textAlignment = TextAnchor.LowerRight;
+                }
+            }
+
+            return new Rect(rectX, rectY, width, height);
         }
 
         /// <summary>
