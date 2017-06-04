@@ -58,6 +58,13 @@ The Alignment of the text is determinated automatically.
 The size of the rect that contains the text. The first value is the Width, the second is the Height.
 The Width affects where is the endline, meaning that determines the width of the paragraph.
 
+- Font
+A numerical index that determines the font used, among the various included in Daggerfall Unity:
+* 1-5 are variations of OpenSans, a popular and classical font (ExtraBold, Bold, Semibold, Regular, Light).
+* 6-11 are from the TESFonts, a font pack with very interesting styles, excellent for a game like Daggerfall
+  (Kingthings Exeter, Kingthings Petrock, Kingthings Petrock light, MorrisRomanBlack, oblivion-font, Planewalker).
+* 0, or above 12, means Unity default font (Arial if available, otherwise Liberation Sans).
+
 - FontStyle
 A number from 0 to 4 -> 0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic.
 

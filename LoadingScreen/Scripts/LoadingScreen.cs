@@ -89,9 +89,10 @@ namespace LoadingScreen
 
         // Label
         static bool LoadingCounter;
+        static int labelFontID;
         static int labelFontSize;
         static Color GuiColor;
-        static int labelFontStyle;
+        static int labelFontStyle; 
         static Tuple<float, float> labelPosition;
         static string labelText;
         static string labelTextFinish;
@@ -405,6 +406,7 @@ namespace LoadingScreen
             // Loading label
             const string LoadingLabelSection = "LoadingLabel";
             LoadingCounter = settings.GetBool(LoadingLabelSection, "LoadingCounter");
+            labelFontID = settings.GetInt(LoadingLabelSection, "Font");
             labelFontSize = settings.GetInt(LoadingLabelSection, "FontSize");
             GuiColor = settings.GetColor(LoadingLabelSection, "FontColor");
             labelFontStyle = settings.GetInt(LoadingLabelSection, "FontStyle", 0, 3);
@@ -466,6 +468,7 @@ namespace LoadingScreen
             LoadingCounterRect = new Rect(Screen.width - labelPosition.First, Screen.height - labelPosition.Second, 50, 10);
             style = new GUIStyle();
             style.alignment = TextAnchor.LowerRight;
+            style.font = GetFont(labelFontID);
             style.fontSize = labelFontSize;
             style.normal.textColor = GuiColor;
             style.fontStyle = (FontStyle)labelFontStyle;
@@ -478,6 +481,7 @@ namespace LoadingScreen
                 tipStyle = new GUIStyle()
                 {
                     alignment = tipsAlignment,
+                    font = GetFont(labelFontID),
                     fontSize = tipsFontSize,
                     fontStyle = (FontStyle)tipsFontStyle,
                     wordWrap = true,
@@ -492,6 +496,7 @@ namespace LoadingScreen
                 questRect = GetRect(questPosition, 1000, 100, out questMessagesAlignment);
                 questMessagesStyle = tipStyle;
                 questMessagesStyle.alignment = questMessagesAlignment;
+                questMessagesStyle.font = GetFont(labelFontID);
                 questMessagesStyle.normal.textColor = questMessagesColor;
             }
 
@@ -502,6 +507,7 @@ namespace LoadingScreen
                 levelCounterRect = GetRect(levelPosition, 50, 10, out levelCounterAlignment);
                 levelCounterStyle = new GUIStyle()
                 {
+                    font = GetFont(labelFontID),
                     fontSize = 35,
                     fontStyle = FontStyle.Bold,
                     alignment = levelCounterAlignment
@@ -694,6 +700,46 @@ namespace LoadingScreen
 
             // Use a black texture as fallback
             screenTexture = LoadingScreenMod.GetAsset<Texture2D>("defaultBackground");
+        }
+
+        private Font GetFont(int fontID)
+        {
+            string name = GetFontName(labelFontID);
+            if (name != null)
+                return (Font)Resources.Load(name);
+
+            return null; // Use unity default
+        }
+
+        private string GetFontName(int fontID)
+        {
+            switch (fontID)
+            {
+                case 1:
+                    return "Fonts/OpenSans/OpenSans-ExtraBold";
+                case 2:
+                    return "Fonts/OpenSans/OpenSansBold";
+                case 3:
+                    return "Fonts/OpenSans/OpenSansSemibold";
+                case 4:
+                    return "Fonts/OpenSans/OpenSansRegular";
+                case 5:
+                    return "Fonts/OpenSans/OpenSansLight";
+                case 6:
+                    return "Fonts/TESFonts/Kingthings Exeter";
+                case 7:
+                    return "Fonts/TESFonts/Kingthings Petrock";
+                case 8:
+                    return "Fonts/TESFonts/Kingthings Petrock light";
+                case 9:
+                    return "Fonts/TESFonts/MorrisRomanBlack";
+                case 10:
+                    return "Fonts/TESFonts/oblivion-font";
+                case 11:
+                    return "Fonts/TESFonts/Planewalker";
+                default:
+                    return null;
+            }
         }
 
         #endregion
