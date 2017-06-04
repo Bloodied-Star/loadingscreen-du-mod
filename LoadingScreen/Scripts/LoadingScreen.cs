@@ -19,6 +19,8 @@ using LoadingScreen.Plugins;
 
 namespace LoadingScreen
 {
+    #region Structs
+
     struct LoadingType
     {
         public const int 
@@ -31,11 +33,20 @@ namespace LoadingScreen
     public struct PluginsStatus
     {
         public bool
-            LoadingCounter,
+            loadingCounter,
             tips,
             questMessages,
             levelCounter;
     }
+
+    public struct LoadingLabel
+    {
+        public string
+            loading,
+            end;
+    }
+    
+    #endregion
 
     /// <summary>
     /// Implement a loading screen in Daggerfall Unity.
@@ -46,18 +57,24 @@ namespace LoadingScreen
         #region Fields
 
         // This mod
-        public static Mod LoadingScreenMod;
+        private static Mod LoadingScreenMod;
 
         // Draw the splash screen on GUI
-        bool DrawLoadingScreen = false;
+        bool drawLoadingScreen = false;
+
+        // Is the game loading ?
         bool isLoading = false;
 
         // Fade from black to clear after the splash screen
         bool fadeFromBlack = false;
+        
+        #endregion
 
-        // Gui elements
+        #region GUI elements
+
         Rect LoadingCounterRect;
         GUIStyle style;
+        LoadingLabel loadingLabel = new LoadingLabel();
 
         Rect tipsRect;
         GUIStyle tipStyle;
@@ -71,55 +88,32 @@ namespace LoadingScreen
         Rect levelCounterRect;
 
         DeathScreen deathScreen;
-
+        
         #endregion
 
         #region Settings
 
-        // Internal
-        static int guiDepth;
+        // Depth on GUI
+        int guiDepth;
 
-        // Splash screen
-        static bool dungeons;
-        static bool buildings;
-        static bool useLocation;
-        static bool useSeason;
-        static float MinimumWait;
-		static bool PressAnyKey;
-
-        // Label
-        static bool LoadingCounter;
-        static int labelFontID;
-        static int labelFontSize;
-        static Color GuiColor;
-        static int labelFontStyle; 
-        static Tuple<float, float> labelPosition;
-        static string labelText;
-        static string labelTextFinish;
-
-        // Tips
-        static bool tips;
-        static int tipsFontSize;
-        static Color tipsFontColor;
-        static int tipsFontStyle;
-        static Tuple<float, float> tipsPosition;
-        static Tuple<float, float> tipsSize;
-        static string tipsLanguage;
+        // Loading screen settings
+        bool dungeons;
+        bool buildings;
+        bool useLocation;
+        bool useSeason;
+        float MinimumWait;
+		bool PressAnyKey;
 
         // Death screen
-        static bool showDeathScreen;
-        static bool DisableVideo;
+        bool showDeathScreen;
+        bool DisableVideo;
 
-        // Experimental
-        static bool questMessages;
-        static Color questMessagesColor;
-        static Tuple<float, float> questPosition;
-        static bool levelCounter = true;
+        // Experimental settings
         static bool levelCounterUppercase;
-        static Color levelCounterColor;
-        static Tuple<float, float> levelPosition;
 
+        // Status of plugins
         PluginsStatus settingsPluginsStatus;
+        PluginsStatus pluginsStatus;
 
         #endregion
 
@@ -140,8 +134,8 @@ namespace LoadingScreen
         /// </summary>
         public bool ShowLoadingScreen
         {
-            get { return DrawLoadingScreen; }
-            set { DrawLoadingScreen = value; }
+            get { return drawLoadingScreen; }
+            set { drawLoadingScreen = value; }
         }
 
         /// <summary>
@@ -189,14 +183,8 @@ namespace LoadingScreen
         /// </summary>
         void Start()
         {
-            // Load settings
+            // Load settings and initialize plugins
             LoadSettings();
-
-            // Initialize plugins
-            InitPlugins();
-
-            // Initialize Gui Elements
-            InitGUiElements();
 
             // ModMessages
             LoadingScreenMod.MessageReciver = MessageReceiver;
@@ -214,25 +202,25 @@ namespace LoadingScreen
             GUI.depth = guiDepth;
 
             // Draw on GUI.
-            if (DrawLoadingScreen)
+            if (drawLoadingScreen)
             {
                 // Background image
                 GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), screenTexture, ScaleMode.StretchToFill);
 
                 // Loading label
-                if (LoadingCounter)
+                if (pluginsStatus.loadingCounter)
                     GUI.Box(LoadingCounterRect, LoadingLabel, style);
 
                 // Tips
-                if (tips)
+                if (pluginsStatus.tips)
                     GUI.Box(tipsRect, tipLabel, tipStyle);
 
                 // Quest Messages
-                if (questMessages)
+                if (pluginsStatus.questMessages)
                     GUI.Box(questRect, questMessage, tipStyle);
 
                 // Level Counter
-                if (levelCounter)
+                if (pluginsStatus.levelCounter)
                     GUI.Box(levelCounterRect, levelCounterLabel, levelCounterStyle);
             }
         }
@@ -248,10 +236,7 @@ namespace LoadingScreen
         /// </summary>
         public void SetPluginStatus(PluginsStatus newPluginsStatus)
         {
-            LoadingCounter = newPluginsStatus.LoadingCounter;
-            tips = newPluginsStatus.tips;
-            questMessages = newPluginsStatus.questMessages;
-            levelCounter = newPluginsStatus.levelCounter;
+            pluginsStatus = newPluginsStatus;
         }
 
         /// <summary>
@@ -259,10 +244,7 @@ namespace LoadingScreen
         /// </summary>
         public void RestorePluginsStatus()
         {
-            LoadingCounter = settingsPluginsStatus.LoadingCounter;
-            tips = settingsPluginsStatus.tips;
-            questMessages = settingsPluginsStatus.questMessages;
-            levelCounter = settingsPluginsStatus.levelCounter;
+            pluginsStatus = settingsPluginsStatus;
         }
 
         #endregion
@@ -275,9 +257,9 @@ namespace LoadingScreen
         /// <param name="saveData">Save game being loaded.</param>
         private void StartLoadingScreen(SaveData_v1 saveData)
         {
-            if (tips)
+            if (pluginsStatus.tips)
                 tipLabel = DfTips.GetTip(saveData);
-            if (levelCounter)
+            if (pluginsStatus.levelCounter)
                 levelCounterLabel = LevelCounter.GetLevelCounter(saveData, levelCounterUppercase);
             int loadingType = useLocation ? GetLoadingType(saveData.playerData.playerPosition) : LoadingType.Default;
             StartLoadingScreen(loadingType);
@@ -293,9 +275,9 @@ namespace LoadingScreen
                     ((buildings) && (args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingInterior 
                     || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior)))
             {
-                if (tips)
+                if (pluginsStatus.tips)
                     tipLabel = DfTips.GetTip(args.TransitionType);
-                if (levelCounter)
+                if (pluginsStatus.levelCounter)
                     levelCounterLabel = LevelCounter.GetLevelCounter(levelCounterUppercase);
                 int loadingType = useLocation ? GetLoadingType(args.TransitionType) : LoadingType.Default;
                 StartLoadingScreen(loadingType);
@@ -307,10 +289,10 @@ namespace LoadingScreen
         /// </summary>
         private void StartLoadingScreen(int loadingType = LoadingType.Default)
         {
-            if (questMessages)
+            if (pluginsStatus.questMessages)
                 questMessage = QuestsMessages.GetQuestMessage();
             LoadImage(loadingType);
-            DrawLoadingScreen = true;
+            drawLoadingScreen = true;
             isLoading = true;
             StartCoroutine(ShowLoadingScreenOnGui());
         }
@@ -360,7 +342,7 @@ namespace LoadingScreen
                 fadeFromBlack = true;
 
                 // Display new string and pause the game
-                LoadingLabel = labelTextFinish;
+                LoadingLabel = loadingLabel.end;
                 GameManager.Instance.PauseGame(true, true);
 
                 // Wait for imput
@@ -372,8 +354,8 @@ namespace LoadingScreen
             GameManager.Instance.PauseGame(false);
 
             // Terminate loading screen
-            DrawLoadingScreen = false;
-            LoadingLabel = labelText;
+            drawLoadingScreen = false;
+            LoadingLabel = loadingLabel.loading;
             if (fadeFromBlack)
             {
                 DaggerfallUI.Instance.FadeHUDFromBlack(0.5f);
@@ -387,7 +369,7 @@ namespace LoadingScreen
         #region Setup Methods
 
         /// <summary>
-        /// Load settings from ModSettings.
+        /// Load settings from ModSettings and initialize plugins.
         /// </summary>
         private void LoadSettings()
         {
@@ -403,158 +385,42 @@ namespace LoadingScreen
             MinimumWait = settings.GetFloat(SplashScreenSection, "ShowForMinimum");
             PressAnyKey = settings.GetBool(SplashScreenSection, "PressAnyKey");
 
-            // Loading label
-            const string LoadingLabelSection = "LoadingLabel";
-            LoadingCounter = settings.GetBool(LoadingLabelSection, "LoadingCounter");
-            labelFontID = settings.GetInt(LoadingLabelSection, "Font");
-            labelFontSize = settings.GetInt(LoadingLabelSection, "FontSize");
-            GuiColor = settings.GetColor(LoadingLabelSection, "FontColor");
-            labelFontStyle = settings.GetInt(LoadingLabelSection, "FontStyle", 0, 3);
-            labelPosition = settings.GetTupleFloat(LoadingLabelSection, "Position");
-            labelText = settings.GetString(LoadingLabelSection, "LabelText");
-            labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
+            // Plugins
+            var loadingScreenSetup = new LoadingScreenSetup(settings);
+            settingsPluginsStatus = loadingScreenSetup.GetSettingsPluginsStatus();
+            SetPluginStatus(settingsPluginsStatus);
+
+            // Label
+            if (pluginsStatus.loadingCounter)
+            {
+                loadingScreenSetup.InitLabel(out LoadingCounterRect, out style, out loadingLabel.loading, out loadingLabel.end);
+                LoadingLabel = loadingLabel.loading;
+            }
 
             // Tips
-            const string TipsSection = "Tips";
-            tips = settings.GetBool(TipsSection, "Tips");
-            tipsFontSize = settings.GetInt(TipsSection, "FontSize");
-            tipsFontColor = settings.GetColor(TipsSection, "FontColor");
-            tipsFontStyle = settings.GetInt(TipsSection, "FontStyle", 0, 3);
-            tipsPosition = settings.GetTupleFloat(TipsSection, "Position");
-            tipsSize = settings.GetTupleFloat(TipsSection, "Size");
-            tipsLanguage = settings.GetString(TipsSection, "Language");
+            if (pluginsStatus.tips)
+            {
+                string tipsLanguage;
+                loadingScreenSetup.InitTips(out tipsRect, out tipStyle, out tipsLanguage);
+                pluginsStatus.tips = DfTips.Init(Path.Combine(LoadingScreenMod.DirPath, "Tips"), tipsLanguage);
+            }
+
+            // Quest Message
+            if (pluginsStatus.questMessages)
+                loadingScreenSetup.InitQuestMessages(out questRect, out questMessagesStyle);
+
+            // Level Counter
+            if (pluginsStatus.levelCounter)
+                loadingScreenSetup.InitLevelCounter(out levelCounterRect, out levelCounterStyle, out levelCounterUppercase);
 
             // Death Screen
             const string DeathScreenSection = "DeathScreen";
             showDeathScreen = settings.GetBool(DeathScreenSection, "ShowDeathScreen");
-            DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
-
-            // Experimental
-            const string experimentalSection = "Experimental";
-            questMessages = settings.GetBool(experimentalSection, "QuestMessages");
-            questMessagesColor = settings.GetColor(experimentalSection, "QuestColor");
-            questPosition = settings.GetTupleFloat(experimentalSection, "QuestPosition");
-            levelCounter = settings.GetBool(experimentalSection, "LevelCounter");
-            levelCounterUppercase = settings.GetBool(experimentalSection, "LcUppercase");
-            levelCounterColor = settings.GetColor(experimentalSection, "LevelColor");
-            levelPosition = settings.GetTupleFloat(experimentalSection, "LevelPosition");
-
-            settingsPluginsStatus = new PluginsStatus()
-            {
-                LoadingCounter = LoadingCounter,
-                tips = tips,
-                questMessages = questMessages,
-                levelCounter = levelCounter
-            };
-        }
-
-        private void InitPlugins()
-        {
             if (showDeathScreen)
-                deathScreen = new DeathScreen(this, DisableVideo, tips, labelText, labelTextFinish);
-
-            if (tips)
-                tips = DfTips.Init(Path.Combine(LoadingScreenMod.DirPath, "Tips"), tipsLanguage);
-        }
-
-        /// <summary>
-        /// Initialize GUI elements.
-        /// Settings must already be loaded.
-        /// </summary>
-        private void InitGUiElements()
-        {
-            // Label
-            LoadingLabel = labelText;
-            LoadingCounterRect = new Rect(Screen.width - labelPosition.First, Screen.height - labelPosition.Second, 50, 10);
-            style = new GUIStyle();
-            style.alignment = TextAnchor.LowerRight;
-            style.font = GetFont(labelFontID);
-            style.fontSize = labelFontSize;
-            style.normal.textColor = GuiColor;
-            style.fontStyle = (FontStyle)labelFontStyle;
-
-            // Tips
-            if (tips)
             {
-                TextAnchor tipsAlignment;
-                tipsRect = GetRect(tipsPosition, tipsSize.First, tipsSize.Second, out tipsAlignment);
-                tipStyle = new GUIStyle()
-                {
-                    alignment = tipsAlignment,
-                    font = GetFont(labelFontID),
-                    fontSize = tipsFontSize,
-                    fontStyle = (FontStyle)tipsFontStyle,
-                    wordWrap = true,
-                };
-                tipStyle.normal.textColor = tipsFontColor;
+                DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
+                deathScreen = new DeathScreen(this, DisableVideo, pluginsStatus.tips, loadingLabel.loading, loadingLabel.end);
             }
-
-            // Quest Message
-            if (questMessages)
-            {
-                TextAnchor questMessagesAlignment;
-                questRect = GetRect(questPosition, 1000, 100, out questMessagesAlignment);
-                questMessagesStyle = tipStyle;
-                questMessagesStyle.alignment = questMessagesAlignment;
-                questMessagesStyle.font = GetFont(labelFontID);
-                questMessagesStyle.normal.textColor = questMessagesColor;
-            }
-
-            // Level Counter
-            if (levelCounter)
-            {
-                TextAnchor levelCounterAlignment;
-                levelCounterRect = GetRect(levelPosition, 50, 10, out levelCounterAlignment);
-                levelCounterStyle = new GUIStyle()
-                {
-                    font = GetFont(labelFontID),
-                    fontSize = 35,
-                    fontStyle = FontStyle.Bold,
-                    alignment = levelCounterAlignment
-                };
-                levelCounterStyle.normal.textColor = levelCounterColor;
-            }
-        }
-
-        /// <summary>
-        /// Get Rect and text alignment.
-        /// Positives values starts from the left/up side of the screen,
-        /// Negatives values starts from the right/bottom side.
-        /// </summary>
-        private Rect GetRect (Tuple<float, float> position, float width, float height, out TextAnchor textAlignment)
-        {
-            float rectX, rectY;
-
-            if (position.First > 0)
-            {
-                rectX = position.First;
-                if (position.Second > 0)
-                {
-                    rectY = position.Second;
-                    textAlignment = TextAnchor.UpperLeft;
-                }
-                else
-                {
-                    rectY = Screen.height + position.Second;
-                    textAlignment = TextAnchor.LowerLeft;
-                }
-            }
-            else
-            {
-                rectX = Screen.width + position.First;
-                if (position.Second > 0)
-                {
-                    rectY = position.Second;
-                    textAlignment = TextAnchor.UpperRight;
-                }
-                else
-                {
-                    rectY = Screen.height + position.Second;
-                    textAlignment = TextAnchor.LowerRight;
-                }
-            }
-
-            return new Rect(rectX, rectY, width, height);
         }
 
         /// <summary>
@@ -702,46 +568,6 @@ namespace LoadingScreen
             screenTexture = LoadingScreenMod.GetAsset<Texture2D>("defaultBackground");
         }
 
-        private Font GetFont(int fontID)
-        {
-            string name = GetFontName(labelFontID);
-            if (name != null)
-                return (Font)Resources.Load(name);
-
-            return null; // Use unity default
-        }
-
-        private string GetFontName(int fontID)
-        {
-            switch (fontID)
-            {
-                case 1:
-                    return "Fonts/OpenSans/OpenSans-ExtraBold";
-                case 2:
-                    return "Fonts/OpenSans/OpenSansBold";
-                case 3:
-                    return "Fonts/OpenSans/OpenSansSemibold";
-                case 4:
-                    return "Fonts/OpenSans/OpenSansRegular";
-                case 5:
-                    return "Fonts/OpenSans/OpenSansLight";
-                case 6:
-                    return "Fonts/TESFonts/Kingthings Exeter";
-                case 7:
-                    return "Fonts/TESFonts/Kingthings Petrock";
-                case 8:
-                    return "Fonts/TESFonts/Kingthings Petrock light";
-                case 9:
-                    return "Fonts/TESFonts/MorrisRomanBlack";
-                case 10:
-                    return "Fonts/TESFonts/oblivion-font";
-                case 11:
-                    return "Fonts/TESFonts/Planewalker";
-                default:
-                    return null;
-            }
-        }
-
         #endregion
 
         #region Mod Messages
@@ -756,7 +582,7 @@ namespace LoadingScreen
                 switch (message)
                 {
                     case "ShowLoadingScreen":
-                        DrawLoadingScreen = (bool)data;
+                        drawLoadingScreen = (bool)data;
                         break;
                     case "IsWaiting":
                         callback("IsWaiting", fadeFromBlack);
