@@ -28,8 +28,6 @@ namespace LoadingScreen
         LoadingScreen loadingScreen;
         bool disableVideo;
         bool tips;
-        string labelText;
-        string labelTextFinish;
 
         #region Public Methods
 
@@ -39,15 +37,11 @@ namespace LoadingScreen
         /// <param name="loadingScreen">Main MonoBehaviour.</param>
         /// <param name="disableVideo">Replace video with screen, or show screen after video.</param>
         /// <param name="tips">Show tips on death screen?</param>
-        /// <param name="labelText">Label which will be restored after death screen.</param>
-        /// <param name="labelTextFinish">Label shown during loading screen.</param>
-        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo, bool tips, string labelText, string labelTextFinish)
+        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo, bool tips)
         {
             this.loadingScreen = loadingScreen;
             this.disableVideo = disableVideo;
             this.tips = tips;
-            this.labelText = labelText;
-            this.labelTextFinish = labelTextFinish;
         }
 
         /// <summary>
@@ -123,7 +117,7 @@ namespace LoadingScreen
 
             // Show death screen
             loadingScreen.screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            loadingScreen.LoadingLabel = labelTextFinish;
+            loadingScreen.LoadingLabel.SetEndLabel();
             if (tips)
                 loadingScreen.tipLabel = DfTips.GetTip();
             loadingScreen.ShowLoadingScreen = true;
@@ -134,7 +128,7 @@ namespace LoadingScreen
 
             // Remove death screen
             loadingScreen.ShowLoadingScreen = false;
-            loadingScreen.LoadingLabel = labelText;
+            loadingScreen.LoadingLabel.SetLoadingLabel();
             loadingScreen.RestorePluginsStatus();
             AudioListener.pause = false;
         }

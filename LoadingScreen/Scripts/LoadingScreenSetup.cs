@@ -56,14 +56,14 @@ namespace LoadingScreen
         /// </summary>
         /// <param name="labelText">Text shown while loading.</param>
         /// <param name="labelTextFinish">Text shown after loading.</param>
-        public void InitLabel(out Rect rect, out GUIStyle style, out string labelText, out string labelTextFinish)
+        public LoadingLabel InitLabel()
         {
-            labelText = settings.GetString(LoadingLabelSection, "LabelText");
-            labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
+            string labelText = settings.GetString(LoadingLabelSection, "LabelText");
+            string labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
 
             var position = settings.GetTupleFloat(LoadingLabelSection, "Position");
-            rect = new Rect(Screen.width - position.First, Screen.height - position.Second, 50, 10);
-            style = new GUIStyle()
+            Rect rect = new Rect(Screen.width - position.First, Screen.height - position.Second, 50, 10);
+            var style = new GUIStyle()
             {
                 alignment = TextAnchor.LowerRight,
                 font = GetFont(settings.GetInt(LoadingLabelSection, "Font")),
@@ -71,6 +71,8 @@ namespace LoadingScreen
                 fontStyle = (FontStyle)settings.GetInt(LoadingLabelSection, "FontStyle", 0, 3)
             };
             style.normal.textColor = settings.GetColor(LoadingLabelSection, "FontColor");
+
+            return new LoadingLabel(rect, style, labelText, labelTextFinish, ".");
         }
 
         /// <summary>

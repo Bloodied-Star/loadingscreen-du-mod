@@ -38,13 +38,6 @@ namespace LoadingScreen
             questMessages,
             levelCounter;
     }
-
-    public struct LoadingLabel
-    {
-        public string
-            loading,
-            end;
-    }
     
     #endregion
 
@@ -67,21 +60,17 @@ namespace LoadingScreen
 
         // Fade from black to clear after the splash screen
         bool fadeFromBlack = false;
-        
+
         #endregion
 
         #region GUI elements
 
-        Rect LoadingCounterRect;
-        GUIStyle style;
-        LoadingLabel loadingLabel = new LoadingLabel();
+        LoadingLabel loadingLabel;
 
         Rect tipsRect;
         GUIStyle tipStyle;
 
-        string questMessage;
-        Rect questRect;
-        GUIStyle questMessagesStyle;
+        QuestsMessages questsMessages;
 
         LevelCounter levelCounter;
 
@@ -106,9 +95,6 @@ namespace LoadingScreen
         bool showDeathScreen;
         bool DisableVideo;
 
-        // Experimental settings
-        static bool levelCounterUppercase;
-
         // Status of plugins
         PluginsStatus settingsPluginsStatus;
         PluginsStatus pluginsStatus;
@@ -117,13 +103,20 @@ namespace LoadingScreen
 
         #region Properties
 
-        // Gui elements
+        /// <summary>
+        /// Image shown on background
+        /// </summary>
         public Texture2D screenTexture { get; set; }
-        public string LoadingLabel { get; set; }
+
+        /// <summary>
+        /// Loading Label used by the Loading Screen.
+        /// </summary>
+        public LoadingLabel LoadingLabel { get { return loadingLabel; } }
+
         public string tipLabel { get; set; }
 
         /// <summary>
-        /// Plugins
+        /// Plugin status settings.
         /// </summary>
         public PluginsStatus SettingsPluginsStatus { get { return settingsPluginsStatus; }}
 
@@ -207,7 +200,7 @@ namespace LoadingScreen
 
                 // Loading label
                 if (pluginsStatus.loadingCounter)
-                    GUI.Box(LoadingCounterRect, LoadingLabel, style);
+                    loadingLabel.DoGui();
 
                 // Tips
                 if (pluginsStatus.tips)
@@ -215,7 +208,7 @@ namespace LoadingScreen
 
                 // Quest Messages
                 if (pluginsStatus.questMessages)
-                    GUI.Box(questRect, questMessage, tipStyle);
+                    questsMessages.DoGui();
 
                 // Level Counter
                 if (pluginsStatus.levelCounter)
@@ -288,7 +281,7 @@ namespace LoadingScreen
         private void StartLoadingScreen(int loadingType = LoadingType.Default)
         {
             if (pluginsStatus.questMessages)
-                questMessage = QuestsMessages.GetQuestMessage();
+                questsMessages.UpdateQuestMessage();
             LoadImage(loadingType);
             drawLoadingScreen = true;
             isLoading = true;
@@ -315,7 +308,7 @@ namespace LoadingScreen
             while (isLoading)
             {
                 // Update label
-                LoadingLabel += ".";
+                loadingLabel.UpdateLoadingLabel();
 
                 timeCounter += Time.deltaTime;
                 yield return null;
@@ -340,7 +333,7 @@ namespace LoadingScreen
                 fadeFromBlack = true;
 
                 // Display new string and pause the game
-                LoadingLabel = loadingLabel.end;
+                loadingLabel.SetEndLabel();
                 GameManager.Instance.PauseGame(true, true);
 
                 // Wait for imput
@@ -353,7 +346,7 @@ namespace LoadingScreen
 
             // Terminate loading screen
             drawLoadingScreen = false;
-            LoadingLabel = loadingLabel.loading;
+            loadingLabel.SetLoadingLabel();
             if (fadeFromBlack)
             {
                 DaggerfallUI.Instance.FadeHUDFromBlack(0.5f);
@@ -390,10 +383,7 @@ namespace LoadingScreen
 
             // Label
             if (pluginsStatus.loadingCounter)
-            {
-                loadingScreenSetup.InitLabel(out LoadingCounterRect, out style, out loadingLabel.loading, out loadingLabel.end);
-                LoadingLabel = loadingLabel.loading;
-            }
+                loadingLabel = loadingScreenSetup.InitLabel();
 
             // Tips
             if (pluginsStatus.tips)
@@ -405,7 +395,7 @@ namespace LoadingScreen
 
             // Quest Message
             if (pluginsStatus.questMessages)
-                loadingScreenSetup.InitQuestMessages(out questRect, out questMessagesStyle);
+                questsMessages = loadingScreenSetup.InitQuestMessages();
 
             // Level Counter
             if (pluginsStatus.levelCounter)
@@ -422,7 +412,7 @@ namespace LoadingScreen
             if (showDeathScreen)
             {
                 DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
-                deathScreen = new DeathScreen(this, DisableVideo, pluginsStatus.tips, loadingLabel.loading, loadingLabel.end);
+                deathScreen = new DeathScreen(this, DisableVideo, pluginsStatus.tips);
             }
         }
 
