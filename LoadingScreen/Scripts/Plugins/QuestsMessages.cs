@@ -22,12 +22,52 @@ namespace LoadingScreen.Plugins
     /// <summary>
     /// Retrieves active quest messages.
     /// </summary>
-    public static class QuestsMessages
+    public class QuestsMessages
     {
+        Rect rect;
+        GUIStyle style;
+        string questMessage;
+
+        #region Public Methods
+
+        public QuestsMessages(Rect rect, GUIStyle style)
+        {
+            this.rect = rect;
+            this.style = style;
+        }
+
+        /// <summary>
+        /// Show QuestMessage on screen with OnGUI
+        /// </summary>
+        public void DoGui()
+        {
+            GUI.Box(rect, questMessage, style);
+        }
+
+        /// <summary>
+        /// Show one quest message from serialized quests.
+        /// </summary>
+        public void UpdateQuestMessage(SaveData_v1 saveData)
+        {
+            questMessage = GetQuestMessage(saveData);
+        }
+
+        /// <summary>
+        /// Show one quest message from active quests.
+        /// </summary>
+        public void UpdateQuestMessage()
+        {
+            questMessage = GetQuestMessage();
+        }
+        
+        #endregion
+
+        #region Private Methods
+
         /// <summary>
         /// Get one quest message from serialized quests.
         /// </summary>
-        public static string GetQuestMessage(SaveData_v1 saveData)
+        private static string GetQuestMessage(SaveData_v1 saveData)
         {
             return string.Empty;
         }
@@ -35,7 +75,7 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// Get one quest message from active quests.
         /// </summary>
-        public static string GetQuestMessage()
+        private static string GetQuestMessage()
         {
             // Get quest messages
             List<Message> questMessages = QuestMachine.Instance.GetAllQuestLogMessages();
@@ -53,10 +93,12 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// Get a readable string from message tokens.
         /// </summary>
-        public static string GetTextFromMessage(Message message)
+        private static string GetTextFromMessage(Message message)
         {
             var text = message.GetTextTokens().Where(x => x.formatting == TextFile.Formatting.Text).Select(x => x.text);
             return string.Join("\n", text.ToArray());
         }
+        
+        #endregion
     }
 }

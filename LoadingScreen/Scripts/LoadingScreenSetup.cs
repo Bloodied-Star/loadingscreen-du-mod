@@ -101,11 +101,11 @@ namespace LoadingScreen
         /// <summary>
         /// Get settings for Quest Messages.
         /// </summary>
-        public void InitQuestMessages(out Rect rect, out GUIStyle style)
+        public QuestsMessages InitQuestMessages()
         {
             TextAnchor alignment;
             var position = settings.GetTupleFloat(experimentalSection, "QuestPosition");
-            rect = GetRect(position, 1000, 100, out alignment);
+            Rect rect = GetRect(position, 1000, 100, out alignment);
 
             // TODO: use own style
             Rect tipsRect;
@@ -113,10 +113,12 @@ namespace LoadingScreen
             string language;
             InitTips(out tipsRect, out tipStyle, out language);
 
-            style = tipStyle;
+            GUIStyle style = tipStyle;
             style.alignment = alignment;
             style.font = GetFont(settings.GetInt(LoadingLabelSection, "Font")); //TODO: font
             style.normal.textColor = settings.GetColor(experimentalSection, "QuestColor");
+
+            return new QuestsMessages(rect, style);
         }
 
         /// <summary>
