@@ -21,6 +21,7 @@ ShowForMinimum = 1
 PressAnyKey = False
 
 ;Show Loading label on the bottom-right corner
+;Index of font, unity default is 0
 ;Size of font of Loading label
 ;Color of Loading label
 ;0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic
@@ -29,6 +30,7 @@ PressAnyKey = False
 ;Text of press-any-key label
 [LoadingLabel]
 LoadingCounter = True
+Font = 0
 FontSize = 30
 FontColor = ffff00ff
 FontStyle = 1
@@ -63,6 +65,8 @@ QuestMessages = False
 QuestColor = ffffffff
 QuestPosition = 100<,>170
 LevelCounter = False
-LcUppercase = False
+LevelLabel = Level
 LevelColor = ffffffff
 LevelPosition = -300<,>120
+BarPosition = -245<,>120
+BarSize = 200<,>40

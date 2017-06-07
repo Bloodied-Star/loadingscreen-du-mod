@@ -8,6 +8,7 @@
 using UnityEngine;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using LoadingScreen.Plugins;
 
 namespace LoadingScreen
 {
@@ -121,14 +122,12 @@ namespace LoadingScreen
         /// <summary>
         /// Get settings for Level Counter.
         /// </summary>
-        public void InitLevelCounter(out Rect rect, out GUIStyle style, out bool upperCase)
+        public LevelCounter.LevelBar InitLevelCounter()
         {
-            upperCase = settings.GetBool(experimentalSection, "LcUppercase");
-            var position = settings.GetTupleFloat(experimentalSection, "LevelPosition");
-
             TextAnchor alignment;
-            rect = GetRect(position, 50, 10, out alignment);
-            style = new GUIStyle()
+            var position = settings.GetTupleFloat(experimentalSection, "LevelPosition");
+            Rect rect = GetRect(position, 50, 10, out alignment);
+            var style = new GUIStyle()
             {
                 font = GetFont(settings.GetInt(LoadingLabelSection, "Font")), //TODO: font
                 fontSize = 35,
@@ -136,11 +135,34 @@ namespace LoadingScreen
                 alignment = alignment
             };
             style.normal.textColor = settings.GetColor(experimentalSection, "LevelColor");
+
+            var barPosition = settings.GetTupleFloat(experimentalSection, "BarPosition");
+            var barSize = settings.GetTupleFloat(experimentalSection, "BarSize");
+
+            return new LevelCounter.LevelBar()
+            {
+                label = settings.GetString(experimentalSection, "LevelLabel"),
+                style = style,
+                labelRect = rect,
+                barRect = GetRect(barPosition, barSize.First, barSize.Second)
+            };
         }
-        
+
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Get Rect.
+        /// Positives values starts from the left/up side of the screen,
+        /// Negatives values starts from the right/bottom side.
+        /// </summary>
+        private static Rect GetRect(Tuple<float, float> position, float width, float height)
+        {
+            float rectX = position.First > 0 ? position.First : Screen.width + position.First;
+            float rectY = position.Second > 0 ? position.Second : Screen.height + position.Second;
+            return new Rect(rectX, rectY, width, height);
+        }
 
         /// <summary>
         /// Get Rect and text alignment.

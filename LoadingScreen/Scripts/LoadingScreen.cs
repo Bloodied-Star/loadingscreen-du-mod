@@ -83,9 +83,7 @@ namespace LoadingScreen
         Rect questRect;
         GUIStyle questMessagesStyle;
 
-        string levelCounterLabel;
-        GUIStyle levelCounterStyle;
-        Rect levelCounterRect;
+        LevelCounter levelCounter;
 
         DeathScreen deathScreen;
         
@@ -221,7 +219,7 @@ namespace LoadingScreen
 
                 // Level Counter
                 if (pluginsStatus.levelCounter)
-                    GUI.Box(levelCounterRect, levelCounterLabel, levelCounterStyle);
+                    levelCounter.DoGui();
             }
         }
 
@@ -260,7 +258,7 @@ namespace LoadingScreen
             if (pluginsStatus.tips)
                 tipLabel = DfTips.GetTip(saveData);
             if (pluginsStatus.levelCounter)
-                levelCounterLabel = LevelCounter.GetLevelCounter(saveData, levelCounterUppercase);
+                levelCounter.UpdateLevelCounter(saveData);
             int loadingType = useLocation ? GetLoadingType(saveData.playerData.playerPosition) : LoadingType.Default;
             StartLoadingScreen(loadingType);
         }
@@ -278,7 +276,7 @@ namespace LoadingScreen
                 if (pluginsStatus.tips)
                     tipLabel = DfTips.GetTip(args.TransitionType);
                 if (pluginsStatus.levelCounter)
-                    levelCounterLabel = LevelCounter.GetLevelCounter(levelCounterUppercase);
+                    levelCounter.UpdateLevelCounter();
                 int loadingType = useLocation ? GetLoadingType(args.TransitionType) : LoadingType.Default;
                 StartLoadingScreen(loadingType);
             }
@@ -411,7 +409,12 @@ namespace LoadingScreen
 
             // Level Counter
             if (pluginsStatus.levelCounter)
-                loadingScreenSetup.InitLevelCounter(out levelCounterRect, out levelCounterStyle, out levelCounterUppercase);
+            {
+                var levelCounterConstructor = loadingScreenSetup.InitLevelCounter();
+                levelCounterConstructor.background = LoadingScreenMod.GetAsset<Texture2D>("BarBackground");
+                levelCounterConstructor.progressBar = LoadingScreenMod.GetAsset<Texture2D>("BarProgress");
+                levelCounter = new LevelCounter(levelCounterConstructor);
+            }
 
             // Death Screen
             const string DeathScreenSection = "DeathScreen";
