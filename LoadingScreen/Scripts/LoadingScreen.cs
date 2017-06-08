@@ -63,21 +63,6 @@ namespace LoadingScreen
 
         #endregion
 
-        #region GUI elements
-
-        Plugins.LoadingLabel loadingLabel;
-
-        Rect tipsRect;
-        GUIStyle tipStyle;
-
-        QuestsMessages questsMessages;
-
-        LevelCounter levelCounter;
-
-        DeathScreen deathScreen;
-        
-        #endregion
-
         #region Settings
 
         // Depth on GUI
@@ -108,13 +93,12 @@ namespace LoadingScreen
         /// </summary>
         public Texture2D screenTexture { get; set; }
 
-        /// <summary>
-        /// Label used by the Loading Screen to show
-        /// Loading, endloading and death strings.
-        /// </summary>
-        public Plugins.LoadingLabel LoadingScreenLabel { get { return loadingLabel; } }
-
-        public string tipLabel { get; set; }
+        // GUI elements/Plugins
+        public Plugins.LoadingLabel loadingLabel { get; set; }
+        public DfTips dfTips { get; set; }
+        public QuestsMessages questsMessages { get; set; }
+        public LevelCounter levelCounter { get; set; }
+        public DeathScreen deathScreen { get; set; }
 
         /// <summary>
         /// Plugin status settings.
@@ -205,7 +189,7 @@ namespace LoadingScreen
 
                 // Tips
                 if (pluginsStatus.tips)
-                    GUI.Box(tipsRect, tipLabel, tipStyle);
+                    dfTips.DoGui();
 
                 // Quest Messages
                 if (pluginsStatus.questMessages)
@@ -250,7 +234,7 @@ namespace LoadingScreen
         private void StartLoadingScreen(SaveData_v1 saveData)
         {
             if (pluginsStatus.tips)
-                tipLabel = DfTips.GetTip(saveData);
+                dfTips.UpdateTip(saveData);
             if (pluginsStatus.levelCounter)
                 levelCounter.UpdateLevelCounter(saveData);
             int loadingType = useLocation ? GetLoadingType(saveData.playerData.playerPosition) : LoadingType.Default;
@@ -268,7 +252,7 @@ namespace LoadingScreen
                     || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior)))
             {
                 if (pluginsStatus.tips)
-                    tipLabel = DfTips.GetTip(args.TransitionType);
+                    dfTips.UpdateTip(args.TransitionType);
                 if (pluginsStatus.levelCounter)
                     levelCounter.UpdateLevelCounter();
                 int loadingType = useLocation ? GetLoadingType(args.TransitionType) : LoadingType.Default;
@@ -389,11 +373,7 @@ namespace LoadingScreen
 
             // Tips
             if (pluginsStatus.tips)
-            {
-                string tipsLanguage;
-                loadingScreenSetup.InitTips(out tipsRect, out tipStyle, out tipsLanguage);
-                pluginsStatus.tips = DfTips.Init(Path.Combine(LoadingScreenMod.DirPath, "Tips"), tipsLanguage);
-            }
+                dfTips = loadingScreenSetup.InitTips(Path.Combine(LoadingScreenMod.DirPath, "Tips"), out pluginsStatus.tips);
 
             // Quest Message
             if (pluginsStatus.questMessages)

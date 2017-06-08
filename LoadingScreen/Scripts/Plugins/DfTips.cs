@@ -29,29 +29,29 @@ namespace LoadingScreen.Plugins
     /// taking in consideration informations obtained from the save game
     /// with the purpose of providing useful tips.
     /// </summary>
-    public static class DfTips
+    public class DfTips
     {
         #region Tips
 
         /// <summary>
         /// All tips from language-specific file.
         /// </summary>
-        public static IniData tips;
+        IniData tips;
 
         /// <summary>
         /// Generic tips.
         /// </summary>
-        static List<string> genericTips { get { return tips.Sections.GetSectionData("Generic").Comments; } }
+        List<string> genericTips { get { return tips.Sections.GetSectionData("Generic").Comments; } }
 
         /// <summary>
         /// Tips for dungeons.
         /// </summary>
-        static List<string> dungeonTips { get { return tips.Sections.GetSectionData("Dungeon").Comments; } }
+        List<string> dungeonTips { get { return tips.Sections.GetSectionData("Dungeon").Comments; } }
 
         /// <summary>
         /// Tips for exteriors, towns and buildings.
         /// </summary>
-        static List<string> exteriorTips { get { return tips.Sections.GetSectionData("Exterior").Comments; } }
+        List<string> exteriorTips { get { return tips.Sections.GetSectionData("Exterior").Comments; } }
 
         /// <summary>
         /// Save-specific tips.
@@ -59,21 +59,21 @@ namespace LoadingScreen.Plugins
         /// </summary>
         const string careerTips = "Career";
         const string NULL = "";
-        static string LOWHELTH { get { return tips[careerTips]["LOWHELTH"]; } }
-        static string LOWGOLD0 { get { return tips[careerTips]["LOWGOLD0"]; } }
-        static string LOWGOLD1 { get { return tips[careerTips]["LOWGOLD1"]; } }
-        static string HIGHGOLD0 { get { return tips[careerTips]["HIGHGOLD0"]; } }
-        static string HIGHGOLD1 { get { return tips[careerTips]["HIGHGOLD1"]; } }
-        static string LOWLEVEL0 { get { return tips[careerTips]["LOWLEVEL0"]; } }
-        static string LOWLEVEL1 { get { return tips[careerTips]["LOWLEVEL1"]; } }
-        static string WAGON { get { return tips[careerTips]["WAGON"]; } }
+        string LOWHELTH { get { return tips[careerTips]["LOWHELTH"]; } }
+        string LOWGOLD0 { get { return tips[careerTips]["LOWGOLD0"]; } }
+        string LOWGOLD1 { get { return tips[careerTips]["LOWGOLD1"]; } }
+        string HIGHGOLD0 { get { return tips[careerTips]["HIGHGOLD0"]; } }
+        string HIGHGOLD1 { get { return tips[careerTips]["HIGHGOLD1"]; } }
+        string LOWLEVEL0 { get { return tips[careerTips]["LOWLEVEL0"]; } }
+        string LOWLEVEL1 { get { return tips[careerTips]["LOWLEVEL1"]; } }
+        string WAGON { get { return tips[careerTips]["WAGON"]; } }
 
         /// <summary>
         /// Race-specific tips
         /// </summary>
         /// <param name="race">Race of player charachter.</param>
         /// <returns>Tip for race</returns>
-        private static string RaceTip(Races race)
+        private string RaceTip(Races race)
         {
             const string raceSection = "Race";
             string tip = tips[raceSection][race.ToString()];
@@ -85,7 +85,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="gender">Gender of charachter.</param>
         /// <returns>Tip for gender</returns>
-        private static string GenderTip(Genders gender)
+        private string GenderTip(Genders gender)
         {
             const string genderSection = "Gender";
             string tip = tips[genderSection][gender.ToString()];
@@ -95,22 +95,74 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// These are shown with more frequency at lower levels.
         /// </summary>
-        static List<string> basicTips { get { return tips.Sections.GetSectionData("Basic").Comments; } }
+        List<string> basicTips { get { return tips.Sections.GetSectionData("Basic").Comments; } }
 
         /// <summary>
         /// These are shown with more frequency at higher levels.
         /// </summary>
-        static List<string> advancedTips { get { return tips.Sections.GetSectionData("Advanced").Comments; } }
+        List<string> advancedTips { get { return tips.Sections.GetSectionData("Advanced").Comments; } }
 
         /// <summary>
         /// Tips for player death.
         /// </summary>
-        static List<string> deathTips { get { return tips.Sections.GetSectionData("Death").Comments; } }
+        List<string> deathTips { get { return tips.Sections.GetSectionData("Death").Comments; } }
 
         /// <summary>
         /// Fallback tip.
         /// </summary>
         const string fallbackTip = "Something wrong with your tips file...";
+
+        #endregion
+
+        #region Public Methods
+
+        Rect rect;
+        GUIStyle style;
+        string tip = string.Empty;
+
+        /// <summary>
+        /// Constructor for Daggefall Tips.
+        /// </summary>
+        /// <param name="path">Folder with language files.</param>
+        /// <param name="language">Name of language file without extension.</param>
+        /// <param name="parseSuccesfull">True if tips can be used.</param>
+        public DfTips(Rect rect, GUIStyle style, string path, string language, out bool parseSuccesfull)
+        {
+            this.rect = rect;
+            this.style = style;
+            parseSuccesfull = Init(path, language);
+        }
+
+        public void DoGui()
+        {
+            GUI.Label(rect, tip, style);
+        }
+
+        /// <summary>
+        /// Show tip during save loading.
+        /// </summary>
+        /// <param name="saveData">Save being loaded.</param>
+        public void UpdateTip(SaveData_v1 saveData)
+        {
+            tip = GetTip(saveData);
+        }
+
+        /// <summary>
+        /// Show tip during transition.
+        /// </summary>
+        /// <param name="transitionType">Transition in action.</param>
+        public void UpdateTip(PlayerEnterExit.TransitionType transitionType)
+        {
+            tip = GetTip(transitionType);
+        }
+
+        /// <summary>
+        /// Show tip on Death Screen.
+        /// </summary>
+        public void UpdateTip()
+        {
+            tip = GetTip();
+        }
 
         #endregion
 
@@ -121,7 +173,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="saveData">Save being loaded.</param>
         /// <returns>Tip</returns>
-        public static string GetTip(SaveData_v1 saveData)
+        public string GetTip(SaveData_v1 saveData)
         {
             SetSeed();
             switch (Random.Range(0, 6))
@@ -149,7 +201,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="transitionType">Transition in action.</param>
         /// <returns>Tip</returns>
-        public static string GetTip(PlayerEnterExit.TransitionType transitionType)
+        public string GetTip(PlayerEnterExit.TransitionType transitionType)
         {
             SetSeed();
             const int maxValue = 5;
@@ -174,7 +226,7 @@ namespace LoadingScreen.Plugins
         /// Get a tip to show on screen for Death Screen.
         /// </summary>
         /// <returns>Tip</returns>
-        public static string GetTip()
+        public string GetTip()
         {
             SetSeed();
             switch (Random.Range(0, 6))
@@ -198,7 +250,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="saveData">Save.</param>
         /// <returns>List of tips.</returns>
-        private static List<string> SaveTips(SaveData_v1 saveData)
+        private List<string> SaveTips(SaveData_v1 saveData)
         {
             // Fields
             var tips = new List<string>();
@@ -249,7 +301,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="inDungeon">Dungeon or exteriors?</param>
         /// <returns>List of tips</returns>
-        private static List<string> LocationTips(bool inDungeon)
+        private List<string> LocationTips(bool inDungeon)
         {
             const int maxValue = 6; // the higher, the more probable it will be specific
             switch (Random.Range(0, maxValue))
@@ -268,7 +320,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="playerLevel">Level of player in game.</param>
         /// <returns>List of tips</returns>
-        private static List<string> ScaledTips(int playerLevel)
+        private List<string> ScaledTips(int playerLevel)
         {
             return Random.Range(0, 33) > playerLevel ? basicTips : advancedTips;
         }
@@ -303,7 +355,7 @@ namespace LoadingScreen.Plugins
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
         /// <returns>True if tips can be used.</returns>
-        public static bool Init(string path, string language)
+        public bool Init(string path, string language)
         {
             try
             {

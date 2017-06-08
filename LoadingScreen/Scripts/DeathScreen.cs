@@ -122,11 +122,11 @@ namespace LoadingScreen
             // Show death screen
             loadingScreen.screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
             if (showLabel)
-                loadingScreen.LoadingScreenLabel.SetLabel(label);
+                loadingScreen.loadingLabel.SetLabel(label);
             else
-                loadingScreen.LoadingScreenLabel.EmptyLabel();
+                loadingScreen.loadingLabel.EmptyLabel();
             if (tips)
-                loadingScreen.tipLabel = DfTips.GetTip();
+                loadingScreen.dfTips.UpdateTip();
             loadingScreen.ShowLoadingScreen = true;
 
             // Wait for imput

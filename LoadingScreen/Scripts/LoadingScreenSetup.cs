@@ -79,17 +79,17 @@ namespace LoadingScreen
         /// Get settings for Tips
         /// </summary>
         /// <param name="language">Language of tips.</param>
-        public void InitTips(out Rect rect, out GUIStyle style, out string language)
+        public DfTips InitTips(string path, out bool parseSuccesfull)
         {
             int fontSize = settings.GetInt(TipsSection, "FontSize");
-            language = settings.GetString(TipsSection, "Language");
+            string language = settings.GetString(TipsSection, "Language");
 
             TextAnchor alignment;
             var position = settings.GetTupleFloat(TipsSection, "Position");
             var size = settings.GetTupleFloat(TipsSection, "Size");
-            rect = GetRect(position, size.First, size.Second, out alignment);
+            Rect rect = GetRect(position, size.First, size.Second, out alignment);
 
-            style = new GUIStyle()
+            var style = new GUIStyle()
             {
                 alignment = alignment,
                 font = GetFont(settings.GetInt(LoadingLabelSection, "Font")), //TODO: font
@@ -98,6 +98,8 @@ namespace LoadingScreen
                 wordWrap = true,
             };
             style.normal.textColor = settings.GetColor(TipsSection, "FontColor");
+
+            return new DfTips(rect, style, path, language, out parseSuccesfull);
         }
 
         /// <summary>
@@ -109,15 +111,11 @@ namespace LoadingScreen
             var position = settings.GetTupleFloat(experimentalSection, "QuestPosition");
             Rect rect = GetRect(position, 1000, 100, out alignment);
 
-            // TODO: use own style
-            Rect tipsRect;
-            GUIStyle tipStyle;
-            string language;
-            InitTips(out tipsRect, out tipStyle, out language);
-
-            GUIStyle style = tipStyle;
-            style.alignment = alignment;
-            style.font = GetFont(settings.GetInt(LoadingLabelSection, "Font")); //TODO: font
+            GUIStyle style = new GUIStyle() // TODO: style
+            {
+                alignment = alignment,
+                font = GetFont(settings.GetInt(LoadingLabelSection, "Font")) //TODO: font
+            };
             style.normal.textColor = settings.GetColor(experimentalSection, "QuestColor");
 
             return new QuestsMessages(rect, style);
