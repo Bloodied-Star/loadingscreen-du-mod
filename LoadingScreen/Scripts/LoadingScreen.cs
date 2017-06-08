@@ -65,7 +65,7 @@ namespace LoadingScreen
 
         #region GUI elements
 
-        LoadingLabel loadingLabel;
+        Plugins.LoadingLabel loadingLabel;
 
         Rect tipsRect;
         GUIStyle tipStyle;
@@ -109,9 +109,10 @@ namespace LoadingScreen
         public Texture2D screenTexture { get; set; }
 
         /// <summary>
-        /// Loading Label used by the Loading Screen.
+        /// Label used by the Loading Screen to show
+        /// Loading, endloading and death strings.
         /// </summary>
-        public LoadingLabel LoadingLabel { get { return loadingLabel; } }
+        public Plugins.LoadingLabel LoadingScreenLabel { get { return loadingLabel; } }
 
         public string tipLabel { get; set; }
 
@@ -301,6 +302,8 @@ namespace LoadingScreen
         /// </summary>
         private IEnumerator ShowLoadingScreenOnGui()
         {
+            loadingLabel.SetLoadingLabel();
+
             // Time spent on the loading screen
             float timeCounter = 0;
 
@@ -346,7 +349,6 @@ namespace LoadingScreen
 
             // Terminate loading screen
             drawLoadingScreen = false;
-            loadingLabel.SetLoadingLabel();
             if (fadeFromBlack)
             {
                 DaggerfallUI.Instance.FadeHUDFromBlack(0.5f);
@@ -409,10 +411,11 @@ namespace LoadingScreen
             // Death Screen
             const string DeathScreenSection = "DeathScreen";
             showDeathScreen = settings.GetBool(DeathScreenSection, "ShowDeathScreen");
+            string deathLabel = settings.GetString(DeathScreenSection, "LabelText");
             if (showDeathScreen)
             {
                 DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
-                deathScreen = new DeathScreen(this, DisableVideo, pluginsStatus.tips);
+                deathScreen = new DeathScreen(this, DisableVideo, deathLabel, pluginsStatus.tips);
             }
         }
 

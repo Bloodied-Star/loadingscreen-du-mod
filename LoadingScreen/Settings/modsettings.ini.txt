@@ -56,9 +56,11 @@ Language = en
 
 ;Show death screen after video
 ;Disable video
+;Text shown on screen. Leave empty to disable
 [DeathScreen]
 ShowDeathScreen = False
 DisableVideo = False
+LabelText = Try Again
 
 [Experimental]
 QuestMessages = False

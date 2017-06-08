@@ -56,7 +56,7 @@ namespace LoadingScreen
         /// </summary>
         /// <param name="labelText">Text shown while loading.</param>
         /// <param name="labelTextFinish">Text shown after loading.</param>
-        public LoadingLabel InitLabel()
+        public Plugins.LoadingLabel InitLabel()
         {
             string labelText = settings.GetString(LoadingLabelSection, "LabelText");
             string labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
@@ -72,7 +72,7 @@ namespace LoadingScreen
             };
             style.normal.textColor = settings.GetColor(LoadingLabelSection, "FontColor");
 
-            return new LoadingLabel(rect, style, labelText, labelTextFinish, ".");
+            return new Plugins.LoadingLabel(rect, style, labelText, labelTextFinish, ".");
         }
 
         /// <summary>

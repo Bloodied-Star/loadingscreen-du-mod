@@ -45,5 +45,15 @@ namespace LoadingScreen.Plugins
         {
             label = endLabel;
         }
+
+        public void SetLabel(string label)
+        {
+            this.label = label;
+        }
+
+        public void EmptyLabel()
+        {
+            label = string.Empty;
+        }
     }
 }

@@ -27,6 +27,8 @@ namespace LoadingScreen
         // Fields
         LoadingScreen loadingScreen;
         bool disableVideo;
+        bool showLabel;
+        string label;
         bool tips;
 
         #region Public Methods
@@ -37,10 +39,12 @@ namespace LoadingScreen
         /// <param name="loadingScreen">Main MonoBehaviour.</param>
         /// <param name="disableVideo">Replace video with screen, or show screen after video.</param>
         /// <param name="tips">Show tips on death screen?</param>
-        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo, bool tips)
+        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo, string label, bool tips)
         {
             this.loadingScreen = loadingScreen;
             this.disableVideo = disableVideo;
+            this.showLabel = (label != null && label.Length != 0);
+            this.label = label;
             this.tips = tips;
         }
 
@@ -117,7 +121,10 @@ namespace LoadingScreen
 
             // Show death screen
             loadingScreen.screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            loadingScreen.LoadingLabel.SetEndLabel();
+            if (showLabel)
+                loadingScreen.LoadingScreenLabel.SetLabel(label);
+            else
+                loadingScreen.LoadingScreenLabel.EmptyLabel();
             if (tips)
                 loadingScreen.tipLabel = DfTips.GetTip();
             loadingScreen.ShowLoadingScreen = true;
@@ -128,7 +135,6 @@ namespace LoadingScreen
 
             // Remove death screen
             loadingScreen.ShowLoadingScreen = false;
-            loadingScreen.LoadingLabel.SetLoadingLabel();
             loadingScreen.RestorePluginsStatus();
             AudioListener.pause = false;
         }
