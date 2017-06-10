@@ -246,10 +246,7 @@ namespace LoadingScreen
         /// </summary>
         private void StartLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
-            if (((dungeons) && (args.TransitionType == PlayerEnterExit.TransitionType.ToDungeonInterior 
-                || args.TransitionType == PlayerEnterExit.TransitionType.ToDungeonExterior)) ||
-                    ((buildings) && (args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingInterior 
-                    || args.TransitionType == PlayerEnterExit.TransitionType.ToBuildingExterior)))
+            if (ShowOnTransitionType(args.TransitionType))
             {
                 if (pluginsStatus.tips)
                     dfTips.UpdateTip(args.TransitionType);
@@ -464,6 +461,23 @@ namespace LoadingScreen
         #endregion
 
         #region Private Methods
+
+        private bool ShowOnTransitionType(PlayerEnterExit.TransitionType transition)
+        {
+            switch(transition)
+            {
+                case PlayerEnterExit.TransitionType.ToDungeonInterior:
+                case PlayerEnterExit.TransitionType.ToDungeonExterior:
+                    return dungeons;
+
+                case PlayerEnterExit.TransitionType.ToBuildingInterior:
+                case PlayerEnterExit.TransitionType.ToBuildingExterior:
+                    return buildings;
+
+                default:
+                    return false;
+            }
+        }
 
         private int GetLoadingType(PlayerPositionData_v1 playerPosition)
         {
