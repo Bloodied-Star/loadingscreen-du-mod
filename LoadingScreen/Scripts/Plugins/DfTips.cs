@@ -125,12 +125,11 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
-        /// <param name="parseSuccesfull">True if tips can be used.</param>
-        public DfTips(Rect rect, GUIStyle style, string path, string language, out bool parseSuccesfull)
+        public DfTips(Rect rect, GUIStyle style, string path, string language)
         {
             this.rect = rect;
             this.style = style;
-            parseSuccesfull = Init(path, language);
+            enabled = Init(path, language);
         }
 
         public override void Draw()

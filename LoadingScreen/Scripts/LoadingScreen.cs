@@ -29,15 +29,6 @@ namespace LoadingScreen
             Building = 1,
             Dungeon = 2;
     }
-
-    public struct PluginsStatus
-    {
-        public bool
-            loadingCounter,
-            tips,
-            questMessages,
-            levelCounter;
-    }
     
     #endregion
 
@@ -49,73 +40,51 @@ namespace LoadingScreen
     {
         #region Fields
 
-        // This mod
-        private static Mod LoadingScreenMod;
+        static Mod mod;
+        readonly LoadingScreenWindow loadingScreen = new LoadingScreenWindow();
+        DeathScreen deathScreen;
 
-        // The loading screen
-        LoadingScreenWindow loadingScreen = new LoadingScreenWindow();
-
-        // Is the game loading ?
+        // Controls
         bool isLoading = false;
-
-        // Fade from black to clear after the splash screen
         bool fadeFromBlack = false;
 
-        #endregion
-
-        #region Settings
-
-        // Depth on GUI
+        // Settings
         int guiDepth;
-
-        // Loading screen settings
-        bool dungeons;
-        bool buildings;
-        bool useLocation;
-        bool useSeason;
-        float MinimumWait;
-		bool PressAnyKey;
-
-        // Death screen
-        bool showDeathScreen;
-        bool DisableVideo;
-
-        PluginsStatus pluginsStatus;
+        bool dungeons, buildings;
+        bool useLocation, useSeason;
+        float minimumWait;
+		bool pressAnyKey;
 
         #endregion
 
         #region Properties
 
-        public LoadingScreenWindow LoadingScreenWindow
+        /// <summary>
+        /// Loading Screen mod.
+        /// </summary>
+        public static Mod Mod
+        {
+            get { return mod; }
+        }
+
+        /// <summary>
+        /// Loading Screen window.
+        /// </summary>
+        public LoadingScreenWindow Window
         {
             get { return loadingScreen; }
         }
-
-        // GUI elements/Plugins
-        public Plugins.LoadingLabel loadingLabel { get; set; }
-        public DfTips dfTips { get; set; }
-        public QuestsMessages questsMessages { get; set; }
-        public LevelCounter levelCounter { get; set; }
-        public DeathScreen deathScreen { get; set; }
 
         /// <summary>
         /// Load/transition finished but loading screen is still on GUI
         /// (MinimumWait and/or PressAnyKey).
         /// </summary>
-        public bool IsWaiting
-        {
-            get { return fadeFromBlack; }
-            internal set { fadeFromBlack = value; }
-        }
+        public bool IsWaiting { get { return fadeFromBlack; } }
 
         /// <summary>
         /// The sorting depth of the loading screen.
         /// </summary>
-        public int GuiDepth
-        {
-            get { return guiDepth; }
-            internal set { guiDepth = value; }
-        }
+        public int GuiDepth { get { return guiDepth; } }
 
         #endregion
 
@@ -128,14 +97,14 @@ namespace LoadingScreen
         public static void Init(InitParams initParams)
         {
             // Get mod
-            LoadingScreenMod = initParams.Mod;
+            mod = initParams.Mod;
 
             // Add script to scene
             GameObject go = new GameObject("LoadingScreen");
             go.AddComponent<LoadingScreen>();
 
             // Set mod as Ready
-            LoadingScreenMod.IsReady = true;
+            mod.IsReady = true;
         }
 
         /// <summary>
@@ -147,7 +116,7 @@ namespace LoadingScreen
             LoadSettings();
 
             // ModMessages
-            LoadingScreenMod.MessageReceiver = MessageReceiver;
+            mod.MessageReceiver = MessageReceiver;
 
             // Suscribe to Loading
             SubscribeToLoading();
@@ -223,21 +192,18 @@ namespace LoadingScreen
             // Wait for end of loading
             while (isLoading)
             {
-                // Update label
-                //loadingLabel.UpdateLoadingLabel();
                 loadingScreen.UpdateScreen();
-
                 timeCounter += Time.deltaTime;
                 yield return null;
             }
 
             // Pause the game and wait for MinimumWait
             // If this is not required by settings, MinimumWait is zero
-            if (timeCounter < MinimumWait)
+            if (timeCounter < minimumWait)
             {
                 fadeFromBlack = true;
                 GameManager.Instance.PauseGame(true, true);
-                while (timeCounter < MinimumWait)
+                while (timeCounter < minimumWait)
                 {
                     timeCounter += Time.unscaledDeltaTime;
                     yield return null;
@@ -245,12 +211,9 @@ namespace LoadingScreen
             }
 
             // Pause the game and show 'press-any-key' screen (if required by settings)
-            if (PressAnyKey)
+            if (pressAnyKey)
             {
                 fadeFromBlack = true;
-
-                // Display new string and pause the game
-                //loadingLabel.SetEndLabel();
                 loadingScreen.OnEndScreen();
                 GameManager.Instance.PauseGame(true, true);
 
@@ -281,62 +244,38 @@ namespace LoadingScreen
         /// </summary>
         private void LoadSettings()
         {
-            ModSettings settings = new ModSettings(LoadingScreenMod);
+            ModSettings settings = new ModSettings(mod);
             guiDepth = settings.GetInt(ModSettingsReader.internalSection, "GuiDepth");
 
-            // Splash screen
-            const string SplashScreenSection = "SplashScreen";
-            dungeons = settings.GetBool(SplashScreenSection, "Dungeons");
-            buildings = settings.GetBool(SplashScreenSection, "Buildings");
-            useLocation = settings.GetBool(SplashScreenSection, "UseLocation");
-            useSeason = settings.GetBool(SplashScreenSection, "UseSeason");
-            MinimumWait = settings.GetFloat(SplashScreenSection, "ShowForMinimum");
-            PressAnyKey = settings.GetBool(SplashScreenSection, "PressAnyKey");
+            // General
+            const string generalSection = "General";
+            dungeons = settings.GetBool(generalSection, "Dungeons");
+            buildings = settings.GetBool(generalSection, "Buildings");
+            minimumWait = settings.GetFloat(generalSection, "ShowForMinimum");
+            pressAnyKey = settings.GetBool(generalSection, "PressAnyKey");
 
-            // Plugins
-            var loadingScreenSetup = new LoadingScreenSetup(settings);
-            pluginsStatus = loadingScreenSetup.GetSettingsPluginsStatus();
-
-            // Label
-            if (pluginsStatus.loadingCounter)
-            {
-                loadingLabel = loadingScreenSetup.InitLabel();
-                loadingScreen.Components.Add(loadingLabel);
-            }
-
-            // Tips
-            if (pluginsStatus.tips)
-            {
-                dfTips = loadingScreenSetup.InitTips(Path.Combine(LoadingScreenMod.DirPath, "Tips"), out pluginsStatus.tips);
-                dfTips.Enabled = pluginsStatus.tips;
-                loadingScreen.Components.Add(dfTips);
-            }
-
-            // Quest Message
-            if (pluginsStatus.questMessages)
-            {
-                questsMessages = loadingScreenSetup.InitQuestMessages();
-                loadingScreen.Components.Add(questsMessages);
-            }
-
-            // Level Counter
-            if (pluginsStatus.levelCounter)
-            {
-                var levelCounterConstructor = loadingScreenSetup.InitLevelCounter();
-                levelCounterConstructor.background = LoadingScreenMod.GetAsset<Texture2D>("BarBackground");
-                levelCounterConstructor.progressBar = LoadingScreenMod.GetAsset<Texture2D>("BarProgress");
-                levelCounter = new LevelCounter(levelCounterConstructor);
-                loadingScreen.Components.Add(levelCounter);
-            }
+            // Background
+            const string backgroundSection = "Background";
+            useLocation = settings.GetBool(backgroundSection, "UseLocation");
+            useSeason = settings.GetBool(backgroundSection, "UseSeason");
 
             // Death Screen
-            const string DeathScreenSection = "DeathScreen";
-            showDeathScreen = settings.GetBool(DeathScreenSection, "ShowDeathScreen");
-            if (showDeathScreen)
-            {
-                DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
-                deathScreen = new DeathScreen(this, DisableVideo);
-            }
+            const string deathScreenSection = "DeathScreen";
+            if (settings.GetBool(deathScreenSection, "Enable"))
+                deathScreen = new DeathScreen(this, settings.GetBool(deathScreenSection, "DisableVideo"));
+
+            // Components
+            var setup = new LoadingScreenSetup(settings);
+            AddComponent(setup.InitLabel());
+            AddComponent(setup.InitTips());
+            AddComponent(setup.InitQuestMessages());
+            AddComponent(setup.InitLevelCounter());
+        }
+
+        private void AddComponent(LoadingScreenPlugin c)
+        {
+            if (c != null)
+                loadingScreen.Components.Add(c);
         }
 
         /// <summary>
@@ -364,7 +303,7 @@ namespace LoadingScreen
                 }
             }
 
-            if (showDeathScreen)
+            if (deathScreen != null)
                 PlayerDeath.OnPlayerDeath += deathScreen.ShowDeathScreen;
 
             Debug.Log("LoadingScreen: subscribed to loadings as per user settings.");
@@ -395,7 +334,7 @@ namespace LoadingScreen
                 }
             }
 
-            if (showDeathScreen)
+            if (deathScreen != null)
                 PlayerDeath.OnPlayerDeath -= deathScreen.ShowDeathScreen;
 
             Debug.Log("LoadingScreen: unsubscribed from all loadings.");
@@ -454,7 +393,7 @@ namespace LoadingScreen
         private void LoadImage(int loadingType)
         {
             // Get path
-            string path = Path.Combine(LoadingScreenMod.DirPath, "Images");
+            string path = Path.Combine(mod.DirPath, "Images");
             if (loadingType == LoadingType.Building)
                 path = Path.Combine(path, "Building");
             else if (loadingType == LoadingType.Dungeon)
@@ -501,7 +440,7 @@ namespace LoadingScreen
             }
 
             // Use a black texture as fallback
-            loadingScreen.background = LoadingScreenMod.GetAsset<Texture2D>("defaultBackground");
+            loadingScreen.background = mod.GetAsset<Texture2D>("defaultBackground");
         }
 
         #endregion

@@ -107,17 +107,17 @@ namespace LoadingScreen
             AudioListener.pause = true;
 
             // Show death screen
-            loadingScreen.LoadingScreenWindow.OnDeathScreen();
-            loadingScreen.LoadingScreenWindow.background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            loadingScreen.LoadingScreenWindow.Enabled = true;
+            loadingScreen.Window.OnDeathScreen();
+            loadingScreen.Window.background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
+            loadingScreen.Window.Enabled = true;
 
             // Wait for imput
             while (!Input.anyKey)
                 yield return null;
 
             // Remove death screen
-            loadingScreen.LoadingScreenWindow.Enabled = false;
-            loadingScreen.LoadingScreenWindow.OnEndDeathScreen();
+            loadingScreen.Window.Enabled = false;
+            loadingScreen.Window.OnEndDeathScreen();
             AudioListener.pause = false; 
         }
 

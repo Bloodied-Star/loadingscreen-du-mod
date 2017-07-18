@@ -8,17 +8,25 @@ GuiDepth = -2
 
 ;Show loading screen entering/exiting dungeons
 ;Show loading screen entering/exiting buildings
-;Use different splash screens when entering buildings/dungeons
-;Use different splash screens according to season
 ;Min time in seconds the splash screen will be displayed on screen. Set to 0 to disable this feature
 ;Show press-any-key screen after loading
-[SplashScreen]
+[General]
 Dungeons = False
 Buildings = False
-UseLocation = False
-UseSeason = False
 ShowForMinimum = 1
 PressAnyKey = False
+
+;Use different splash screens when entering buildings/dungeons
+;Use different splash screens according to season
+[Background]
+UseLocation = False
+UseSeason = False
+
+;Show Death Screen on player death
+;Disable video before death screen
+[DeathScreen]
+Enable = False
+DisableVideo = False
 
 ;Show Loading label on the bottom-right corner
 ;Index of font, unity default is 0
@@ -28,25 +36,29 @@ PressAnyKey = False
 ;Position on screen (x,y)
 ;Text of loading label
 ;Text of press-any-key label
+;Text shown on Death Screen. Leave empty to disable
 [LoadingLabel]
-LoadingCounter = True
-Font = 0
-FontSize = 30
+Enable = True
+Font = 6
+FontSize = 25
 FontColor = ffff00ff
-FontStyle = 1
+FontStyle = 3
 Position = 100<,>30
-LabelText = Loading
-LabelTextFinish = Continue
+LoadingText = Loading
+EndText = Continue
+DeathText = Try Again
 
 ;Show tips on the world of Daggerfall
-;Size of font for tips
-;Color of font for tips
+;Index of font, unity default is 0
+;Size of text
+;Color of text
 ;0:Normal, 1:Bold, 2:Italic, 3:BoldAndItalic
 ;Position on screen (x,y)
 ;Size
 ;Name of language file
 [Tips]
-Tips = True
+Enable = True
+Font = 6
 FontSize = 25
 FontColor = ffffffff
 FontStyle = 2
@@ -54,21 +66,27 @@ Position = 180<,>-100
 Size = 600<,>30
 Language = en
 
-;Show death screen after video
-;Disable video
-;Text shown on screen. Leave empty to disable
-[DeathScreen]
-ShowDeathScreen = False
-DisableVideo = False
-LabelText = Try Again
+;Show messages from active quests.
+[Quests]
+Enable = True
+Font = 7
+FontSize = 30
+FontColor = ffffffff
+FontStyle = 2
+Position = 100<,>170
 
-[Experimental]
-QuestMessages = False
-QuestColor = ffffffff
-QuestPosition = 100<,>170
-LevelCounter = False
-LevelLabel = Level
-LevelColor = ffffffff
-LevelPosition = -300<,>120
-BarPosition = -245<,>120
+;Show a progress bar for next level
+;[Text] [n]
+;Index of font, unity default is 0
+;Color of text
+;Position of text
+;Size of progress bar
+;Position of progress bar
+[LevelProgress]
+Enable = True
+Text = Level
+Font = 10
+FontColor = ffffff55
+TextPosition = -310<,>120
 BarSize = 200<,>40
+BarPosition = -245<,>120

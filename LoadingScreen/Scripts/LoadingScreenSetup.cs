@@ -5,6 +5,7 @@
 // Original Author: TheLacus (TheLacus@yandex.com)
 // Contributors:    
 
+using System.IO;
 using UnityEngine;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
@@ -17,12 +18,7 @@ namespace LoadingScreen
     /// </summary>
     public class LoadingScreenSetup
     {
-        private ModSettings settings;
-
-        const string
-            LoadingLabelSection      = "LoadingLabel",
-            TipsSection              = "Tips",
-            experimentalSection      = "Experimental";
+        readonly ModSettings settings;
 
         #region Public Methods
 
@@ -37,118 +33,122 @@ namespace LoadingScreen
         }
 
         /// <summary>
-        /// Get status of plugins from user settings.
-        /// </summary>
-        /// <returns></returns>
-        public PluginsStatus GetSettingsPluginsStatus()
-        {
-            return new PluginsStatus()
-            {
-                loadingCounter = settings.GetBool(LoadingLabelSection, "LoadingCounter"),
-                tips = settings.GetBool(TipsSection, "Tips"),
-                questMessages = settings.GetBool(experimentalSection, "QuestMessages"),
-                levelCounter = settings.GetBool(experimentalSection, "LevelCounter")
-            };
-        }
-
-        /// <summary>
-        /// Get settings for Loading Counter
+        /// Gets Loading Counter with user settings.
         /// </summary>
         /// <param name="labelText">Text shown while loading.</param>
         /// <param name="labelTextFinish">Text shown after loading.</param>
         public Plugins.LoadingLabel InitLabel()
         {
-            string labelText = settings.GetString(LoadingLabelSection, "LabelText");
-            string labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
-            string deathLabel = settings.GetString("DeathScreen", "LabelText");
+            const string loadingLabelSection = "LoadingLabel";
+            if (!settings.GetBool(loadingLabelSection, "Enable"))
+                return null;
 
-            var position = settings.GetTupleFloat(LoadingLabelSection, "Position");
+            string labelText = settings.GetString(loadingLabelSection, "LoadingText");
+            string labelTextFinish = settings.GetString(loadingLabelSection, "EndText");
+            string deathLabel = settings.GetString("DeathScreen", "DeathText");
+
+            var position = settings.GetTupleFloat(loadingLabelSection, "Position");
             Rect rect = new Rect(Screen.width - position.First, Screen.height - position.Second, 50, 10);
             var style = new GUIStyle()
             {
                 alignment = TextAnchor.LowerRight,
-                font = GetFont(settings.GetInt(LoadingLabelSection, "Font")),
-                fontSize = settings.GetInt(LoadingLabelSection, "FontSize"),
-                fontStyle = (FontStyle)settings.GetInt(LoadingLabelSection, "FontStyle", 0, 3)
+                font = GetFont(settings.GetInt(loadingLabelSection, "Font")),
+                fontSize = settings.GetInt(loadingLabelSection, "FontSize"),
+                fontStyle = (FontStyle)settings.GetInt(loadingLabelSection, "FontStyle", 0, 3)
             };
-            style.normal.textColor = settings.GetColor(LoadingLabelSection, "FontColor");
+            style.normal.textColor = settings.GetColor(loadingLabelSection, "FontColor");
 
             return new Plugins.LoadingLabel(rect, style, labelText, labelTextFinish, ".", deathLabel);
         }
 
         /// <summary>
-        /// Get settings for Tips
+        /// Gets Daggerfall Tips with user settings.
         /// </summary>
-        /// <param name="language">Language of tips.</param>
-        public DfTips InitTips(string path, out bool parseSuccesfull)
+        public DfTips InitTips()
         {
-            int fontSize = settings.GetInt(TipsSection, "FontSize");
-            string language = settings.GetString(TipsSection, "Language");
+            const string tipsSection = "Tips";
+            if (!settings.GetBool(tipsSection, "Enable"))
+                return null;
 
             TextAnchor alignment;
-            var position = settings.GetTupleFloat(TipsSection, "Position");
-            var size = settings.GetTupleFloat(TipsSection, "Size");
+            var position = settings.GetTupleFloat(tipsSection, "Position");
+            var size = settings.GetTupleFloat(tipsSection, "Size");
             Rect rect = GetRect(position, size.First, size.Second, out alignment);
+            string language = settings.GetString(tipsSection, "Language");
+            string path = Path.Combine(LoadingScreen.Mod.DirPath, "Tips");
 
             var style = new GUIStyle()
             {
                 alignment = alignment,
-                font = GetFont(settings.GetInt(LoadingLabelSection, "Font")), //TODO: font
-                fontSize = fontSize,
-                fontStyle = (FontStyle)settings.GetInt(TipsSection, "FontStyle", 0, 3),
+                font = GetFont(settings.GetInt(tipsSection, "Font")),
+                fontSize = settings.GetInt(tipsSection, "FontSize"),
+                fontStyle = (FontStyle)settings.GetInt(tipsSection, "FontStyle", 0, 3),
                 wordWrap = true,
             };
-            style.normal.textColor = settings.GetColor(TipsSection, "FontColor");
+            style.normal.textColor = settings.GetColor(tipsSection, "FontColor");
 
-            return new DfTips(rect, style, path, language, out parseSuccesfull);
+            return new DfTips(rect, style, path, language);
         }
 
         /// <summary>
-        /// Get settings for Quest Messages.
+        /// Gets Quests Messages with user settings.
         /// </summary>
         public QuestsMessages InitQuestMessages()
         {
+            const string questsSection = "Quests";
+            if (!settings.GetBool(questsSection, "Enable"))
+                return null;
+
             TextAnchor alignment;
-            var position = settings.GetTupleFloat(experimentalSection, "QuestPosition");
+            var position = settings.GetTupleFloat(questsSection, "Position");
             Rect rect = GetRect(position, 1000, 100, out alignment);
 
-            GUIStyle style = new GUIStyle() // TODO: style
+            GUIStyle style = new GUIStyle()
             {
                 alignment = alignment,
-                font = GetFont(settings.GetInt(LoadingLabelSection, "Font")) //TODO: font
+                font = GetFont(settings.GetInt(questsSection, "Font")),
+                fontSize = settings.GetInt(questsSection, "FontSize"),
+                fontStyle = (FontStyle)settings.GetInt(questsSection, "FontStyle", 0, 3),
             };
-            style.normal.textColor = settings.GetColor(experimentalSection, "QuestColor");
+            style.normal.textColor = settings.GetColor(questsSection, "FontColor");
 
             return new QuestsMessages(rect, style);
         }
 
         /// <summary>
-        /// Get settings for Level Counter.
+        /// Gets Level Counter with user settings.
         /// </summary>
-        public LevelCounter.LevelBar InitLevelCounter()
+        public LevelCounter InitLevelCounter()
         {
+            const string levelProgressSection = "LevelProgress";
+            if (!settings.GetBool(levelProgressSection, "Enable"))
+                return null;
+
             TextAnchor alignment;
-            var position = settings.GetTupleFloat(experimentalSection, "LevelPosition");
+            var position = settings.GetTupleFloat(levelProgressSection, "TextPosition");
             Rect rect = GetRect(position, 50, 10, out alignment);
             var style = new GUIStyle()
             {
-                font = GetFont(settings.GetInt(LoadingLabelSection, "Font")), //TODO: font
+                font = GetFont(settings.GetInt(levelProgressSection, "Font")),
                 fontSize = 35,
                 fontStyle = FontStyle.Bold,
                 alignment = alignment
             };
-            style.normal.textColor = settings.GetColor(experimentalSection, "LevelColor");
+            style.normal.textColor = settings.GetColor(levelProgressSection, "FontColor");
 
-            var barPosition = settings.GetTupleFloat(experimentalSection, "BarPosition");
-            var barSize = settings.GetTupleFloat(experimentalSection, "BarSize");
+            var barPosition = settings.GetTupleFloat(levelProgressSection, "BarPosition");
+            var barSize = settings.GetTupleFloat(levelProgressSection, "BarSize");
 
-            return new LevelCounter.LevelBar()
+            var constructor = new LevelCounter.LevelBar()
             {
-                label = settings.GetString(experimentalSection, "LevelLabel"),
+                label = settings.GetString(levelProgressSection, "Text"),
                 style = style,
                 labelRect = rect,
-                barRect = GetRect(barPosition, barSize.First, barSize.Second)
+                barRect = GetRect(barPosition, barSize.First, barSize.Second),
+                background = LoadingScreen.Mod.GetAsset<Texture2D>("BarBackground"),
+                progressBar = LoadingScreen.Mod.GetAsset<Texture2D>("BarProgress")
             };
+            return new LevelCounter(constructor);
         }
 
         #endregion

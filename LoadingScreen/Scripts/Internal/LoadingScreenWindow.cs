@@ -30,7 +30,7 @@ namespace LoadingScreen
     /// <summary>
     /// Implements a loading screen window.
     /// </summary>
-    public class LoadingScreenWindow
+    public class LoadingScreenWindow : ILoadingScreenWindow
     {
         protected bool enabled = false;
         readonly Rect backgroundRect = new Rect(0, 0, Screen.width, Screen.height);
