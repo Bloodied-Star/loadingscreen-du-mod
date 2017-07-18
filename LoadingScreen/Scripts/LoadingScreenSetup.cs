@@ -60,6 +60,7 @@ namespace LoadingScreen
         {
             string labelText = settings.GetString(LoadingLabelSection, "LabelText");
             string labelTextFinish = settings.GetString(LoadingLabelSection, "LabelTextFinish");
+            string deathLabel = settings.GetString("DeathScreen", "LabelText");
 
             var position = settings.GetTupleFloat(LoadingLabelSection, "Position");
             Rect rect = new Rect(Screen.width - position.First, Screen.height - position.Second, 50, 10);
@@ -72,7 +73,7 @@ namespace LoadingScreen
             };
             style.normal.textColor = settings.GetColor(LoadingLabelSection, "FontColor");
 
-            return new Plugins.LoadingLabel(rect, style, labelText, labelTextFinish, ".");
+            return new Plugins.LoadingLabel(rect, style, labelText, labelTextFinish, ".", deathLabel);
         }
 
         /// <summary>

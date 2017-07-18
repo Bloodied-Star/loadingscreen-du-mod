@@ -14,7 +14,7 @@ namespace LoadingScreen.Plugins
     /// <summary>
     /// Create a level counter.
     /// </summary>
-    public class LevelCounter
+    public class LevelCounter : LoadingScreenPlugin
     {
         /// <summary>
         /// Constructor of level indicator and bar.
@@ -56,7 +56,7 @@ namespace LoadingScreen.Plugins
             this.levelBar = levelBar;
         }
 
-        public void DoGui()
+        public override void Draw()
         {
             // Counter
             GUI.Label(levelBar.labelRect, label, levelBar.style);
@@ -70,12 +70,12 @@ namespace LoadingScreen.Plugins
             GUI.EndGroup();
         }
 
-        public void UpdateLevelCounter(SaveData_v1 saveData)
+        public override void OnLoadingScreen(SaveData_v1 saveData)
         {
             UpdateLevelCounter(saveData.playerData.playerEntity.level);
         }
 
-        public void UpdateLevelCounter()
+        public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
             UpdateLevelCounter(GameManager.Instance.PlayerEntity.Level);
         }

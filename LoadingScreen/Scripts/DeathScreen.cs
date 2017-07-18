@@ -12,7 +12,6 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
-using LoadingScreen.Plugins;
 
 namespace LoadingScreen
 {
@@ -27,9 +26,6 @@ namespace LoadingScreen
         // Fields
         LoadingScreen loadingScreen;
         bool disableVideo;
-        bool showLabel;
-        string label;
-        bool tips;
 
         #region Public Methods
 
@@ -39,13 +35,10 @@ namespace LoadingScreen
         /// <param name="loadingScreen">Main MonoBehaviour.</param>
         /// <param name="disableVideo">Replace video with screen, or show screen after video.</param>
         /// <param name="tips">Show tips on death screen?</param>
-        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo, string label, bool tips)
+        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo)
         {
             this.loadingScreen = loadingScreen;
             this.disableVideo = disableVideo;
-            this.showLabel = (label != null && label.Length != 0);
-            this.label = label;
-            this.tips = tips;
         }
 
         /// <summary>
@@ -113,30 +106,19 @@ namespace LoadingScreen
             // Disable background audio
             AudioListener.pause = true;
 
-            // Disable unnecessary plugins
-            PluginsStatus pluginsStatus = loadingScreen.SettingsPluginsStatus;
-            pluginsStatus.questMessages = false;
-            pluginsStatus.levelCounter = false;
-            loadingScreen.SetPluginStatus(pluginsStatus);
-
             // Show death screen
-            loadingScreen.screenTexture = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            if (showLabel)
-                loadingScreen.loadingLabel.SetLabel(label);
-            else
-                loadingScreen.loadingLabel.EmptyLabel();
-            if (tips)
-                loadingScreen.dfTips.UpdateTip();
-            loadingScreen.ShowLoadingScreen = true;
+            loadingScreen.LoadingScreenWindow.OnDeathScreen();
+            loadingScreen.LoadingScreenWindow.background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
+            loadingScreen.LoadingScreenWindow.Enabled = true;
 
             // Wait for imput
             while (!Input.anyKey)
                 yield return null;
 
             // Remove death screen
-            loadingScreen.ShowLoadingScreen = false;
-            loadingScreen.RestorePluginsStatus();
-            AudioListener.pause = false;
+            loadingScreen.LoadingScreenWindow.Enabled = false;
+            loadingScreen.LoadingScreenWindow.OnEndDeathScreen();
+            AudioListener.pause = false; 
         }
 
         #endregion

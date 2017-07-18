@@ -52,8 +52,8 @@ namespace LoadingScreen
         // This mod
         private static Mod LoadingScreenMod;
 
-        // Draw the splash screen on GUI
-        bool drawLoadingScreen = false;
+        // The loading screen
+        LoadingScreenWindow loadingScreen = new LoadingScreenWindow();
 
         // Is the game loading ?
         bool isLoading = false;
@@ -80,18 +80,16 @@ namespace LoadingScreen
         bool showDeathScreen;
         bool DisableVideo;
 
-        // Status of plugins
-        PluginsStatus settingsPluginsStatus;
         PluginsStatus pluginsStatus;
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Image shown on background
-        /// </summary>
-        public Texture2D screenTexture { get; set; }
+        public LoadingScreenWindow LoadingScreenWindow
+        {
+            get { return loadingScreen; }
+        }
 
         // GUI elements/Plugins
         public Plugins.LoadingLabel loadingLabel { get; set; }
@@ -99,20 +97,6 @@ namespace LoadingScreen
         public QuestsMessages questsMessages { get; set; }
         public LevelCounter levelCounter { get; set; }
         public DeathScreen deathScreen { get; set; }
-
-        /// <summary>
-        /// Plugin status settings.
-        /// </summary>
-        public PluginsStatus SettingsPluginsStatus { get { return settingsPluginsStatus; }}
-
-        /// <summary>
-        /// Is the loading screen on GUI.
-        /// </summary>
-        public bool ShowLoadingScreen
-        {
-            get { return drawLoadingScreen; }
-            set { drawLoadingScreen = value; }
-        }
 
         /// <summary>
         /// Load/transition finished but loading screen is still on GUI
@@ -163,7 +147,7 @@ namespace LoadingScreen
             LoadSettings();
 
             // ModMessages
-            LoadingScreenMod.MessageReciver = MessageReceiver;
+            LoadingScreenMod.MessageReceiver = MessageReceiver;
 
             // Suscribe to Loading
             SubscribeToLoading();
@@ -178,49 +162,7 @@ namespace LoadingScreen
             GUI.depth = guiDepth;
 
             // Draw on GUI.
-            if (drawLoadingScreen)
-            {
-                // Background image
-                GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), screenTexture, ScaleMode.StretchToFill);
-
-                // Loading label
-                if (pluginsStatus.loadingCounter)
-                    loadingLabel.DoGui();
-
-                // Tips
-                if (pluginsStatus.tips)
-                    dfTips.DoGui();
-
-                // Quest Messages
-                if (pluginsStatus.questMessages)
-                    questsMessages.DoGui();
-
-                // Level Counter
-                if (pluginsStatus.levelCounter)
-                    levelCounter.DoGui();
-            }
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Change status of specific plugins.
-        /// Use SettingsPluginsStatus to get user settings,
-        /// RestorePluginsStatus() to restore them.
-        /// </summary>
-        public void SetPluginStatus(PluginsStatus newPluginsStatus)
-        {
-            pluginsStatus = newPluginsStatus;
-        }
-
-        /// <summary>
-        /// Restore status of plugins as user settings.
-        /// </summary>
-        public void RestorePluginsStatus()
-        {
-            pluginsStatus = settingsPluginsStatus;
+            loadingScreen.Draw();
         }
 
         #endregion
@@ -233,10 +175,7 @@ namespace LoadingScreen
         /// <param name="saveData">Save game being loaded.</param>
         private void StartLoadingScreen(SaveData_v1 saveData)
         {
-            if (pluginsStatus.tips)
-                dfTips.UpdateTip(saveData);
-            if (pluginsStatus.levelCounter)
-                levelCounter.UpdateLevelCounter(saveData);
+            loadingScreen.OnLoadingScreen(saveData);
             int loadingType = useLocation ? GetLoadingType(saveData.playerData.playerPosition) : LoadingType.Default;
             StartLoadingScreen(loadingType);
         }
@@ -248,10 +187,7 @@ namespace LoadingScreen
         {
             if (ShowOnTransitionType(args.TransitionType))
             {
-                if (pluginsStatus.tips)
-                    dfTips.UpdateTip(args.TransitionType);
-                if (pluginsStatus.levelCounter)
-                    levelCounter.UpdateLevelCounter();
+                loadingScreen.OnLoadingScreen(args);
                 int loadingType = useLocation ? GetLoadingType(args.TransitionType) : LoadingType.Default;
                 StartLoadingScreen(loadingType);
             }
@@ -262,10 +198,8 @@ namespace LoadingScreen
         /// </summary>
         private void StartLoadingScreen(int loadingType = LoadingType.Default)
         {
-            if (pluginsStatus.questMessages)
-                questsMessages.UpdateQuestMessage();
             LoadImage(loadingType);
-            drawLoadingScreen = true;
+            loadingScreen.Enabled = true;
             isLoading = true;
             StartCoroutine(ShowLoadingScreenOnGui());
         }
@@ -283,8 +217,6 @@ namespace LoadingScreen
         /// </summary>
         private IEnumerator ShowLoadingScreenOnGui()
         {
-            loadingLabel.SetLoadingLabel();
-
             // Time spent on the loading screen
             float timeCounter = 0;
 
@@ -292,7 +224,8 @@ namespace LoadingScreen
             while (isLoading)
             {
                 // Update label
-                loadingLabel.UpdateLoadingLabel();
+                //loadingLabel.UpdateLoadingLabel();
+                loadingScreen.UpdateScreen();
 
                 timeCounter += Time.deltaTime;
                 yield return null;
@@ -317,7 +250,8 @@ namespace LoadingScreen
                 fadeFromBlack = true;
 
                 // Display new string and pause the game
-                loadingLabel.SetEndLabel();
+                //loadingLabel.SetEndLabel();
+                loadingScreen.OnEndScreen();
                 GameManager.Instance.PauseGame(true, true);
 
                 // Wait for imput
@@ -329,7 +263,7 @@ namespace LoadingScreen
             GameManager.Instance.PauseGame(false);
 
             // Terminate loading screen
-            drawLoadingScreen = false;
+            loadingScreen.Enabled = false;
             if (fadeFromBlack)
             {
                 DaggerfallUI.Instance.FadeHUDFromBlack(0.5f);
@@ -361,20 +295,29 @@ namespace LoadingScreen
 
             // Plugins
             var loadingScreenSetup = new LoadingScreenSetup(settings);
-            settingsPluginsStatus = loadingScreenSetup.GetSettingsPluginsStatus();
-            SetPluginStatus(settingsPluginsStatus);
+            pluginsStatus = loadingScreenSetup.GetSettingsPluginsStatus();
 
             // Label
             if (pluginsStatus.loadingCounter)
+            {
                 loadingLabel = loadingScreenSetup.InitLabel();
+                loadingScreen.Components.Add(loadingLabel);
+            }
 
             // Tips
             if (pluginsStatus.tips)
+            {
                 dfTips = loadingScreenSetup.InitTips(Path.Combine(LoadingScreenMod.DirPath, "Tips"), out pluginsStatus.tips);
+                dfTips.Enabled = pluginsStatus.tips;
+                loadingScreen.Components.Add(dfTips);
+            }
 
             // Quest Message
             if (pluginsStatus.questMessages)
+            {
                 questsMessages = loadingScreenSetup.InitQuestMessages();
+                loadingScreen.Components.Add(questsMessages);
+            }
 
             // Level Counter
             if (pluginsStatus.levelCounter)
@@ -383,16 +326,16 @@ namespace LoadingScreen
                 levelCounterConstructor.background = LoadingScreenMod.GetAsset<Texture2D>("BarBackground");
                 levelCounterConstructor.progressBar = LoadingScreenMod.GetAsset<Texture2D>("BarProgress");
                 levelCounter = new LevelCounter(levelCounterConstructor);
+                loadingScreen.Components.Add(levelCounter);
             }
 
             // Death Screen
             const string DeathScreenSection = "DeathScreen";
             showDeathScreen = settings.GetBool(DeathScreenSection, "ShowDeathScreen");
-            string deathLabel = settings.GetString(DeathScreenSection, "LabelText");
             if (showDeathScreen)
             {
                 DisableVideo = settings.GetBool(DeathScreenSection, "DisableVideo");
-                deathScreen = new DeathScreen(this, DisableVideo, deathLabel, pluginsStatus.tips);
+                deathScreen = new DeathScreen(this, DisableVideo);
             }
         }
 
@@ -538,10 +481,13 @@ namespace LoadingScreen
                     int index = Random.Range(0, images.Length);
 
                     // Import image
-                    screenTexture = new Texture2D(2, 2);
-                    screenTexture.LoadImage(File.ReadAllBytes(Path.Combine(path, images[index])));
-                    if (screenTexture != null)
+                    var tex = new Texture2D(2, 2);
+                    tex.LoadImage(File.ReadAllBytes(Path.Combine(path, images[index])));
+                    if (tex != null)
+                    {
+                        loadingScreen.background = tex;
                         return;
+                    }
 
                     Debug.LogError("Loading Screen: Failed to import " + images[index] + " from " + path + imageException);
                 }
@@ -555,7 +501,7 @@ namespace LoadingScreen
             }
 
             // Use a black texture as fallback
-            screenTexture = LoadingScreenMod.GetAsset<Texture2D>("defaultBackground");
+            loadingScreen.background = LoadingScreenMod.GetAsset<Texture2D>("defaultBackground");
         }
 
         #endregion
@@ -572,7 +518,7 @@ namespace LoadingScreen
                 switch (message)
                 {
                     case "ShowLoadingScreen":
-                        drawLoadingScreen = (bool)data;
+                        loadingScreen.Enabled = (bool)data;
                         break;
                     case "IsWaiting":
                         callback("IsWaiting", fadeFromBlack);

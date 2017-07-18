@@ -11,6 +11,7 @@ using UnityEngine;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game;
 
 /*
  * TODO
@@ -22,7 +23,7 @@ namespace LoadingScreen.Plugins
     /// <summary>
     /// Retrieves active quest messages.
     /// </summary>
-    public class QuestsMessages
+    public class QuestsMessages : LoadingScreenPlugin
     {
         Rect rect;
         GUIStyle style;
@@ -39,7 +40,7 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// Show QuestMessage on screen with OnGUI
         /// </summary>
-        public void DoGui()
+        public override void Draw()
         {
             GUI.Box(rect, questMessage, style);
         }
@@ -47,7 +48,7 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// Show one quest message from serialized quests.
         /// </summary>
-        public void UpdateQuestMessage(SaveData_v1 saveData)
+        public override void OnLoadingScreen(SaveData_v1 saveData)
         {
             questMessage = GetQuestMessage(saveData);
         }
@@ -55,7 +56,7 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// Show one quest message from active quests.
         /// </summary>
-        public void UpdateQuestMessage()
+        public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
             questMessage = GetQuestMessage();
         }

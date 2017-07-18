@@ -6,54 +6,61 @@
 // Contributors:   
 
 using UnityEngine;
+using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Serialization;
 
 namespace LoadingScreen.Plugins
 {
-    public class LoadingLabel
+    public class LoadingLabel : LoadingScreenPlugin
     {
         Rect rect;
         GUIStyle style;
-        string label, loadingLabel, endLabel, updateChar;
+        string label, loadingLabel, endLabel, updateChar, deathLabel;
+        bool deathScreen;
 
-        public LoadingLabel(Rect rect, GUIStyle style, string loadingLabel, string endLabel, string updateChar)
+        public LoadingLabel(Rect rect, GUIStyle style, string loadingLabel, string endLabel, string updateChar, string deathLabel)
         {
             this.rect = rect;
             this.style = style;
             this.loadingLabel = loadingLabel;
+            this.label = loadingLabel;
             this.endLabel = endLabel;
             this.updateChar = updateChar;
-
-            SetLoadingLabel();
+            this.deathLabel = deathLabel;
+            this.deathScreen = label != null && label.Length != 0;
         }
 
-        public void DoGui()
+        public override void Draw()
         {
             GUI.Box(rect, label, style);
         }
 
-        public void SetLoadingLabel()
+        public override void OnLoadingScreen(SaveData_v1 saveData)
         {
             label = loadingLabel;
         }
 
-        public void UpdateLoadingLabel()
+        public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
+        {
+            label = loadingLabel;
+        }
+
+        public override void UpdateScreen()
         {
             label += updateChar;
         }
 
-        public void SetEndLabel()
+        public override void OnEndScreen()
         {
             label = endLabel;
         }
 
-        public void SetLabel(string label)
+        public override void OnDeathScreen()
         {
-            this.label = label;
-        }
-
-        public void EmptyLabel()
-        {
-            label = string.Empty;
+            if (deathScreen)
+                this.label = deathLabel;
+            else
+                base.OnDeathScreen();
         }
     }
 }

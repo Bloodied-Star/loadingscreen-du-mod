@@ -29,7 +29,7 @@ namespace LoadingScreen.Plugins
     /// taking in consideration informations obtained from the save game
     /// with the purpose of providing useful tips.
     /// </summary>
-    public class DfTips
+    public class DfTips : LoadingScreenPlugin
     {
         #region Tips
 
@@ -133,33 +133,22 @@ namespace LoadingScreen.Plugins
             parseSuccesfull = Init(path, language);
         }
 
-        public void DoGui()
+        public override void Draw()
         {
             GUI.Label(rect, tip, style);
         }
 
-        /// <summary>
-        /// Show tip during save loading.
-        /// </summary>
-        /// <param name="saveData">Save being loaded.</param>
-        public void UpdateTip(SaveData_v1 saveData)
+        public override void OnLoadingScreen(SaveData_v1 saveData)
         {
             tip = GetTip(saveData);
         }
 
-        /// <summary>
-        /// Show tip during transition.
-        /// </summary>
-        /// <param name="transitionType">Transition in action.</param>
-        public void UpdateTip(PlayerEnterExit.TransitionType transitionType)
+        public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
-            tip = GetTip(transitionType);
+            tip = GetTip(args.TransitionType);
         }
 
-        /// <summary>
-        /// Show tip on Death Screen.
-        /// </summary>
-        public void UpdateTip()
+        public override void OnDeathScreen()
         {
             tip = GetTip();
         }
