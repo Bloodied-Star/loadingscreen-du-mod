@@ -8,7 +8,7 @@ A customizable loading screen for Daggerfall Unity.
 
 Prerequisites
 -------------
-Daggerfall Unity 0.4.12 or higher.
+Daggerfall Unity 0.4.36 or higher.
 
 Installation
 ------------
