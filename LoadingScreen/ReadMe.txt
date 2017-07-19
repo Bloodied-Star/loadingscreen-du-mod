@@ -75,7 +75,9 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 Changelog
 ---------
 * 1.5
-- (optional) Show active quests messages 
+- Improvements.
+- (optional) Show active quests messages
+- (optional) Show progress bar for next level
 
 * 1.4
 - Improvements
