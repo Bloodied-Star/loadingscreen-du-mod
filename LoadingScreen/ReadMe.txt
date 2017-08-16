@@ -76,6 +76,7 @@ Changelog
 ---------
 * dev
 - Improvements on code design.
+- Migrated from ini to json for tips import.
 - More tips by Jay_H and Tealy Wolf.
 
 * 1.5

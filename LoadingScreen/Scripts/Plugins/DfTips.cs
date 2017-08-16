@@ -5,19 +5,16 @@
 // Original Author: TheLacus (TheLacus@yandex.com)
 // Contributors:    
 
-using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
-using IniParser;
-using IniParser.Model;
-using IniParser.Exceptions;
+using UnityEngine;
+using FullSerializer;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
 
 /*
  * TODO:
- * - Add more dungeonTips, basicTips and advancedTips.
  * - Improve GenderTip().
  * - Seek informations from quests.
  */
@@ -31,94 +28,80 @@ namespace LoadingScreen.Plugins
     /// </summary>
     public class DfTips : LoadingScreenPlugin
     {
-        #region Tips
+        #region Tips Definition
+
+        class DaggerfallTips
+        {
+            public Header header;
+            public List<string> generic;
+            public Location location;
+            public Career career;
+            public Character character;
+            public Progress progress;
+            public List<string> death;
+        }
+
+        class Header
+        {
+            public string
+                project, webSite, license, sourceCode, contributors, translators;
+        }
+
+        class Location
+        {
+            public List<string> exterior, dungeon;
+        }
+
+        class Career
+        {
+            public List<string> LOWHEALT, LOWGOLD, HIGHGOLD, LOWLEVEL;
+            public string HIGHLEVEL;
+            public List<string> WAGON;
+        }
+
+        class Character
+        {
+            public Dictionary<string, List<string>> race;
+            public Gender gender;
+        }
+
+        class Gender
+        {
+            public List<string> male, female;
+        }
+
+        class Progress
+        {
+            public List<string> basic, advanced;
+        }
+
+        #endregion
+
+        #region Fields
 
         /// <summary>
         /// All tips from language-specific file.
         /// </summary>
-        IniData tips;
-
-        /// <summary>
-        /// Generic tips.
-        /// </summary>
-        List<string> genericTips { get { return tips.Sections.GetSectionData("Generic").Comments; } }
-
-        /// <summary>
-        /// Tips for dungeons.
-        /// </summary>
-        List<string> dungeonTips { get { return tips.Sections.GetSectionData("Dungeon").Comments; } }
-
-        /// <summary>
-        /// Tips for exteriors, towns and buildings.
-        /// </summary>
-        List<string> exteriorTips { get { return tips.Sections.GetSectionData("Exterior").Comments; } }
-
-        /// <summary>
-        /// Save-specific tips.
-        /// These strings are used when "requested" by the save.
-        /// </summary>
-        const string careerTips = "Career";
-        const string NULL = "";
-        string LOWHELTH { get { return tips[careerTips]["LOWHELTH"]; } }
-        string LOWGOLD0 { get { return tips[careerTips]["LOWGOLD0"]; } }
-        string LOWGOLD1 { get { return tips[careerTips]["LOWGOLD1"]; } }
-        string HIGHGOLD0 { get { return tips[careerTips]["HIGHGOLD0"]; } }
-        string HIGHGOLD1 { get { return tips[careerTips]["HIGHGOLD1"]; } }
-        string LOWLEVEL0 { get { return tips[careerTips]["LOWLEVEL0"]; } }
-        string LOWLEVEL1 { get { return tips[careerTips]["LOWLEVEL1"]; } }
-        string WAGON { get { return tips[careerTips]["WAGON"]; } }
-
-        /// <summary>
-        /// Race-specific tips
-        /// </summary>
-        /// <param name="race">Race of player charachter.</param>
-        /// <returns>Tip for race</returns>
-        private string RaceTip(Races race)
-        {
-            const string raceSection = "Race";
-            string tip = tips[raceSection][race.ToString()];
-            return tip != null ? tip : (EmptyItem(raceSection, race.ToString(), race!=Races.None ? RaceTip(Races.None) : ""));
-        }
-
-        /// <summary>
-        /// Gender-specific tips
-        /// </summary>
-        /// <param name="gender">Gender of charachter.</param>
-        /// <returns>Tip for gender</returns>
-        private string GenderTip(Genders gender)
-        {
-            const string genderSection = "Gender";
-            string tip = tips[genderSection][gender.ToString()];
-            return tip != null ? tip : EmptyItem(genderSection, gender.ToString());
-        }
-
-        /// <summary>
-        /// These are shown with more frequency at lower levels.
-        /// </summary>
-        List<string> basicTips { get { return tips.Sections.GetSectionData("Basic").Comments; } }
-
-        /// <summary>
-        /// These are shown with more frequency at higher levels.
-        /// </summary>
-        List<string> advancedTips { get { return tips.Sections.GetSectionData("Advanced").Comments; } }
-
-        /// <summary>
-        /// Tips for player death.
-        /// </summary>
-        List<string> deathTips { get { return tips.Sections.GetSectionData("Death").Comments; } }
+        DaggerfallTips tips = new DaggerfallTips();
 
         /// <summary>
         /// Fallback tip.
         /// </summary>
         const string fallbackTip = "Something wrong with your tips file...";
 
-        #endregion
+        /// <summary>
+        /// Fallback tip.
+        /// </summary>
+        readonly List<string> fallbackTips = new List<string>() { fallbackTip };
 
-        #region Public Methods
-
+        // UI fields
         Rect rect;
         GUIStyle style;
         string tip = string.Empty;
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Constructor for Daggefall Tips.
@@ -180,7 +163,7 @@ namespace LoadingScreen.Plugins
                     return RandomTip(LocationTips(saveData.playerData.playerPosition.insideDungeon));
                 default:
                     // Generic tips
-                    return RandomTip(genericTips);
+                    return RandomTip(tips.generic);
             }
         }
 
@@ -197,7 +180,7 @@ namespace LoadingScreen.Plugins
             {
                 case 0:
                     // Generic tips
-                    return RandomTip(genericTips);
+                    return RandomTip(tips.generic);
                 case 1:
                 case 2:
                     // Scaled on level
@@ -221,7 +204,7 @@ namespace LoadingScreen.Plugins
             {
                 case 0:
                     // Generic tips
-                    return RandomTip(genericTips);
+                    return RandomTip(tips.generic);
                 case 1:
                 case 2:
                     // Location
@@ -229,7 +212,7 @@ namespace LoadingScreen.Plugins
                     return RandomTip(LocationTips(inDungeon));
                 default:
                     // Death
-                    return RandomTip(deathTips);
+                    return RandomTip(tips.death);
             }
         }
 
@@ -240,46 +223,39 @@ namespace LoadingScreen.Plugins
         /// <returns>List of tips.</returns>
         private List<string> SaveTips(SaveData_v1 saveData)
         {
+            var c = this.tips.career;
+
             // Fields
             var tips = new List<string>();
             PlayerEntityData_v1 playerEntityData = saveData.playerData.playerEntity;
 
             // Health
             if (playerEntityData.currentHealth < (playerEntityData.maxHealth / 4))
-                tips.Add(LOWHELTH);
+                tips.AddRange(c.LOWHEALT);
 
             // Gold
             const int lowGold = 2000, highGold = 5000;
             if (playerEntityData.goldPieces < lowGold)
-            {
-                tips.Add(LOWGOLD0);
-                tips.Add(LOWGOLD1);
-            }
+                tips.AddRange(c.LOWGOLD);
             else if (playerEntityData.goldPieces > highGold)
-            {
-                tips.Add(HIGHGOLD0);
-                tips.Add(HIGHGOLD1);
-            }
+                tips.AddRange(c.HIGHGOLD);
 
             // Level
             const int lowLevel = 11, highLevel = 29;
             if (playerEntityData.level < lowLevel)
-            {
-                tips.Add(LOWLEVEL0);
-                tips.Add(LOWLEVEL1);
-            }
+                tips.AddRange(c.LOWLEVEL);
             else if (playerEntityData.level > highLevel)
-                tips.Add(string.Format("They say great things about {0}", playerEntityData.name));
+                tips.Add(string.Format(c.HIGHLEVEL, playerEntityData.name));
 
             // Race
-            tips.Add(RaceTip((Races)playerEntityData.raceTemplate.ID));
+            tips.AddRange(RaceTip((Races)playerEntityData.raceTemplate.ID));
 
             // Gender
-            tips.Add(GenderTip(playerEntityData.gender));
+            tips.AddRange(GenderTip(playerEntityData.gender));
 
             // Wagon
             if (playerEntityData.wagonItems.Length == 0)
-                tips.Add(WAGON);
+                tips.AddRange(c.WAGON);
 
             return tips;
         }
@@ -292,14 +268,52 @@ namespace LoadingScreen.Plugins
         private List<string> LocationTips(bool inDungeon)
         {
             const int maxValue = 6; // the higher, the more probable it will be specific
+            Location l = tips.location;
             switch (Random.Range(0, maxValue))
             {
                 case 0:
-                    return dungeonTips;
+                    return l.dungeon;
                 case 1:
-                    return exteriorTips;
+                    return l.exterior;
                 default:
-                    return inDungeon ? dungeonTips : exteriorTips;
+                    return inDungeon ? l.dungeon : l.exterior;
+            }
+        }
+
+        /// <summary>
+        /// Race-specific tips
+        /// </summary>
+        /// <param name="race">Race of player charachter.</param>
+        /// <returns>Tips for race</returns>
+        private List<string> RaceTip(Races race)
+        {
+            List<string> raceTips;
+            if (tips.character.race.TryGetValue(race.ToString(), out raceTips))
+                return raceTips;
+
+            Debug.LogErrorFormat("Failed to get tip for race {0}", race.ToString());
+
+            if (race != Races.None)
+                return RaceTip(Races.None);
+
+            return fallbackTips;
+        }
+
+        /// <summary>
+        /// Gender-specific tips
+        /// </summary>
+        /// <param name="gender">Gender of charachter.</param>
+        /// <returns>Tip for gender</returns>
+        private List<string> GenderTip(Genders gender)
+        {
+            switch (gender)
+            {
+                case Genders.Male:
+                default:
+                    return tips.character.gender.male;
+
+                case Genders.Female:
+                    return tips.character.gender.female;
             }
         }
 
@@ -310,7 +324,7 @@ namespace LoadingScreen.Plugins
         /// <returns>List of tips</returns>
         private List<string> ScaledTips(int playerLevel)
         {
-            return Random.Range(0, 33) > playerLevel ? basicTips : advancedTips;
+            return Random.Range(0, 33) > playerLevel ? tips.progress.basic : tips.progress.advanced;
         }
 
         /// <summary>
@@ -334,7 +348,7 @@ namespace LoadingScreen.Plugins
 
         #endregion
 
-        #region Utilities
+        #region Private Methods
 
         /// <summary>
         /// Load tips from file on disk.
@@ -343,22 +357,21 @@ namespace LoadingScreen.Plugins
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
         /// <returns>True if tips can be used.</returns>
-        public bool Init(string path, string language)
+        private bool Init(string path, string language)
         {
-            try
-            {
-                var parser = new FileIniDataParser();
-                tips = parser.ReadFile(Path.Combine(path, language + ".ini"));
-                return true;
-            }
-            catch (ParsingException e)
-            {
-                string message = e.InnerException != null ? e.InnerException.Message : e.Message;
-                Debug.LogError(string.Format("Loading Screen: Failed to parse file with '{0}' tips, " +
-                    "cannot display tips without this file!\n{1}", language, message));
+            var serializedData = File.ReadAllText(Path.Combine(path, language + ".json"));
+            fsData data = fsJsonParser.Parse(serializedData);
 
-                return language != "en" ? Init(path, "en") : false;
-            }
+            if (new fsSerializer().TryDeserialize<DaggerfallTips>(data, ref tips).Succeeded)
+                return true;
+
+            Debug.LogErrorFormat("Loading Screen: Failed to parse file for {0} tips, " +
+                "cannot display tips without this file!", language);
+
+            if (language != "en")
+                return Init(path, "en");
+
+            return false;
         }
 
         /// <summary>
@@ -367,17 +380,6 @@ namespace LoadingScreen.Plugins
         private static void SetSeed()
         {
             Random.InitState((int)Time.time);
-        }
-
-        /// <summary>
-        /// Print error to log and return fallback string.
-        /// </summary>
-        /// <param name="itemClass">Item description</param>
-        /// <param name="item">Item.ToString()</param>
-        static private string EmptyItem (string itemClass, string item, string fallback = fallbackTip)
-        {
-            Debug.LogError(string.Format("LoadingScreen: Failed to read {0} ({1})", itemClass, item));
-            return fallback;
         }
         
         #endregion
