@@ -23,40 +23,32 @@ namespace LoadingScreen
     /// </summary>
     public class DeathScreen
     {
-        // Fields
-        LoadingScreen loadingScreen;
-        bool disableVideo;
+        readonly bool disableVideo;
 
         #region Public Methods
 
         /// <summary>
         /// Constructor for Death Screen.
         /// </summary>
-        /// <param name="loadingScreen">Main MonoBehaviour.</param>
         /// <param name="disableVideo">Replace video with screen, or show screen after video.</param>
-        /// <param name="tips">Show tips on death screen?</param>
-        public DeathScreen (LoadingScreen loadingScreen, bool disableVideo)
+        public DeathScreen (bool disableVideo)
         {
-            this.loadingScreen = loadingScreen;
             this.disableVideo = disableVideo;
         }
 
         /// <summary>
-        /// Show death screen.
+        /// Start logic for Death Screen.
         /// </summary>
-        public void ShowDeathScreen(object sender, System.EventArgs e)
+        public void StartLogic(object sender, System.EventArgs e)
         {
-            loadingScreen.StartCoroutine(ShowDeathScreenOnGUI());
+            LoadingScreen.Instance.StartCoroutine(Logic());
         }
 
         #endregion
 
         #region Private Methods
 
-        /// <summary>
-        /// Show death screen.
-        /// </summary>
-        private IEnumerator ShowDeathScreenOnGUI()
+        private IEnumerator Logic()
         {
             // Wait for user death
             var playerDeath = GameManager.Instance.PlayerDeath;
@@ -75,29 +67,23 @@ namespace LoadingScreen
                 }
 
                 // Get video
-                DaggerfallVidPlayerWindow vidWindow;
-                try
+                var player = DaggerfallUI.Instance.UserInterfaceManager.TopWindow as DaggerfallVidPlayerWindow;
+                if (player == null)
                 {
-                    vidWindow = (DaggerfallVidPlayerWindow)DaggerfallUI.Instance.UserInterfaceManager.TopWindow;
-                }
-                catch
-                {
-                    Debug.LogError("Loading Screen: current top window is not a videoplayer, failed to get death video.\n" +
-                        "Expecting: DaggerfallWorkshop.Game.UserInterfaceWindows.DaggerfallVidPlayerWindow\nGot: " +
-                        DaggerfallUI.Instance.UserInterfaceManager.TopWindow.ToString());
+                    Debug.LogError("LoadingScreen: current top window is not a videoplayer, failed to get death video.");
                     yield break;
                 }
 
                 // Wait for end of video
-                if (vidWindow.CustomVideo)
+                if (player.UseCustomVideo)
                 {
-                    CustomVideoPlayer video = vidWindow.CustomVideo;
+                    CustomVideoPlayer video = player.CustomVideo;
                     while (video.Playing)
                         yield return null;
                 }
                 else
                 {
-                    DaggerfallVideo video = vidWindow.Video;
+                    DaggerfallVideo video = player.Video;
                     while (video.Playing)
                         yield return null;
                 }
@@ -107,17 +93,18 @@ namespace LoadingScreen
             AudioListener.pause = true;
 
             // Show death screen
-            loadingScreen.Window.OnDeathScreen();
-            loadingScreen.Window.background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
-            loadingScreen.Window.Enabled = true;
+            var ls = LoadingScreen.Instance.Window;
+            ls.Panel.OnDeathScreen();
+            ls.Panel.background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
+            ls.Enabled = true;
 
             // Wait for imput
             while (!Input.anyKey)
                 yield return null;
 
             // Remove death screen
-            loadingScreen.Window.Enabled = false;
-            loadingScreen.Window.OnEndDeathScreen();
+            ls.Enabled = false;
+            ls.Panel.OnEndDeathScreen();
             AudioListener.pause = false; 
         }
 

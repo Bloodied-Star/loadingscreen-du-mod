@@ -132,7 +132,7 @@ namespace LoadingScreen
                 font = GetFont(settings.GetInt(levelProgressSection, "Font")),
                 fontSize = 35,
                 fontStyle = FontStyle.Bold,
-                alignment = alignment
+                alignment = alignment,
             };
             style.normal.textColor = settings.GetColor(levelProgressSection, "FontColor");
 

@@ -74,6 +74,10 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* dev
+- Improvements on code design.
+- More tips by Jay_H and Tealy Wolf.
+
 * 1.5
 - Improvements.
 - (optional) Show active quests messages
@@ -102,5 +106,6 @@ Changelog
 
 Credits
 -------
-TheLacus (TheLacus@yandex.com)
-
+TheLacus (TheLacus@yandex.com) - developer
+Jay_H - tips contributor
+Tealy Wolf - tips contributor
