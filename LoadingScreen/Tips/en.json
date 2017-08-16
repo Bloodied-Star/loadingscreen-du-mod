@@ -38,7 +38,15 @@
         "If you've earned more gold than you can carry from a sale, you are given a letter of credit instead.",
         "You can convert gold into a letter of credit at a bank at the cost of a 1% surcharge.",
         "The gold in your bank account does not transfer between regions.",
-        "Failing quests lowers your reputation with the respective organization."
+        "Failing quests lowers your reputation with the respective organization.",     
+        "Gold has weight. Drop off what gold you don't need at the bank to save space.",
+        "Different types of shops sell and buy different types of equipment.",
+        "Higher quality shops have better wares but at a higher cost. Lower quality shops give better prices.",
+        "High-ranking mages can create custom magic items and receive teleportation and Daedra summoning services.",
+        "Members of the Fighters Guild are given free room and board within any of their guild halls.",
+        "Knights of a region get free inn rooms in that region. High-ranking knights get free rooms everywhere.",
+        "If you are diseased, you can get cured at a temple for a fee.",
+        "Rumors say the Thieves Guild and Dark Brotherhood require a special initiation process to become members.",
     ],
     "location": {
         "exterior": [
@@ -69,7 +77,9 @@
             "Lycanthropy and vampirism are communicable diseases.",
             "Vary things by trying a shopkeeper quest or visiting a distant graveyard or shrine.",
             "Some priests build shrines in the wilderness. They do not believe in the deities of the Empire.",
-            "Gortwog, leader of the orcs, seeks to be officially recognized by the Empire."
+            "Gortwog, leader of the orcs, seeks to be officially recognized by the Empire.",
+            "The three powers of the Iliac Bay, Daggerfall, Sentinel, and Wayrest, are not on the best of terms.",
+            "Some regions have differing architecture based on geography, climate, and the inhabitants."
         ],
         "dungeon": [
             "Explore the dungeon, you may find a different exit.",
@@ -104,7 +114,10 @@
             "The undead are not easily fooled by the effects like invisibility or chameleon.",
             "Warriors and other combat-centric humanoids have more health than rogue or mage-type humanoids.",
             "Rogue-type humanoids attack faster than mages or warriors.",
-            "The critical strike skill can help you do more damage with weapon attacks."
+            "The critical strike skill can help you do more damage with weapon attacks.",
+            "Some enemies drain your fatigue instead of health with their attacks.",
+            "Watch your step. Falling from great heights or into hidden traps can be fatal.",
+            "Beware of enemies that can paralyze with their attacks, such as spiders and scorpions."
         ]
     },
     "career": {
@@ -131,37 +144,47 @@
     "character": {
         "race": {
             "Argonian": [
-                "Argonians are known for their intelligence, agility and speed."
+                "Argonians are known for their intelligence, agility and speed.",
+                "Argonians call Black Marsh, full of forests and swamps, their home."
             ],
             "Breton": [
-                "Bretons are excellent in magic arts."
+                "Bretons are excellent in magic arts.",
+                "The Bretons of High Rock are often excellent wizards of great repute.",
+                "Bretons have an innate resistance to raw magic."
             ],
             "DarkElf": [
-                "Dark elves are very strong and quick."
+                "Dark elves are very strong and quick.",
+                "At the center of the Dark Elven province of Morrowind lies the ominous Red Mountain volcano."
             ],
             "HighElf": [
-                "Khajiites are great climbers (and thieves)."
+                "High Elves are known to be immune to paralysis.",
+                "High Elves hail from Summerset (Sumurset) Isle, and are highly regarded as mages."
             ],
             "Khajiit": [
-                ""
+                "Khajiites are great climbers (and thieves).",
+                "Elsweyr is the homeland of the Khajiiti. They are known for being adept thieves."
             ],
             "Nord": [
-                "Nords are strong and resistant to cold temperature."
+                "Nords are strong and resistant to cold temperature.",
+                "Nords are naturally resistant to cold, and take less damage from cold-based attacks.",
+                "Nords inhabit the arctic province of Skyrim."
             ],
             "Redguard": [
-                "Redguards are famous for being excellent warriors."
+                "Redguards are famous for being excellent warriors.",
+                "Redguards, like Nords, are known for being powerful warriors. They hail from Hammerfell."
             ],
             "Vampire": [
-                ""
-            ],
-            "Werewolf": [
                 ""
             ],
             "Wereboar": [
                 ""
             ],
+            "Werewolf": [
+                ""
+            ],
             "WoodElf": [
-                "Bow and arrors, these are the best weapons fot wood elves."
+                "Bow and arrors, these are the best weapons fot wood elves.",
+                "Valenwood, the land of the Wood Elves, is full of forests."
             ],
             "None": [
                 "There are eight races in Daggerfall..."
@@ -185,14 +208,18 @@
             "Diagonal Slashes, Horizontal Slashes, Vertical Chops and Thrust Forward",
             "Daggerfall horses make travel shorter and faster, even more than a cart",
             "Improve your reputation doing quests",
-            "If you need to make an expensive purchase, use a letter of credit instead of holding all the gold."
+            "If you need to make an expensive purchase, use a letter of credit instead of holding all the gold.",
+            "You must wait for at least 6 hours after your last skill increase in order to level up.",
+            "Leveling is based on increasing a mixture of your primary, major, and minor skills.",
+            "Staves have the most enchantment points of any weapon for constructing custom magic items."
         ],
         "advanced": [
             "Legends talk about an Order of the Lamp, but nobody can prove its existence...",
             "Horses can be even faster with levitation...",
             "Levitation allows a ranged attack from the air",
             "Unlike Fast Travel, Teleportation is instantaneous. It's magic after all",
-            "Try backing off an enemy before he finishes an attack to dodge it."
+            "Try backing off an enemy before he finishes an attack to dodge it.",
+            "If you must get past an enemy and are having trouble killing it, lure it into a room to bypass it."
         ]
     },
     "death": [
