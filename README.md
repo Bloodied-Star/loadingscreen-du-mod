@@ -19,11 +19,8 @@ bothering the player with notions that have already been found in game.
 + Highly customizable (font, style, colors, size and position)
 + Import your own png images from disk
 
-## Credits
-TheLacus
-
 ## Info
-+ Version: 1.5
++ Version: 2.0
 + Daggerfall Unity Version: 0.4.36
 + [LoadingScreen on Daggerfall Unity forums](http://forums.dfworkshop.net/viewtopic.php?f=14&t=469)
 + [Download](http://forums.dfworkshop.net/viewtopic.php?f=22&t=456)

@@ -1,6 +1,6 @@
 ﻿LOADING SCREEN
 
-Version: 1.5
+Version: 2.0
 
 Description 
 -----------
@@ -74,7 +74,7 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
-* dev
+* 2.0
 - Improvements on code design.
 - Migrated from ini to json for tips import.
 - More tips by Jay_H and Tealy Wolf.
