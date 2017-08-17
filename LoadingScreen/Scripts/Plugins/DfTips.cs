@@ -144,7 +144,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="saveData">Save being loaded.</param>
         /// <returns>Tip</returns>
-        public string GetTip(SaveData_v1 saveData)
+        private string GetTip(SaveData_v1 saveData)
         {
             SetSeed();
             switch (Random.Range(0, 6))
@@ -172,7 +172,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="transitionType">Transition in action.</param>
         /// <returns>Tip</returns>
-        public string GetTip(PlayerEnterExit.TransitionType transitionType)
+        private string GetTip(PlayerEnterExit.TransitionType transitionType)
         {
             SetSeed();
             const int maxValue = 5;
@@ -182,6 +182,8 @@ namespace LoadingScreen.Plugins
                     // Generic tips
                     return RandomTip(tips.generic);
                 case 1:
+                    // Based on player informations
+                    return RandomTip(PlayerTips());
                 case 2:
                     // Scaled on level
                     int playerLevel = GameManager.Instance.PlayerEntity.Level;
@@ -197,7 +199,7 @@ namespace LoadingScreen.Plugins
         /// Get a tip to show on screen for Death Screen.
         /// </summary>
         /// <returns>Tip</returns>
-        public string GetTip()
+        private string GetTip()
         {
             SetSeed();
             switch (Random.Range(0, 6))
@@ -216,49 +218,9 @@ namespace LoadingScreen.Plugins
             }
         }
 
-        /// <summary>
-        /// Get tips seeking information from the savegame.
-        /// </summary>
-        /// <param name="saveData">Save.</param>
-        /// <returns>List of tips.</returns>
-        private List<string> SaveTips(SaveData_v1 saveData)
-        {
-            var c = this.tips.career;
+        #endregion
 
-            // Fields
-            var tips = new List<string>();
-            PlayerEntityData_v1 playerEntityData = saveData.playerData.playerEntity;
-
-            // Health
-            if (playerEntityData.currentHealth < (playerEntityData.maxHealth / 4))
-                tips.AddRange(c.LOWHEALT);
-
-            // Gold
-            const int lowGold = 2000, highGold = 5000;
-            if (playerEntityData.goldPieces < lowGold)
-                tips.AddRange(c.LOWGOLD);
-            else if (playerEntityData.goldPieces > highGold)
-                tips.AddRange(c.HIGHGOLD);
-
-            // Level
-            const int lowLevel = 11, highLevel = 29;
-            if (playerEntityData.level < lowLevel)
-                tips.AddRange(c.LOWLEVEL);
-            else if (playerEntityData.level > highLevel)
-                tips.Add(string.Format(c.HIGHLEVEL, playerEntityData.name));
-
-            // Race
-            tips.AddRange(RaceTip((Races)playerEntityData.raceTemplate.ID));
-
-            // Gender
-            tips.AddRange(GenderTip(playerEntityData.gender));
-
-            // Wagon
-            if (playerEntityData.wagonItems.Length == 0)
-                tips.AddRange(c.WAGON);
-
-            return tips;
-        }
+        #region Algorithm Methods
 
         /// <summary>
         /// Get tip specific to location
@@ -278,6 +240,55 @@ namespace LoadingScreen.Plugins
                 default:
                     return inDungeon ? l.dungeon : l.exterior;
             }
+        }
+
+        /// <summary>
+        /// Get tips seeking information from the savegame.
+        /// </summary>
+        /// <param name="saveData">Save.</param>
+        private List<string> SaveTips(SaveData_v1 saveData)
+        {
+            // Variables
+            var tips = new List<string>();
+            PlayerEntityData_v1 data = saveData.playerData.playerEntity;
+
+            // Race
+            tips.AddRange(RaceTip((Races)data.raceTemplate.ID));
+
+            // Gender
+            tips.AddRange(GenderTip(data.gender));
+
+            // Others
+            HealthTips(tips, data.currentHealth, data.maxHealth);
+            GoldTips(tips, data.goldPieces);
+            LevelTips(tips, data.level, data.name);
+            WagonTips(tips, data.wagonItems.Length);
+
+            return tips;
+        }
+
+        /// <summary>
+        /// Get tips seeking information from PlayerEntity.
+        /// </summary>
+        private List<string> PlayerTips()
+        {
+            // Variables
+            var tips = new List<string>();
+            PlayerEntity player = GameManager.Instance.PlayerEntity;
+
+            // Race
+            tips.AddRange(RaceTip((Races)player.RaceTemplate.ID));
+
+            // Gender
+            tips.AddRange(GenderTip(player.Gender));
+
+            // Others
+            HealthTips(tips, player.CurrentHealth, player.MaxHealth);
+            GoldTips(tips, player.GoldPieces);
+            LevelTips(tips, player.Level, player.Name);
+            WagonTips(tips, player.WagonItems.Count);
+
+            return tips;
         }
 
         /// <summary>
@@ -317,6 +328,36 @@ namespace LoadingScreen.Plugins
             }
         }
 
+        private void HealthTips(List<string> list, int current, int max)
+        {
+            if (current < (max / 4))
+                list.AddRange(tips.career.LOWHEALT);
+        }
+
+        private void GoldTips(List<string> list, int gold)
+        {
+            const int lowGold = 2000, highGold = 5000;
+            if (gold < lowGold)
+                list.AddRange(tips.career.LOWGOLD);
+            else if (gold > highGold)
+                list.AddRange(tips.career.HIGHGOLD);
+        }
+
+        private void LevelTips(List<string> list, int level, string name)
+        {
+            const int lowLevel = 11, highLevel = 29;
+            if (level < lowLevel)
+                list.AddRange(tips.career.LOWLEVEL);
+            else if (level > highLevel)
+                list.Add(string.Format(tips.career.HIGHLEVEL, name));
+        }
+
+        private void WagonTips(List<string> list, int items)
+        {
+            if (items == 0)
+                list.AddRange(tips.career.WAGON);
+        }
+
         /// <summary>
         /// Choose tips according to player level.
         /// </summary>
@@ -327,28 +368,9 @@ namespace LoadingScreen.Plugins
             return Random.Range(0, 33) > playerLevel ? tips.progress.basic : tips.progress.advanced;
         }
 
-        /// <summary>
-        /// Get one tip from a list.
-        /// </summary>
-        /// <param name="tips">List of tips.</param>
-        /// <returns>One tip.</returns>
-        private static string RandomTip(List<string> tips)
-        {
-            try
-            {
-                int index = Random.Range(0, tips.Count);
-                return tips[index];
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("LoadingScreen: Failed to get a tip string\n" + e);
-                return string.Format("{0}({1})", fallbackTip, e.Message);
-            }
-        }
-
         #endregion
 
-        #region Private Methods
+        #region Helpers
 
         /// <summary>
         /// Load tips from file on disk.
@@ -381,7 +403,26 @@ namespace LoadingScreen.Plugins
         {
             Random.InitState((int)Time.time);
         }
-        
+
+        /// <summary>
+        /// Get one tip from a list.
+        /// </summary>
+        /// <param name="tips">List of tips.</param>
+        /// <returns>One tip.</returns>
+        private static string RandomTip(List<string> tips)
+        {
+            try
+            {
+                int index = Random.Range(0, tips.Count);
+                return tips[index];
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("LoadingScreen: Failed to get a tip string\n" + e);
+                return string.Format("{0}({1})", fallbackTip, e.Message);
+            }
+        }
+
         #endregion
     }
 }
