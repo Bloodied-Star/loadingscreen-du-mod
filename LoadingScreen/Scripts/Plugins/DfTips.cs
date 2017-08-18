@@ -381,14 +381,22 @@ namespace LoadingScreen.Plugins
         /// <returns>True if tips can be used.</returns>
         private bool Init(string path, string language)
         {
-            var serializedData = File.ReadAllText(Path.Combine(path, language + ".json"));
-            fsData data = fsJsonParser.Parse(serializedData);
+            try
+            {
+                var serializedData = File.ReadAllText(Path.Combine(path, language + ".json"));
+                fsData data = fsJsonParser.Parse(serializedData);
 
-            if (new fsSerializer().TryDeserialize<DaggerfallTips>(data, ref tips).Succeeded)
-                return true;
+                if (new fsSerializer().TryDeserialize<DaggerfallTips>(data, ref tips).Succeeded)
+                    return true;
 
-            Debug.LogErrorFormat("Loading Screen: Failed to parse file for {0} tips, " +
+                Debug.LogErrorFormat("Loading Screen: Failed to parse file for {0} tips, " +
                 "cannot display tips without this file!", language);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogErrorFormat("Loading Screen: Failed to parse file for {0} tips, " +
+                    "cannot display tips without this file!\n{1}", language, e.ToString());
+            }
 
             if (language != "en")
                 return Init(path, "en");
