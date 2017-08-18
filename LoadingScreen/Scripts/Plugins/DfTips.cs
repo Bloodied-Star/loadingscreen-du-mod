@@ -409,7 +409,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         private static void SetSeed()
         {
-            Random.InitState((int)Time.time);
+            Random.InitState(System.Environment.TickCount);
         }
 
         /// <summary>
