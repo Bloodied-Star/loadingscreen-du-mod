@@ -82,7 +82,7 @@ namespace LoadingScreen.Plugins
         /// <summary>
         /// All tips from language-specific file.
         /// </summary>
-        DaggerfallTips tips = new DaggerfallTips();
+        DaggerfallTips tips;
 
         /// <summary>
         /// Fallback tip.
@@ -104,7 +104,7 @@ namespace LoadingScreen.Plugins
         #region Public Methods
 
         /// <summary>
-        /// Constructor for Daggefall Tips.
+        /// Constructor for Daggerfall Tips.
         /// </summary>
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
@@ -112,7 +112,7 @@ namespace LoadingScreen.Plugins
         {
             this.rect = rect;
             this.style = style;
-            enabled = Init(path, language);
+            enabled = ParseTips(path, language);
         }
 
         public override void Draw()
@@ -379,7 +379,7 @@ namespace LoadingScreen.Plugins
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
         /// <returns>True if tips can be used.</returns>
-        private bool Init(string path, string language)
+        private bool ParseTips(string path, string language)
         {
             try
             {
@@ -399,7 +399,7 @@ namespace LoadingScreen.Plugins
             }
 
             if (language != "en")
-                return Init(path, "en");
+                return ParseTips(path, "en");
 
             return false;
         }
@@ -426,7 +426,7 @@ namespace LoadingScreen.Plugins
             }
             catch (System.Exception e)
             {
-                Debug.LogError("LoadingScreen: Failed to get a tip string\n" + e);
+                Debug.LogError("LoadingScreen: Failed to get a tip string\n" + e.ToString());
                 return string.Format("{0}({1})", fallbackTip, e.Message);
             }
         }
