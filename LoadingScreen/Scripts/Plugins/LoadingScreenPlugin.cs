@@ -10,7 +10,7 @@ using DaggerfallWorkshop.Game.Serialization;
 
 namespace LoadingScreen.Plugins
 {
-    public interface ILoadingScreenPlugin
+    public interface ILoadingScreenComponent
     {
         bool Enabled { get; set; }
         void Draw();
@@ -24,7 +24,7 @@ namespace LoadingScreen.Plugins
     /// <summary>
     /// Implements a component for the loading screen.
     /// </summary>
-    public abstract class LoadingScreenPlugin : ILoadingScreenPlugin
+    public abstract class LoadingScreenComponent : ILoadingScreenComponent
     {
         protected bool enabled = true;
 
@@ -77,7 +77,7 @@ namespace LoadingScreen.Plugins
             enabled = false;
         }
 
-        public static implicit operator bool(LoadingScreenPlugin plugin)
+        public static implicit operator bool(LoadingScreenComponent plugin)
         {
             return !object.ReferenceEquals(plugin, null);
         }

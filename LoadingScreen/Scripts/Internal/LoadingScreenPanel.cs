@@ -15,7 +15,7 @@ namespace LoadingScreen
 {
     public interface ILoadingScreenPanel
     {
-        List<LoadingScreenPlugin> Components { get; }
+        List<LoadingScreenComponent> Components { get; }
         Texture2D background { get; set; }
         void Draw();
         void OnLoadingScreen(SaveData_v1 saveData);
@@ -32,7 +32,7 @@ namespace LoadingScreen
     public class LoadingScreenPanel : ILoadingScreenPanel
     {
         readonly Rect backgroundRect = new Rect(0, 0, Screen.width, Screen.height);
-        readonly List<LoadingScreenPlugin> components = new List<LoadingScreenPlugin>();
+        readonly List<LoadingScreenComponent> components = new List<LoadingScreenComponent>();
 
         /// <summary>
         /// Background image for the loading screen.
@@ -42,7 +42,7 @@ namespace LoadingScreen
         /// <summary>
         /// Components of the loading screen.
         /// </summary>
-        public List<LoadingScreenPlugin> Components
+        public List<LoadingScreenComponent> Components
         {
             get { return components; }
         }
@@ -54,7 +54,7 @@ namespace LoadingScreen
         {
             GUI.DrawTexture(backgroundRect, background, ScaleMode.StretchToFill);
 
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
                     component.Draw();
@@ -67,7 +67,7 @@ namespace LoadingScreen
         /// <param name="saveData">Save being loaded.</param>
         public virtual void OnLoadingScreen(SaveData_v1 saveData)
         {
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
                     component.OnLoadingScreen(saveData);
@@ -80,7 +80,7 @@ namespace LoadingScreen
         /// <param name="args">Transition parameters.</param>
         public virtual void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
                     component.OnLoadingScreen(args);
@@ -92,7 +92,7 @@ namespace LoadingScreen
         /// </summary>
         public virtual void UpdateScreen()
         {
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
                     component.UpdateScreen();
@@ -104,7 +104,7 @@ namespace LoadingScreen
         /// </summary>
         public virtual void OnEndScreen()
         {
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
                     component.OnEndScreen();
@@ -116,7 +116,7 @@ namespace LoadingScreen
         /// </summary>
         public virtual void OnDeathScreen()
         {
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
                     component.OnDeathScreen();
@@ -128,7 +128,7 @@ namespace LoadingScreen
         /// </summary>
         public virtual void OnEndDeathScreen()
         {
-            foreach (LoadingScreenPlugin component in components)
+            foreach (LoadingScreenComponent component in components)
                 component.Enabled = true;
         }
     }
@@ -138,7 +138,7 @@ namespace LoadingScreen
         /// <summary>
         /// Add a component only if is not null.
         /// </summary>
-        public static void AddValid (this List<LoadingScreenPlugin> list, LoadingScreenPlugin c)
+        public static void AddValid (this List<LoadingScreenComponent> list, LoadingScreenComponent c)
         {
             if (c != null)
                 list.Add(c);

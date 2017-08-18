@@ -26,7 +26,7 @@ namespace LoadingScreen.Plugins
     /// taking in consideration informations obtained from the save game
     /// with the purpose of providing useful tips.
     /// </summary>
-    public class DfTips : LoadingScreenPlugin
+    public class DfTips : LoadingScreenComponent
     {
         #region Tips Definition
 

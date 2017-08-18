@@ -14,7 +14,7 @@ namespace LoadingScreen.Plugins
     /// <summary>
     /// Create a level counter.
     /// </summary>
-    public class LevelCounter : LoadingScreenPlugin
+    public class LevelCounter : LoadingScreenComponent
     {
         /// <summary>
         /// Constructor of level indicator and bar.

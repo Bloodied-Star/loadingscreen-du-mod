@@ -11,7 +11,7 @@ using DaggerfallWorkshop.Game.Serialization;
 
 namespace LoadingScreen.Plugins
 {
-    public class LoadingLabel : LoadingScreenPlugin
+    public class LoadingLabel : LoadingScreenComponent
     {
         Rect rect;
         GUIStyle style;

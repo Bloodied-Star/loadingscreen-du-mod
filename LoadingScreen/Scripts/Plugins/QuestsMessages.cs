@@ -23,7 +23,7 @@ namespace LoadingScreen.Plugins
     /// <summary>
     /// Retrieves active quest messages.
     /// </summary>
-    public class QuestsMessages : LoadingScreenPlugin
+    public class QuestsMessages : LoadingScreenComponent
     {
         Rect rect;
         GUIStyle style;
