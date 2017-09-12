@@ -30,6 +30,8 @@ namespace LoadingScreen.Plugins
     {
         #region Tips Definition
 
+#pragma warning disable 0649
+
         class DaggerfallTips
         {
             public Header header;
@@ -74,6 +76,8 @@ namespace LoadingScreen.Plugins
         {
             public List<string> basic, advanced;
         }
+
+#pragma warning restore 0649
 
         #endregion
 
