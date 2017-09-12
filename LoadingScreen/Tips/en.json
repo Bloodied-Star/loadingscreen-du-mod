@@ -174,13 +174,22 @@
                 "Redguards, like Nords, are known for being powerful warriors. They hail from Hammerfell."
             ],
             "Vampire": [
-                ""
+                "In order to hit a vampire, a weapon must be, at least, made of silver.",
+                "Becoming a vampire is much like being born again.",
+                "Vampires cannot bear holy places and sunlight.",
+                "Vampires can't rest if not fed properly every day."
             ],
             "Wereboar": [
-                ""
+                "People are afraid of Werewolves and Wereboars.",
+                "Lycanthropes feel the urge to kill innocents people...",
+                "Wereboars are immune to diseases and many weapons but not spells and hand-to-hand",
+                "A cure for lycanthropy may exists..."
             ],
             "Werewolf": [
-                ""
+                "People are afraid of Werewolves and Wereboars.",
+                "Lycanthropes feel the urge to kill innocents people...",
+                "Werewolves are immune to diseases and many weapons but not spells and hand-to-hand",
+                "A cure for lycanthropy may exists..."
             ],
             "WoodElf": [
                 "Bow and arrors, these are the best weapons fot wood elves.",
