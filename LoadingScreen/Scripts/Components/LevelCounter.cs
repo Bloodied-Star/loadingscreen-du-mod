@@ -7,6 +7,7 @@
 
 using UnityEngine;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
 
 namespace LoadingScreen.Plugins
@@ -16,57 +17,44 @@ namespace LoadingScreen.Plugins
     /// </summary>
     public class LevelCounter : LoadingScreenComponent
     {
-        /// <summary>
-        /// Constructor of level indicator and bar.
-        /// </summary>
-        public class LevelBar
-        {
-            public string label;                  // Label for level counter
-            public GUIStyle style;                // Style for level counter
-            public Rect labelRect;                // Rect of level counter
-            public Rect barRect;                  // Rect of bar
-            public Texture2D background;          // Texture for bar background
-            public Texture2D progressBar;         // Texture for bar foreground; this is partially shown
-        }
+        Rect labelRect;
+        Rect groupRect;
+        Rect backgroundRect;
+        Rect foregroundRect;
 
-        // Fields
-        private LevelBar levelBar;               // Gui elements and settings
-        private string label;                    // Label for level counter
-        private Rect rect;                       // Rect for group (affects foreground texture)
-        private Rect barInGroupRect;             // Rect for foreground texture inside group
-        private float n;                         // Size of 1% (1/100 of total lenght)
+        float progress;
+        string label;
+        string labelFormat;
+
+        public Texture2D BarBackground { get; set; }
+        public Texture2D BarForeGround { get; set; }
+
+        public string LabelFormat
+        {
+            get { return labelFormat; }
+            set { SetLabelFormat(value); }
+        }
 
         #region Public Methods
 
-        /// <summary>
-        /// Constructor for Level Counter/Bar
-        /// </summary>
-        /// <param name="label">Label to show on indicator.</param>
-        /// <param name="rect">Rect of Begingroup, equals to background rect on full bar.</param>
-        public LevelCounter(LevelBar levelBar)
+        public LevelCounter(Rect rect)
+            :base(rect)
         {
-            // Rect for foreground texture
-            this.barInGroupRect = new Rect(0, 0, levelBar.barRect.width, levelBar.barRect.height);
+            this.style.alignment = TextAnchor.MiddleRight;
+            this.style.fontStyle = FontStyle.Bold;
 
-            // Initial rect for group
-            this.rect = new Rect(levelBar.barRect);
-            this.n = rect.width / 100;
-
-            // Other components
-            this.levelBar = levelBar;
+            SetRects();
         }
 
         public override void Draw()
         {
-            // Counter
-            GUI.Label(levelBar.labelRect, label, levelBar.style);
-
-            // Background texture
-            GUI.DrawTexture(levelBar.barRect, levelBar.background, ScaleMode.StretchToFill);
+            // Label
+            GUI.Label(labelRect, label, style);
 
             // Progress bar
-            GUI.BeginGroup(rect);
-                GUI.DrawTexture(barInGroupRect, levelBar.progressBar, ScaleMode.StretchToFill);
+            GUI.DrawTexture(backgroundRect, BarBackground, ScaleMode.StretchToFill);
+            GUI.BeginGroup(groupRect);
+                GUI.DrawTexture(foregroundRect, BarForeGround, ScaleMode.StretchToFill);
             GUI.EndGroup();
         }
 
@@ -80,31 +68,43 @@ namespace LoadingScreen.Plugins
             UpdateLevelCounter(GameManager.Instance.PlayerEntity.Level);
         }
 
+        public override void RefreshRect()
+        {
+            base.RefreshRect();
+
+            SetRects();
+        }
+
         public void UpdateLevelCounter(int level)
         {
-            UpdateRect();
-            label = string.Format("{0} {1}", levelBar.label, level);
+            progress = CalcProgress();
+            label = string.Format(LabelFormat, level);
         }
-        
+
         #endregion
 
         #region Private Methods
 
-        private void UpdateRect()
+        private void SetRects()
         {
-            int levelProgress = CalculateLevelPercent();
-            rect.width = n * levelProgress;
+            labelRect = new Rect(rect.x, rect.y, rect.width * 0.45f, rect.height);
+            groupRect = new Rect(rect.x + rect.width * 0.5f, rect.y, rect.width * 0.5f * progress, rect.height);
+            backgroundRect = new Rect(rect.x + rect.width * 0.5f, rect.y, rect.width * 0.5f, rect.height);
+            foregroundRect = new Rect(0, 0, rect.width * 0.5f, rect.height);
         }
 
-        private int CalculateLevelPercent()
+        private void SetLabelFormat(string format)
         {
-            return (int)(CalculateLevelDecimal() * 100);
+            if (format.Contains("%"))
+                labelFormat = format.Replace("%", "{0}");
+            else
+                labelFormat = string.Format("{0} {1}", format, "{0}");
         }
 
-        private float CalculateLevelDecimal()
+        private float CalcProgress()
         {
-            var playerEntity = GameManager.Instance.PlayerEntity;
-            float currentLevel = (float)(playerEntity.CurrentLevelUpSkillSum - playerEntity.StartingLevelUpSkillSum + 28f) / 15f;
+            PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
+            float currentLevel = (playerEntity.CurrentLevelUpSkillSum - playerEntity.StartingLevelUpSkillSum + 28f) / 15f;
             return currentLevel % 1;
         }
         

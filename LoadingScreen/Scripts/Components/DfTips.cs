@@ -99,8 +99,6 @@ namespace LoadingScreen.Plugins
         readonly List<string> fallbackTips = new List<string>() { fallbackTip };
 
         // UI fields
-        Rect rect;
-        GUIStyle style;
         string tip = string.Empty;
 
         #endregion
@@ -112,11 +110,11 @@ namespace LoadingScreen.Plugins
         /// </summary>
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
-        public DfTips(Rect rect, GUIStyle style, string path, string language)
+        public DfTips(Rect rect, string path, string language)
+            :base(rect)
         {
-            this.rect = rect;
-            this.style = style;
-            enabled = ParseTips(path, language);
+            this.style.wordWrap = true;
+            this.enabled = ParseTips(path, language);
         }
 
         public override void Draw()

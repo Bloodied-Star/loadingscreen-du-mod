@@ -13,18 +13,17 @@ namespace LoadingScreen.Plugins
 {
     public class LoadingLabel : LoadingScreenComponent
     {
-        Rect rect;
-        GUIStyle style;
         string label, loadingLabel, endLabel, updateChar, deathLabel;
         bool deathScreen;
+        bool isDynamic;
 
-        public LoadingLabel(Rect rect, GUIStyle style, string loadingLabel, string endLabel, string updateChar, string deathLabel)
+        public LoadingLabel(Rect rect, string loadingLabel, string endLabel, bool isDynamic, string updateChar, string deathLabel)
+            :base(rect)
         {
-            this.rect = rect;
-            this.style = style;
             this.loadingLabel = loadingLabel;
             this.label = loadingLabel;
             this.endLabel = endLabel;
+            this.isDynamic = isDynamic;
             this.updateChar = updateChar;
             this.deathLabel = deathLabel;
             this.deathScreen = label != null && label.Length != 0;
@@ -32,7 +31,7 @@ namespace LoadingScreen.Plugins
 
         public override void Draw()
         {
-            GUI.Box(rect, label, style);
+            GUI.Label(rect, label, style);
         }
 
         public override void OnLoadingScreen(SaveData_v1 saveData)
@@ -47,7 +46,8 @@ namespace LoadingScreen.Plugins
 
         public override void UpdateScreen()
         {
-            label += updateChar;
+            if (isDynamic)
+                label += updateChar;
         }
 
         public override void OnEndScreen()

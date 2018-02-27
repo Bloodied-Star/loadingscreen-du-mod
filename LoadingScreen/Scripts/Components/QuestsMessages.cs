@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -9,14 +9,9 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Serialization;
-using DaggerfallWorkshop.Game;
-
-/*
- * TODO
- * - Serialized quests. 
- */
 
 namespace LoadingScreen.Plugins
 {
@@ -25,16 +20,16 @@ namespace LoadingScreen.Plugins
     /// </summary>
     public class QuestsMessages : LoadingScreenComponent
     {
-        Rect rect;
-        GUIStyle style;
+        const string defaultquestMessage = "Taverns are the best place to seek work.";
         string questMessage;
+        bool loadingSave;
 
         #region Public Methods
 
-        public QuestsMessages(Rect rect, GUIStyle style)
+        public QuestsMessages(Rect rect)
+            :base(rect)
         {
-            this.rect = rect;
-            this.style = style;
+            this.style.wordWrap = true;
         }
 
         /// <summary>
@@ -42,7 +37,7 @@ namespace LoadingScreen.Plugins
         /// </summary>
         public override void Draw()
         {
-            GUI.Box(rect, questMessage, style);
+            GUI.Label(rect, questMessage, style);
         }
 
         /// <summary>
@@ -50,7 +45,9 @@ namespace LoadingScreen.Plugins
         /// </summary>
         public override void OnLoadingScreen(SaveData_v1 saveData)
         {
-            questMessage = GetQuestMessage(saveData);
+            loadingSave = true;
+
+            questMessage = GetQuestMessage();
         }
 
         /// <summary>
@@ -58,30 +55,41 @@ namespace LoadingScreen.Plugins
         /// </summary>
         public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
-            questMessage = GetQuestMessage();
+            loadingSave = false;
+
+            if (string.IsNullOrEmpty(questMessage = GetQuestMessage()))
+                questMessage = defaultquestMessage;
         }
-        
+
+        public override void UpdateScreen()
+        {
+            if (loadingSave && string.IsNullOrEmpty(questMessage))
+                questMessage = GetQuestMessage();
+        }
+
+        public override void OnEndScreen()
+        {
+            if (loadingSave && string.IsNullOrEmpty(questMessage) &&
+                string.IsNullOrEmpty(questMessage = GetQuestMessage()))
+                questMessage = defaultquestMessage;
+        }
+
         #endregion
 
         #region Private Methods
-
-        /// <summary>
-        /// Get one quest message from serialized quests.
-        /// </summary>
-        private static string GetQuestMessage(SaveData_v1 saveData)
-        {
-            return string.Empty;
-        }
 
         /// <summary>
         /// Get one quest message from active quests.
         /// </summary>
         private static string GetQuestMessage()
         {
+            if (QuestMachine.Instance.QuestCount < 1)
+                return null;
+
             // Get quest messages
             List<Message> questMessages = QuestMachine.Instance.GetAllQuestLogMessages();
             if (questMessages.Count == 0)
-                return string.Empty;
+                return null;
 
             // Choose one quest message
             Random.InitState((int)Time.time);

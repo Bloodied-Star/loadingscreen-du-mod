@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -8,10 +8,8 @@
 using System.Collections;
 using UnityEngine;
 using DaggerfallWorkshop.Game;
-using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Utility.AssetInjection;
 
 namespace LoadingScreen
 {
@@ -59,12 +57,7 @@ namespace LoadingScreen
             if (!disableVideo)
             {
                 // Let the video starts
-                float timeCounter = 0;
-                while (timeCounter < 1)
-                {
-                    timeCounter += Time.unscaledDeltaTime;
-                    yield return null;
-                }
+                yield return new WaitForSecondsRealtime(1);
 
                 // Get video
                 var player = DaggerfallUI.Instance.UserInterfaceManager.TopWindow as DaggerfallVidPlayerWindow;
@@ -75,18 +68,8 @@ namespace LoadingScreen
                 }
 
                 // Wait for end of video
-                if (player.UseCustomVideo)
-                {
-                    CustomVideoPlayer video = player.CustomVideo;
-                    while (video.Playing)
-                        yield return null;
-                }
-                else
-                {
-                    DaggerfallVideo video = player.Video;
-                    while (video.Playing)
-                        yield return null;
-                }
+                //while (player.IsPlaying)
+                //    yield return null;
             }
 
             // Disable background audio
@@ -95,7 +78,7 @@ namespace LoadingScreen
             // Show death screen
             var ls = LoadingScreen.Instance.Window;
             ls.Panel.OnDeathScreen();
-            ls.Panel.background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
+            ls.Panel.Background = ImageReader.GetImageData("DIE_00I0.IMG").texture;
             ls.Enabled = true;
 
             // Wait for imput

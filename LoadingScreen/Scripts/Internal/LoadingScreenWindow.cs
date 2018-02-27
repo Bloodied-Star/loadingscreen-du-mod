@@ -5,10 +5,14 @@
 // Original Author: TheLacus (TheLacus@yandex.com)
 // Contributors:
 
+using System.IO;
 using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 using TransitionType = DaggerfallWorkshop.Game.PlayerEnterExit.TransitionType;
+using DaggerfallWorkshop.Utility;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using LoadingScreen.Plugins;
 
 namespace LoadingScreen
 {
@@ -25,7 +29,8 @@ namespace LoadingScreen
     /// </summary>
     public class LoadingScreenWindow : ILoadingScreenWindow
     {
-        protected bool enabled = false;
+        #region Fields
+
         protected readonly LoadingScreenPanel panel = new LoadingScreenPanel();
 
         // Logic
@@ -36,14 +41,14 @@ namespace LoadingScreen
         bool dungeons, buildings;
         bool useLocation, useSeason;
 
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// Show or hide the loading screen.
         /// </summary>
-        public bool Enabled
-        {
-            get { return enabled; }
-            set { enabled = value; }
-        }
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// Panel containing all components.
@@ -52,6 +57,8 @@ namespace LoadingScreen
         {
             get { return panel; }
         }
+
+        #endregion
 
         #region Public Methods
 
@@ -78,32 +85,32 @@ namespace LoadingScreen
                 deathScreen = new DeathScreen(settings.GetBool(deathScreenSection, "DisableVideo"));
 
             // Components
-            var setup = new LoadingScreenSetup(settings);
-            panel.Components.AddValid(setup.InitLabel());
-            panel.Components.AddValid(setup.InitTips());
-            panel.Components.AddValid(setup.InitQuestMessages());
-            panel.Components.AddValid(setup.InitLevelCounter());
+            panel.AddValidComponent(MakeLabel(settings));
+            panel.AddValidComponent(MakeTips(settings));
+            panel.AddValidComponent(MakeQuestMessages(settings));
+            panel.AddValidComponent(MakeLevelCounter(settings));
+            panel.AddValidComponent(MakeEnemyPreview(settings));
 
             SubscribeToLoading();
         }
 
         public virtual void Draw()
         {
-            if (enabled)
+            if (Enabled)
                 panel.Draw();
         }
 
         #endregion
 
-        #region Private Methods
+        #region Loading Logic
 
         /// <summary>
         /// Start showing loading screen.
         /// </summary>
         private void StartLoadingScreen(int loadingType = LoadingType.Default)
         {
-            panel.background = BackgroundImage.Get(loadingType, useSeason);
-            enabled = true;
+            panel.SetBackground(loadingType, useSeason);
+            Enabled = true;
             loadingLogic.StartLogic();
         }
 
@@ -184,6 +191,138 @@ namespace LoadingScreen
                 PlayerDeath.OnPlayerDeath -= deathScreen.StartLogic;
 
             Debug.Log("LoadingScreen: unsubscribed from all loadings.");
+        }
+
+        #endregion
+
+        #region Load Settings
+
+        /// <summary>
+        /// Gets Loading Counter with user settings.
+        /// </summary>
+        /// <param name="labelText">Text shown while loading.</param>
+        /// <param name="labelTextFinish">Text shown after loading.</param>
+        public LoadingLabel MakeLabel(ModSettings settings)
+        {
+            const string loadingLabelSection = "LoadingLabel";
+            if (!settings.GetBool(loadingLabelSection, "Enable"))
+                return null;
+
+            string labelText = settings.GetString(loadingLabelSection, "LoadingText");
+            bool isDynamic = settings.GetBool(loadingLabelSection, "IsDynamic");
+            string labelTextFinish = settings.GetString(loadingLabelSection, "EndText");
+            string deathLabel = settings.GetString(loadingLabelSection, "DeathText");
+
+            Rect rect = GetRect(
+                settings.GetTupleInt(loadingLabelSection, "Position"),
+                new Tuple<int, int>(10, 3));
+
+            return new LoadingLabel(rect, labelText, labelTextFinish, isDynamic, ".", deathLabel)
+            {
+                Font = settings.GetInt(loadingLabelSection, "Font"),
+                //FontSize = settings.GetInt(loadingLabelSection, "FontSize"),
+                FontStyle = (FontStyle)settings.GetInt(loadingLabelSection, "FontStyle"),
+                FontColor = settings.GetColor(loadingLabelSection, "FontColor")
+            };
+        }
+
+        /// <summary>
+        /// Gets Daggerfall Tips with user settings.
+        /// </summary>
+        public DfTips MakeTips(ModSettings settings)
+        {
+            const string tipsSection = "Tips";
+            if (!settings.GetBool(tipsSection, "Enable"))
+                return null;
+
+            Rect rect = GetRect(
+                settings.GetTupleInt(tipsSection, "Position"),
+                settings.GetTupleInt(tipsSection, "Size"));
+            string path = Path.Combine(LoadingScreen.Mod.DirPath, "Tips");
+            string language = settings.GetString(tipsSection, "Language");
+
+            return new DfTips(rect, path, language)
+            {
+                Font = settings.GetInt(tipsSection, "Font"),
+                //FontSize = settings.GetInt(tipsSection, "FontSize"),
+                FontStyle = (FontStyle)settings.GetInt(tipsSection, "FontStyle"),
+                FontColor = settings.GetColor(tipsSection, "FontColor")
+            };
+        }
+
+        /// <summary>
+        /// Gets Quests Messages with user settings.
+        /// </summary>
+        public QuestsMessages MakeQuestMessages(ModSettings settings)
+        {
+            const string questsSection = "Quests";
+            if (!settings.GetBool(questsSection, "Enable"))
+                return null;
+
+            Rect rect = GetRect(
+                settings.GetTupleInt(questsSection, "Position"),
+                new Tuple<int, int>(20, 10));
+
+            return new QuestsMessages(rect)
+            {
+                Font = settings.GetInt(questsSection, "Font"),
+                //FontSize = settings.GetInt(questsSection, "FontSize"),
+                FontStyle = (FontStyle)settings.GetInt(questsSection, "FontStyle"),
+                FontColor = settings.GetColor(questsSection, "FontColor")
+            };
+        }
+
+        /// <summary>
+        /// Gets Level Counter with user settings.
+        /// </summary>
+        public LevelCounter MakeLevelCounter(ModSettings settings)
+        {
+            const string levelProgressSection = "LevelProgress";
+            if (!settings.GetBool(levelProgressSection, "Enable"))
+                return null;
+
+            Rect rect = GetRect(
+                settings.GetTupleInt(levelProgressSection, "Position"),
+                settings.GetTupleInt(levelProgressSection, "Size"));
+
+            return new LevelCounter(rect)
+            {
+                BarBackground = LoadingScreen.Mod.GetAsset<Texture2D>("BarBackground"),
+                BarForeGround = LoadingScreen.Mod.GetAsset<Texture2D>("BarProgress"),
+                LabelFormat = settings.GetString(levelProgressSection, "Text"),
+                Font = settings.GetInt(levelProgressSection, "Font"),
+                FontColor = settings.GetColor(levelProgressSection, "FontColor"),
+                //FontSize = 35 //TODO: get from settings
+            };
+        }
+
+        /// <summary>
+        /// Gets Enemy Preview with user settings.
+        /// </summary>
+        public EnemyShowCase MakeEnemyPreview(ModSettings settings)
+        {
+            const string enemyPreviewSection = "EnemyPreview";
+            if (!settings.GetBool(enemyPreviewSection, "Enable"))
+                return null;
+
+            Rect rect = GetRect(
+                settings.GetTupleInt(enemyPreviewSection, "Position"),
+                settings.GetTupleInt(enemyPreviewSection, "Size"));
+            bool enableBackground = settings.GetBool(enemyPreviewSection, "Background");
+
+            return new EnemyShowCase(rect, enableBackground)
+            {
+                Font = 8,
+                FontColor = Color.yellow
+            };
+        }
+
+        private static Rect GetRect(Tuple<int, int> position, Tuple<int, int> size)
+        {
+            return new Rect(
+                position.First, position.Second,
+                size.First, size.Second
+                );
         }
 
         #endregion

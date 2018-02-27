@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -115,7 +115,7 @@ namespace LoadingScreen
         private ModSettings LoadSettings()
         {
             ModSettings settings = new ModSettings(mod);
-            guiDepth = settings.GetInt(ModSettingsReader.internalSection, "GuiDepth");
+            guiDepth = settings.GetValue<int>("UiSettings", "GuiDepth");
             return settings;
         }
 

@@ -1,0 +1,28 @@
+{
+    "ModTitle": "Loading Screen",
+    "ModVersion": "",
+    "ModAuthor": "",
+    "ContactInfo": "",
+    "DFUnity_Version": "0.5.0",
+    "ModDescription": "",
+    "GUID": "f9590cc9-4efc-4048-a370-1cfa99ba532d",
+    "Files": [
+        "Assets/Game/Addons/LoadingScreen/Settings/modsettings.json",
+        "Assets/Game/Addons/LoadingScreen/Settings/modpresets.json",
+        "Assets/Game/Addons/LoadingScreen/Scripts/LoadingScreen.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Internal/LoadingScreenWindow.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Internal/LoadingScreenPanel.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Internal/Logic/LoadingLogic.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Internal/Logic/DeathScreen.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/DfTips.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/LevelCounter.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/LoadingLabel.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/EnemyShowCase.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/LoadingScreenComponent.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/QuestsMessages.cs",
+        "Assets/Game/Addons/LoadingScreen/Scripts/API/LoadingType.cs",
+        "Assets/Game/Addons/LoadingScreen/Resources/BarBackground.png",
+        "Assets/Game/Addons/LoadingScreen/Resources/defaultBackground.png",
+        "Assets/Game/Addons/LoadingScreen/Resources/BarProgress.png"
+    ]
+}
