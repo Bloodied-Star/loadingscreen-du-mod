@@ -220,7 +220,7 @@ namespace LoadingScreen
             return new LoadingLabel(rect, labelText, labelTextFinish, isDynamic, ".", deathLabel)
             {
                 Font = settings.GetInt(loadingLabelSection, "Font"),
-                //FontSize = settings.GetInt(loadingLabelSection, "FontSize"),
+                FontSize = settings.GetInt(loadingLabelSection, "FontSize"),
                 FontStyle = (FontStyle)settings.GetInt(loadingLabelSection, "FontStyle"),
                 FontColor = settings.GetColor(loadingLabelSection, "FontColor")
             };
@@ -244,7 +244,6 @@ namespace LoadingScreen
             return new DfTips(rect, path, language)
             {
                 Font = settings.GetInt(tipsSection, "Font"),
-                //FontSize = settings.GetInt(tipsSection, "FontSize"),
                 FontStyle = (FontStyle)settings.GetInt(tipsSection, "FontStyle"),
                 FontColor = settings.GetColor(tipsSection, "FontColor")
             };
@@ -261,12 +260,11 @@ namespace LoadingScreen
 
             Rect rect = GetRect(
                 settings.GetTupleInt(questsSection, "Position"),
-                new Tuple<int, int>(20, 10));
+                settings.GetTupleInt(questsSection, "Size"));
 
             return new QuestsMessages(rect)
             {
                 Font = settings.GetInt(questsSection, "Font"),
-                //FontSize = settings.GetInt(questsSection, "FontSize"),
                 FontStyle = (FontStyle)settings.GetInt(questsSection, "FontStyle"),
                 FontColor = settings.GetColor(questsSection, "FontColor")
             };
@@ -292,7 +290,6 @@ namespace LoadingScreen
                 LabelFormat = settings.GetString(levelProgressSection, "Text"),
                 Font = settings.GetInt(levelProgressSection, "Font"),
                 FontColor = settings.GetColor(levelProgressSection, "FontColor"),
-                //FontSize = 35 //TODO: get from settings
             };
         }
 

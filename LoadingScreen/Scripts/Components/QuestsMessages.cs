@@ -27,7 +27,7 @@ namespace LoadingScreen.Plugins
         #region Public Methods
 
         public QuestsMessages(Rect rect)
-            :base(rect)
+            :base(rect, 5)
         {
             this.style.wordWrap = true;
         }
