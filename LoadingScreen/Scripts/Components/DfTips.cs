@@ -111,7 +111,7 @@ namespace LoadingScreen.Plugins
         /// <param name="path">Folder with language files.</param>
         /// <param name="language">Name of language file without extension.</param>
         public DfTips(Rect rect, string path, string language)
-            :base(rect)
+            :base(rect, 9)
         {
             this.style.wordWrap = true;
             this.enabled = ParseTips(path, language);

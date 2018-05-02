@@ -237,15 +237,6 @@
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
                 },
                 {
-                    "Min": 0,
-                    "Max": 100,
-                    "Value": 25,
-                    "Name": "FontSize",
-                    "Description": null,
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
-                },
-                {
                     "Value": {
                         "r": 255,
                         "g": 255,
@@ -280,7 +271,7 @@
                 {
                     "Value": {
                         "First": 26,
-                        "Second": 3
+                        "Second": 9
                     },
                     "Name": "Size",
                     "Description": null,
@@ -320,15 +311,6 @@
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
                 },
                 {
-                    "Min": 0,
-                    "Max": 100,
-                    "Value": 21,
-                    "Name": "FontSize",
-                    "Description": null,
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
-                },
-                {
                     "Value": {
                         "r": 255,
                         "g": 255,
@@ -356,6 +338,16 @@
                         "Second": 16
                     },
                     "Name": "Position",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.TupleIntKey"
+                },
+                {
+                    "Value": {
+                        "First": 20,
+                        "Second": 40
+                    },
+                    "Name": "Size",
                     "Description": null,
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.TupleIntKey"

@@ -12,7 +12,10 @@
                 "Position": "-5,-3",
                 "LoadingText": "",
                 "IsDynamic": "True",
-                "DeathText": ""
+                "DeathText": "Try Again",
+                "Font": "6",
+                "FontStyle": "1",
+                "EndText": "Continue"
             },
             "Tips": {
                 "Enable": "False"
@@ -21,6 +24,9 @@
                 "Enable": "False"
             },
             "LevelProgress": {
+                "Enable": "False"
+            },
+            "EnemyPreview": {
                 "Enable": "False"
             }
         },
@@ -86,7 +92,7 @@
                 "FontColor": "FFFFFFFF",
                 "FontStyle": "3",
                 "Position": "-4,-5",
-                "Size": "26,3"
+                "Size": "26,9"
             },
             "Quests": {
                 "Enable": "False"

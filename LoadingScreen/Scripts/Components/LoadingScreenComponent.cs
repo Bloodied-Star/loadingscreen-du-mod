@@ -36,6 +36,8 @@ namespace LoadingScreen.Plugins
         protected Rect rect;
         protected GUIStyle style;
 
+        int referenceFontSize = -1;
+
         /// <summary>
         /// Show or hide the component.
         /// </summary>
@@ -102,6 +104,19 @@ namespace LoadingScreen.Plugins
             this.style = style;
         }
 
+        /// <summary>
+        /// Set component rect and style.
+        /// Font size will be automatically scaled on resolution and rect size.
+        /// </summary>
+        /// <param name="virtualRect">Rect in a 100x100 resolution.</param>
+        /// <param name="referenceFontSize">A font size that fits the rect.</param>
+        protected LoadingScreenComponent(Rect virtualRect, int referenceFontSize)
+            :this(virtualRect)
+        {
+            this.referenceFontSize = referenceFontSize;
+            this.style.fontSize = CalcFontSize(referenceFontSize);
+        }
+
         #endregion
 
         #region Public Methods
@@ -150,6 +165,9 @@ namespace LoadingScreen.Plugins
         {
             rect.position = RelToScreen(relRect.position);
             rect.size = RelToScreen(relRect.size);
+
+            if (referenceFontSize != -1)
+                style.fontSize = CalcFontSize(referenceFontSize);
         }
 
         public static implicit operator bool(LoadingScreenComponent plugin)
@@ -158,6 +176,17 @@ namespace LoadingScreen.Plugins
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets font size scaled on resolution and rect size.
+        /// </summary>
+        /// <param name="referenceSize">A font size that fits the rect.</param>
+        /// <returns>Font size for the guistyle</returns>
+        protected int CalcFontSize(int referenceSize)
+        {
+            Vector2 scale = new Vector2(rect.width / 100, rect.height / 100);
+            return Mathf.RoundToInt(referenceSize * (scale.x + scale.y) / 2);
+        }
 
         #region Private Methods
 

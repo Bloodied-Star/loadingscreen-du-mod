@@ -5,16 +5,16 @@
 // Original Author: TheLacus (TheLacus@yandex.com)
 // Contributors:
 
-//#define DEBUGRECT
+#define DRAW_RECT_BACKGROUND
 
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
-using LoadingScreen.Plugins;
-using DaggerfallWorkshop;
 using DaggerfallWorkshop.Utility;
-using System.IO;
+using LoadingScreen.Plugins;
 
 namespace LoadingScreen
 {
@@ -71,8 +71,9 @@ namespace LoadingScreen
             {
                 if (component.Enabled)
                 {
-#if DEBUGRECT
+#if DRAW_RECT_BACKGROUND
                     GUI.DrawTexture(component.Rect, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                    component.FontColor = Color.green;
 #endif
                     component.Draw();
 

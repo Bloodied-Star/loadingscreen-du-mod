@@ -38,7 +38,7 @@ namespace LoadingScreen.Plugins
         #region Public Methods
 
         public LevelCounter(Rect rect)
-            :base(rect)
+            :base(rect, 24)
         {
             this.style.alignment = TextAnchor.MiddleRight;
             this.style.fontStyle = FontStyle.Bold;
