@@ -113,5 +113,34 @@
             }
         },
         "$version": "v1"
+    },
+    {
+        "Title": "Oblivion",
+        "Author": null,
+        "Description": "A loading screen inspired by Oblivion",
+        "SettingsVersion": "1.4",
+        "Values": {
+            "LoadingLabel": {
+                "Enable": "False"
+            },
+            "Tips": {
+                "Enable": "True",
+                "Font": "10",
+                "FontColor": "592D12FF",
+                "FontStyle": "0",
+                "Position": "25,-30",
+                "Size": "50,13"
+            },
+            "Quests": {
+                "Enable": "False"
+            },
+            "LevelProgress": {
+                "Enable": "False"
+            },
+            "EnemyPreview": {
+                "Enable": "False"
+            }
+        },
+        "$version": "v1"
     }
 ]
