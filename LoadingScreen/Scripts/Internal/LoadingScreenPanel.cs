@@ -10,31 +10,33 @@
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using DaggerfallConnect;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
-using LoadingScreen.Plugins;
+using DaggerfallWorkshop.Utility.AssetInjection;
+using LoadingScreen.Components;
 
 namespace LoadingScreen
 {
-    public interface ILoadingScreenPanel
+    /// <summary>
+    /// Implements loading screen events.
+    /// </summary>
+    public interface ILoadingEventsHandler
     {
-        List<LoadingScreenComponent> Components { get; }
-        Texture2D Background { get; set; }
         void Draw();
         void OnLoadingScreen(SaveData_v1 saveData);
         void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args);
         void UpdateScreen();
         void OnEndScreen();
         void OnDeathScreen();
-        void OnEndDeathScreen();
     }
 
     /// <summary>
     /// Manages and draws components of Loading Screen.
     /// </summary>
-    public class LoadingScreenPanel : ILoadingScreenPanel
+    public class LoadingScreenPanel : ILoadingEventsHandler
     {
         #region Fields & Properties
 
@@ -47,6 +49,11 @@ namespace LoadingScreen
         /// Background image for the loading screen.
         /// </summary>
         public Texture2D Background { get; set; }
+
+        internal static string ImagesPath
+        {
+            get { return imagesPath; }
+        }
 
         /// <summary>
         /// Components of the loading screen.
@@ -167,31 +174,8 @@ namespace LoadingScreen
 
         public void SetBackground(int loadingType, bool useSeason)
         {
-            string folder;
-            switch (loadingType)
-            {
-                case LoadingType.Building:
-                    folder = "Building";
-                    break;
-                case LoadingType.Dungeon:
-                    folder = "Dungeon";
-                    break;
-                default:
-                    if (useSeason)
-                    {
-                        if (GameManager.Instance.PlayerGPS.ClimateSettings.ClimateType == DaggerfallConnect.DFLocation.ClimateBaseType.Desert)
-                            folder = "Desert";
-                        else if (DaggerfallUnity.Instance.WorldTime.Now.SeasonValue == DaggerfallDateTime.Seasons.Winter)
-                            folder = "Winter";
-                        else
-                            folder = "Summer";
-                        break;
-                    }
-                    folder = string.Empty;
-                    break;
-            }
-
-            Background = LoadTexture(Path.Combine(imagesPath, folder));
+            string folder = GetSplashFolder(loadingType, useSeason);
+            Background = LoadSplash(Path.Combine(imagesPath, folder));
         }
 
         #endregion
@@ -200,7 +184,7 @@ namespace LoadingScreen
 
         private void RefreshRect()
         {
-            if (Screen.width != rect.width || Screen.height != rect.width)
+            if (Screen.width != rect.width || Screen.height != rect.height)
             {
                 rect.size = new Vector2(Screen.width, Screen.height);
                 foreach (LoadingScreenComponent component in components)
@@ -208,37 +192,57 @@ namespace LoadingScreen
             }
         }
 
-        private static Texture2D LoadTexture(string path)
+        private static string GetSplashFolder(int loadingType, bool useSeason)
         {
-            const string imageNotFound = "\nPlease place one or more images in png format inside this folder to be used as a background\n" +
-                "for the loading screen. As a fallback, a black image is being used.";
+            if (loadingType == LoadingType.Building)
+                return "Building";
 
-            try
+            if (loadingType == LoadingType.Dungeon)
+                return "Dungeon";
+
+            if (useSeason)
             {
-                string[] images = Directory.GetFiles(path, "*.png");
-                if (images.Length != 0)
-                {
-                    // Get random index
-                    int index = Random.Range(0, images.Length);
+                if (GameManager.Instance.PlayerGPS.ClimateSettings.ClimateType == DFLocation.ClimateBaseType.Desert)
+                    return "Desert";
 
-                    // Import image
-                    var tex = new Texture2D(2, 2);
-                    tex.LoadImage(File.ReadAllBytes(Path.Combine(path, images[index])));
-                    if (tex != null)
-                        return tex;
+                if (DaggerfallUnity.Instance.WorldTime.Now.SeasonValue == DaggerfallDateTime.Seasons.Winter)
+                    return "Winter";
 
-                    Debug.LogError("Loading Screen: Failed to import " + images[index] + " from " + path + imageNotFound);
-                }
-
-                Debug.LogError("Loading Screen: Failed to get any image from " + path + imageNotFound);
-
-            }
-            catch (DirectoryNotFoundException)
-            {
-                Debug.LogError("Loading Screen: directory " + path + " is missing." + imageNotFound);
+                return "Summer";
             }
 
-            // Use a black texture as fallback
+            return string.Empty;
+        }
+
+        private static Texture2D LoadSplash(string path)
+        {
+            if (!Directory.Exists(path))
+                return ManageSplashError("Path {0} is not a valid directory.", path);
+
+            string[] images = Directory.GetFiles(path, "*.png");
+            if (images.Length == 0)
+                return ManageSplashError("Failed to get any image from {0}.", path);
+
+            // Get random image
+            int index = Random.Range(0, images.Length);
+            path = Path.Combine(path, images[index]);
+
+            // Import image
+            Texture2D tex;
+            if (!TextureReplacement.TryImportTextureFromDisk(path, false, false, out tex))
+                return ManageSplashError("Failed to import {0} from {1}.", images[index], path);
+
+            return tex;
+        }
+
+        /// <summary>
+        /// Print a log error and import fallback splash screen.
+        /// </summary>
+        private static Texture2D ManageSplashError(string format, params object[] args)
+        {
+            Debug.LogErrorFormat("Loading Screen: {0}\nPlease place one or more images in png format inside this folder to be used as a background" +
+                "for the loading screen.\nAs a fallback, a black image is being used.", string.Format(format, args));
+
             return LoadingScreen.Mod.GetAsset<Texture2D>("defaultBackground");
         }
 

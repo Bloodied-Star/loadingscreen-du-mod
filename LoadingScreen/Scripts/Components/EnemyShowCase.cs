@@ -15,7 +15,7 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 
-namespace LoadingScreen.Plugins
+namespace LoadingScreen.Components
 {
     /// <summary>
     /// Shows enemy graphics with a label.

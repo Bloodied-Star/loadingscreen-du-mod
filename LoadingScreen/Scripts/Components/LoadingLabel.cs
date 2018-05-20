@@ -9,7 +9,7 @@ using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 
-namespace LoadingScreen.Plugins
+namespace LoadingScreen.Components
 {
     public class LoadingLabel : LoadingScreenComponent
     {

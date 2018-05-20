@@ -10,7 +10,7 @@ using TransitionType = DaggerfallWorkshop.Game.PlayerEnterExit.TransitionType;
 
 namespace LoadingScreen
 {
-    struct LoadingType
+    public static class LoadingType
     {
         public const int
 

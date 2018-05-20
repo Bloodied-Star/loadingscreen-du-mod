@@ -20,7 +20,6 @@ namespace LoadingScreen
     {
         #region Fields
 
-        static Mod mod;
         static LoadingScreen instance;
         readonly LoadingScreenWindow loadingScreen = new LoadingScreenWindow();
 
@@ -33,22 +32,14 @@ namespace LoadingScreen
         /// <summary>
         /// Loading Screen mod.
         /// </summary>
-        public static Mod Mod
-        {
-            get { return mod; }
-        }
+        public static Mod Mod { get; private set; }
 
         /// <summary>
         /// Loading Screen instance.
         /// </summary>
         public static LoadingScreen Instance
         {
-            get
-            {
-                if (instance == null)
-                    instance = FindObjectOfType<LoadingScreen>();
-                return instance;
-            }
+            get { return instance ?? (instance = FindObjectOfType<LoadingScreen>()); }
         }
 
         /// <summary>
@@ -57,14 +48,6 @@ namespace LoadingScreen
         public LoadingScreenWindow Window
         {
             get { return loadingScreen; }
-        }
-
-        /// <summary>
-        /// Load and get mod settings.
-        /// </summary>
-        public ModSettings Settings
-        {
-            get { return LoadSettings(); }
         }
 
         /// <summary>
@@ -80,20 +63,20 @@ namespace LoadingScreen
         public static void Init(InitParams initParams)
         {
             // Get mod
-            mod = initParams.Mod;
+            Mod = initParams.Mod;
 
             // Add script to scene
             GameObject go = new GameObject("LoadingScreen");
             instance = go.AddComponent<LoadingScreen>();
 
             // Set mod as Ready
-            mod.IsReady = true;
+            Mod.IsReady = true;
         }
 
         void Awake()
         {
             loadingScreen.Setup();
-            mod.MessageReceiver = MessageReceiver;
+            Mod.MessageReceiver = MessageReceiver;
         }
 
         void OnGUI()
@@ -107,17 +90,21 @@ namespace LoadingScreen
 
         #endregion
 
-        #region Private Methods
+        #region Internal Methods
 
         /// <summary>
         /// Load settings from ModSettings.
         /// </summary>
-        private ModSettings LoadSettings()
+        internal ModSettings LoadSettings()
         {
-            ModSettings settings = new ModSettings(mod);
+            ModSettings settings = Mod.GetSettings();
             guiDepth = settings.GetValue<int>("UiSettings", "GuiDepth");
             return settings;
         }
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Exchange messages with other mods.

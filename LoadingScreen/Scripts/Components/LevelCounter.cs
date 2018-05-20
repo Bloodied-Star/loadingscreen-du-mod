@@ -10,13 +10,16 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
 
-namespace LoadingScreen.Plugins
+namespace LoadingScreen.Components
 {
     /// <summary>
     /// Create a level counter.
     /// </summary>
     public class LevelCounter : LoadingScreenComponent
     {
+        readonly Texture2D barBackground;
+        readonly Texture2D barForeGround;
+
         Rect labelRect;
         Rect groupRect;
         Rect backgroundRect;
@@ -25,9 +28,6 @@ namespace LoadingScreen.Plugins
         float progress;
         string label;
         string labelFormat;
-
-        public Texture2D BarBackground { get; set; }
-        public Texture2D BarForeGround { get; set; }
 
         public string LabelFormat
         {
@@ -42,6 +42,8 @@ namespace LoadingScreen.Plugins
         {
             this.style.alignment = TextAnchor.MiddleRight;
             this.style.fontStyle = FontStyle.Bold;
+            this.barBackground = ImportTexture("BarBackground");
+            this.barForeGround = ImportTexture("BarProgress");
 
             SetRects();
         }
@@ -52,9 +54,9 @@ namespace LoadingScreen.Plugins
             GUI.Label(labelRect, label, style);
 
             // Progress bar
-            GUI.DrawTexture(backgroundRect, BarBackground, ScaleMode.StretchToFill);
+            GUI.DrawTexture(backgroundRect, barBackground, ScaleMode.StretchToFill);
             GUI.BeginGroup(groupRect);
-                GUI.DrawTexture(foregroundRect, BarForeGround, ScaleMode.StretchToFill);
+                GUI.DrawTexture(foregroundRect, barForeGround, ScaleMode.StretchToFill);
             GUI.EndGroup();
         }
 

@@ -13,7 +13,7 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Serialization;
 
-namespace LoadingScreen.Plugins
+namespace LoadingScreen.Components
 {
     /// <summary>
     /// Retrieves active quest messages.

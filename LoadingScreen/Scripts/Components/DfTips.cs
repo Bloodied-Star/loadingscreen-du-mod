@@ -19,7 +19,7 @@ using DaggerfallWorkshop.Game.Serialization;
  * - Seek informations from quests.
  */
 
-namespace LoadingScreen.Plugins
+namespace LoadingScreen.Components
 {
     /// <summary>
     /// Provide a string to be shown on the loading screen,

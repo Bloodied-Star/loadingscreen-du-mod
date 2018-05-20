@@ -12,22 +12,14 @@ using DaggerfallWorkshop.Game.Serialization;
 using TransitionType = DaggerfallWorkshop.Game.PlayerEnterExit.TransitionType;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using LoadingScreen.Plugins;
+using LoadingScreen.Components;
 
 namespace LoadingScreen
 {
-    public interface ILoadingScreenWindow
-    {
-        bool Enabled { get; set; }
-        LoadingScreenPanel Panel { get; }
-        void Setup();
-        void Draw();
-    }
-
     /// <summary>
     /// Implements a Loading Screen window.
     /// </summary>
-    public class LoadingScreenWindow : ILoadingScreenWindow
+    public class LoadingScreenWindow
     {
         #region Fields
 
@@ -64,7 +56,7 @@ namespace LoadingScreen
 
         public virtual void Setup()
         {
-            var settings = LoadingScreen.Instance.Settings;
+            var settings = LoadingScreen.Instance.LoadSettings();
 
             // General
             const string generalSection = "General";
@@ -285,8 +277,6 @@ namespace LoadingScreen
 
             return new LevelCounter(rect)
             {
-                BarBackground = LoadingScreen.Mod.GetAsset<Texture2D>("BarBackground"),
-                BarForeGround = LoadingScreen.Mod.GetAsset<Texture2D>("BarProgress"),
                 LabelFormat = settings.GetString(levelProgressSection, "Text"),
                 Font = settings.GetInt(levelProgressSection, "Font"),
                 FontColor = settings.GetColor(levelProgressSection, "FontColor"),

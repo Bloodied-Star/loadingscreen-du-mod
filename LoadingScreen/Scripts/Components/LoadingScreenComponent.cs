@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -6,27 +6,18 @@
 // Contributors:
 
 using System;
+using System.IO;
 using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Utility.AssetInjection;
 
-namespace LoadingScreen.Plugins
+namespace LoadingScreen.Components
 {
-    public interface ILoadingScreenComponent
-    {
-        bool Enabled { get; set; }
-        void Draw();
-        void OnLoadingScreen(SaveData_v1 saveData);
-        void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args);
-        void UpdateScreen();
-        void OnEndScreen();
-        void OnDeathScreen();
-    }
-
     /// <summary>
     /// Implements a component for the loading screen.
     /// </summary>
-    public abstract class LoadingScreenComponent : ILoadingScreenComponent
+    public abstract class LoadingScreenComponent : ILoadingEventsHandler
     {
         #region Fields & Properties
 
@@ -177,6 +168,8 @@ namespace LoadingScreen.Plugins
 
         #endregion
 
+        #region Protected Methods
+
         /// <summary>
         /// Gets font size scaled on resolution and rect size.
         /// </summary>
@@ -187,6 +180,22 @@ namespace LoadingScreen.Plugins
             Vector2 scale = new Vector2(rect.width / 100, rect.height / 100);
             return Mathf.RoundToInt(referenceSize * (scale.x + scale.y) / 2);
         }
+
+        /// <summary>
+        /// Import a texture from resources. This texture can be overriden with loose files.
+        /// </summary>
+        protected Texture2D ImportTexture(string name)
+        {
+            Texture2D tex;
+
+            string path = Path.Combine(Path.Combine(LoadingScreenPanel.ImagesPath, "resources"), name);
+            if (!TextureReplacement.TryImportTextureFromDisk(path, false, false, out tex))
+                tex = LoadingScreen.Mod.GetAsset<Texture2D>(name);
+
+            return tex;
+        }
+
+        #endregion
 
         #region Private Methods
 
