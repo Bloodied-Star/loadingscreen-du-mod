@@ -52,6 +52,18 @@
                     "Description": "Show press-any-key screen after loading",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Options": [
+                        "Disabled",
+                        "AfterVideo",
+                        "ReplaceVideo"
+                    ],
+                    "Value": 0,
+                    "Name": "DeathScreen",
+                    "Description": "Show Death Screen on player death.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
                 }
             ],
             "$version": "v1"
@@ -128,7 +140,7 @@
                             "Oblivion",
                             "PlaneWalker"
                         ],
-                        "$id": "23"
+                        "$id": "25"
                     },
                     "Value": 6,
                     "Name": "Font",
@@ -165,7 +177,7 @@
                             "Italic",
                             "BoldAndItalic"
                         ],
-                        "$id": "27"
+                        "$id": "29"
                     },
                     "Value": 1,
                     "Name": "FontStyle",
@@ -228,7 +240,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "23"
+                        "$ref": "25"
                     },
                     "Value": 6,
                     "Name": "Font",
@@ -250,7 +262,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "27"
+                        "$ref": "29"
                     },
                     "Value": 3,
                     "Name": "FontStyle",
@@ -302,7 +314,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "23"
+                        "$ref": "25"
                     },
                     "Value": 7,
                     "Name": "Font",
@@ -324,7 +336,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "27"
+                        "$ref": "29"
                     },
                     "Value": 2,
                     "Name": "FontStyle",
@@ -376,7 +388,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "23"
+                        "$ref": "25"
                     },
                     "Value": 3,
                     "Name": "Font",

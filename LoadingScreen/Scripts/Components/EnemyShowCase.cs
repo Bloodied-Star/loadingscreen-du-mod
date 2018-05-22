@@ -14,6 +14,7 @@ using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
+using System.Collections.Generic;
 
 namespace LoadingScreen.Components
 {
@@ -22,14 +23,14 @@ namespace LoadingScreen.Components
     /// </summary>
     public class EnemyShowCase : LoadingScreenComponent
     {
-        #region Fields & Properties
-
-        string enemyName;
-        Texture2D enemyTexture;
+        #region Fields
 
         bool background;
         GUIStyle backgroundStyle;
         Rect innerRect;
+
+        string enemyName;
+        Texture2D enemyTexture;
 
         #endregion
 
@@ -93,7 +94,6 @@ namespace LoadingScreen.Components
                 GetInnerRect(rect, 0.8f, 0.4f) :
                 rect;
         }
-
 
         #endregion
 

@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -38,17 +38,18 @@ namespace LoadingScreen
     /// </summary>
     public class LoadingScreenPanel : ILoadingEventsHandler
     {
-        #region Fields & Properties
+        #region Fields
 
         readonly static string imagesPath = Path.Combine(LoadingScreen.Mod.DirPath, "Images");
 
         readonly List<LoadingScreenComponent> components = new List<LoadingScreenComponent>();
-        Rect rect = new Rect(Vector2.zero, new Vector2(Screen.width, Screen.height));
 
-        /// <summary>
-        /// Background image for the loading screen.
-        /// </summary>
-        public Texture2D Background { get; set; }
+        Rect rect = new Rect(Vector2.zero, new Vector2(Screen.width, Screen.height));
+        Texture2D background;
+
+        #endregion
+
+        #region Properties
 
         internal static string ImagesPath
         {
@@ -72,7 +73,7 @@ namespace LoadingScreen
         /// </summary>
         public virtual void Draw()
         {
-            GUI.DrawTexture(rect, Background, ScaleMode.StretchToFill);
+            GUI.DrawTexture(rect, background, ScaleMode.StretchToFill);
 
             foreach (LoadingScreenComponent component in components)
             {
@@ -149,6 +150,8 @@ namespace LoadingScreen
         {
             RefreshRect();
 
+            background = ImageReader.GetTexture("DIE_00I0.IMG");
+
             foreach (LoadingScreenComponent component in components)
             {
                 if (component.Enabled)
@@ -165,7 +168,6 @@ namespace LoadingScreen
                 component.Enabled = true;
         }
 
-
         public void AddValidComponent(LoadingScreenComponent component)
         {
             if (component)
@@ -175,7 +177,7 @@ namespace LoadingScreen
         public void SetBackground(int loadingType, bool useSeason)
         {
             string folder = GetSplashFolder(loadingType, useSeason);
-            Background = LoadSplash(Path.Combine(imagesPath, folder));
+            background = LoadSplash(Path.Combine(imagesPath, folder));
         }
 
         #endregion
@@ -240,8 +242,8 @@ namespace LoadingScreen
         /// </summary>
         private static Texture2D ManageSplashError(string format, params object[] args)
         {
-            Debug.LogErrorFormat("Loading Screen: {0}\nPlease place one or more images in png format inside this folder to be used as a background" +
-                "for the loading screen.\nAs a fallback, a black image is being used.", string.Format(format, args));
+            LoadingScreen.Instance.LogError("{0}\nPlease place one or more images in png format inside this folder to be used as a background" +
+                "for the loading screen.\nAs a fallback, a black image is being used.", string.Format(format, args));;
 
             return LoadingScreen.Mod.GetAsset<Texture2D>("defaultBackground");
         }

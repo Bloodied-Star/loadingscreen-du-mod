@@ -81,6 +81,7 @@ namespace LoadingScreen.Components
         {
             progress = CalcProgress();
             label = string.Format(LabelFormat, level);
+            groupRect = new Rect(rect.x + rect.width * 0.5f, rect.y, rect.width * 0.5f * progress, rect.height);
         }
 
         #endregion

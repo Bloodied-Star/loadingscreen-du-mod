@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -7,11 +7,8 @@
 
 using System.IO;
 using UnityEngine;
-using DaggerfallWorkshop.Game;
-using DaggerfallWorkshop.Game.Serialization;
-using TransitionType = DaggerfallWorkshop.Game.PlayerEnterExit.TransitionType;
-using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using DaggerfallWorkshop.Utility;
 using LoadingScreen.Components;
 
 namespace LoadingScreen
@@ -24,14 +21,6 @@ namespace LoadingScreen
         #region Fields
 
         protected readonly LoadingScreenPanel panel = new LoadingScreenPanel();
-
-        // Logic
-        DeathScreen deathScreen;
-        LoadingLogic loadingLogic;
-
-        // Settings
-        bool dungeons, buildings;
-        bool useLocation, useSeason;
 
         #endregion
 
@@ -52,137 +41,29 @@ namespace LoadingScreen
 
         #endregion
 
-        #region Public Methods
+        #region Constructors
 
-        public virtual void Setup()
+        /// <summary>
+        /// Make a loading screen window with the given mod settings.
+        /// </summary>
+        public LoadingScreenWindow(ModSettings settings)
         {
-            var settings = LoadingScreen.Instance.LoadSettings();
-
-            // General
-            const string generalSection = "General";
-            dungeons = settings.GetBool(generalSection, "Dungeons");
-            buildings = settings.GetBool(generalSection, "Buildings");
-            float minimumWait = settings.GetFloat(generalSection, "ShowForMinimum");
-            bool pressAnyKey = settings.GetBool(generalSection, "PressAnyKey");
-            loadingLogic = new LoadingLogic(minimumWait, pressAnyKey);
-
-            // Background
-            const string backgroundSection = "Background";
-            useLocation = settings.GetBool(backgroundSection, "UseLocation");
-            useSeason = settings.GetBool(backgroundSection, "UseSeason");
-
-            // Death Screen
-            const string deathScreenSection = "DeathScreen";
-            if (settings.GetBool(deathScreenSection, "Enable"))
-                deathScreen = new DeathScreen(settings.GetBool(deathScreenSection, "DisableVideo"));
-
-            // Components
+            // Setup components
             panel.AddValidComponent(MakeLabel(settings));
             panel.AddValidComponent(MakeTips(settings));
             panel.AddValidComponent(MakeQuestMessages(settings));
             panel.AddValidComponent(MakeLevelCounter(settings));
             panel.AddValidComponent(MakeEnemyPreview(settings));
-
-            SubscribeToLoading();
         }
+
+        #endregion
+
+        #region Public Methods
 
         public virtual void Draw()
         {
             if (Enabled)
                 panel.Draw();
-        }
-
-        #endregion
-
-        #region Loading Logic
-
-        /// <summary>
-        /// Start showing loading screen.
-        /// </summary>
-        private void StartLoadingScreen(int loadingType = LoadingType.Default)
-        {
-            panel.SetBackground(loadingType, useSeason);
-            Enabled = true;
-            loadingLogic.StartLogic();
-        }
-
-        private bool ShowOnTransitionType(TransitionType transition)
-        {
-            switch (transition)
-            {
-                case TransitionType.ToDungeonInterior:
-                case TransitionType.ToDungeonExterior:
-                    return dungeons;
-
-                case TransitionType.ToBuildingInterior:
-                case TransitionType.ToBuildingExterior:
-                    return buildings;
-
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
-        /// Subscribe to loading as per user settings.
-        /// </summary>
-        private void SubscribeToLoading()
-        {
-            SaveLoadManager.OnStartLoad += SaveLoadManager_OnStartLoad;
-            SaveLoadManager.OnLoad += SaveLoadManager_OnLoad;
-
-            if (dungeons || buildings)
-            {
-                PlayerEnterExit.OnPreTransition += PlayerEnterExit_OnPreTransition;
-
-                if (dungeons)
-                {
-                    PlayerEnterExit.OnTransitionDungeonInterior += PlayerEnterExit_OnTransition;
-                    PlayerEnterExit.OnTransitionDungeonExterior += PlayerEnterExit_OnTransition;
-                }
-
-                if (buildings)
-                {
-                    PlayerEnterExit.OnTransitionInterior += PlayerEnterExit_OnTransition;
-                    PlayerEnterExit.OnTransitionExterior += PlayerEnterExit_OnTransition;
-                }
-            }
-
-            if (deathScreen != null)
-                PlayerDeath.OnPlayerDeath += deathScreen.StartLogic;
-
-            Debug.Log("LoadingScreen: subscribed to loadings as per user settings.");
-        }
-
-        /// <summary>
-        /// Unsubscribe from all loadings.
-        /// </summary>
-        private void UnsubscribeFromLoading()
-        {
-            SaveLoadManager.OnStartLoad -= SaveLoadManager_OnStartLoad;
-            SaveLoadManager.OnLoad -= SaveLoadManager_OnLoad;
-
-            if (dungeons || buildings)
-            {
-                PlayerEnterExit.OnPreTransition -= PlayerEnterExit_OnPreTransition;
-
-                if (dungeons)
-                {
-                    PlayerEnterExit.OnTransitionDungeonInterior -= PlayerEnterExit_OnTransition;
-                    PlayerEnterExit.OnTransitionDungeonExterior -= PlayerEnterExit_OnTransition;
-                }
-
-                if (buildings)
-                {
-                    PlayerEnterExit.OnTransitionInterior -= PlayerEnterExit_OnTransition;
-                    PlayerEnterExit.OnTransitionExterior -= PlayerEnterExit_OnTransition;
-                }
-            }
-
-            if (deathScreen != null)
-                PlayerDeath.OnPlayerDeath -= deathScreen.StartLogic;
-
-            Debug.Log("LoadingScreen: unsubscribed from all loadings.");
         }
 
         #endregion
@@ -194,7 +75,7 @@ namespace LoadingScreen
         /// </summary>
         /// <param name="labelText">Text shown while loading.</param>
         /// <param name="labelTextFinish">Text shown after loading.</param>
-        public LoadingLabel MakeLabel(ModSettings settings)
+        private LoadingLabel MakeLabel(ModSettings settings)
         {
             const string loadingLabelSection = "LoadingLabel";
             if (!settings.GetBool(loadingLabelSection, "Enable"))
@@ -221,7 +102,7 @@ namespace LoadingScreen
         /// <summary>
         /// Gets Daggerfall Tips with user settings.
         /// </summary>
-        public DfTips MakeTips(ModSettings settings)
+        private DfTips MakeTips(ModSettings settings)
         {
             const string tipsSection = "Tips";
             if (!settings.GetBool(tipsSection, "Enable"))
@@ -244,7 +125,7 @@ namespace LoadingScreen
         /// <summary>
         /// Gets Quests Messages with user settings.
         /// </summary>
-        public QuestsMessages MakeQuestMessages(ModSettings settings)
+        private QuestsMessages MakeQuestMessages(ModSettings settings)
         {
             const string questsSection = "Quests";
             if (!settings.GetBool(questsSection, "Enable"))
@@ -265,7 +146,7 @@ namespace LoadingScreen
         /// <summary>
         /// Gets Level Counter with user settings.
         /// </summary>
-        public LevelCounter MakeLevelCounter(ModSettings settings)
+        private LevelCounter MakeLevelCounter(ModSettings settings)
         {
             const string levelProgressSection = "LevelProgress";
             if (!settings.GetBool(levelProgressSection, "Enable"))
@@ -286,7 +167,7 @@ namespace LoadingScreen
         /// <summary>
         /// Gets Enemy Preview with user settings.
         /// </summary>
-        public EnemyShowCase MakeEnemyPreview(ModSettings settings)
+        private EnemyShowCase MakeEnemyPreview(ModSettings settings)
         {
             const string enemyPreviewSection = "EnemyPreview";
             if (!settings.GetBool(enemyPreviewSection, "Enable"))
@@ -304,47 +185,16 @@ namespace LoadingScreen
             };
         }
 
+        #endregion
+
+        #region Helpers
+
         private static Rect GetRect(Tuple<int, int> position, Tuple<int, int> size)
         {
             return new Rect(
                 position.First, position.Second,
                 size.First, size.Second
                 );
-        }
-
-        #endregion
-
-        #region Event Handlers
-
-        // Start of save loading
-        private void SaveLoadManager_OnStartLoad(SaveData_v1 saveData)
-        {
-            panel.OnLoadingScreen(saveData);
-            int loadingType = useLocation ? LoadingType.Get(saveData.playerData.playerPosition) : LoadingType.Default;
-            StartLoadingScreen(loadingType);
-        }
-
-        // End of save loading
-        private void SaveLoadManager_OnLoad(SaveData_v1 saveData)
-        {
-            loadingLogic.StopLogic();
-        }
-
-        // Start of transition
-        private void PlayerEnterExit_OnPreTransition(PlayerEnterExit.TransitionEventArgs args)
-        {
-            if (ShowOnTransitionType(args.TransitionType))
-            {
-                panel.OnLoadingScreen(args);
-                int loadingType = useLocation ? LoadingType.Get(args.TransitionType) : LoadingType.Default;
-                StartLoadingScreen(loadingType);
-            }
-        }
-
-        // End of transition
-        private void PlayerEnterExit_OnTransition(PlayerEnterExit.TransitionEventArgs args)
-        {
-            loadingLogic.StopLogic();
         }
 
         #endregion
