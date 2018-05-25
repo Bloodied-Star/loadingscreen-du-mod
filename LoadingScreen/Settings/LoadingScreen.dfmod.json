@@ -22,5 +22,9 @@
         "Assets/Game/Addons/LoadingScreen/Resources/BarBackground.png",
         "Assets/Game/Addons/LoadingScreen/Resources/defaultBackground.png",
         "Assets/Game/Addons/LoadingScreen/Resources/BarProgress.png",
+        "Assets/Game/Addons/LoadingScreen/Settings/LoadingScreen.dfmod.json",
+        "Assets/Game/Addons/LoadingScreen/Resources/ModelViewer.prefab",
+        "Assets/Game/Addons/LoadingScreen/Scripts/Components/ModelViewer.cs",
+        "Assets/Game/Addons/LoadingScreen/Resources/Particle Add (RGBA).shader"
     ]
 }

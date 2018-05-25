@@ -48,12 +48,13 @@ namespace LoadingScreen
         /// </summary>
         public LoadingScreenWindow(ModSettings settings)
         {
-            // Setup components
+            // Setup components. This is the draw order.
+            panel.AddValidComponent(MakeModelViewer(settings));
+            panel.AddValidComponent(MakeEnemyPreview(settings));
             panel.AddValidComponent(MakeLabel(settings));
             panel.AddValidComponent(MakeTips(settings));
             panel.AddValidComponent(MakeQuestMessages(settings));
             panel.AddValidComponent(MakeLevelCounter(settings));
-            panel.AddValidComponent(MakeEnemyPreview(settings));
         }
 
         #endregion
@@ -182,6 +183,14 @@ namespace LoadingScreen
             {
                 Font = 8,
                 FontColor = Color.yellow
+            };
+        }
+
+        private ModelViewer MakeModelViewer(ModSettings settings)
+        {
+            return new ModelViewer(new Rect(0, 0, 100, 100))
+            {
+                HorizontalPosition = 0.25f
             };
         }
 
