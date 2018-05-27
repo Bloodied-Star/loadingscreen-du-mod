@@ -80,6 +80,7 @@ namespace LoadingScreen
         {
             SetupMod();
             Mod.MessageReceiver = MessageReceiver;
+            LoadingScreenConsoleCommands.RegisterCommands();
         }
 
         void OnGUI()
@@ -101,6 +102,11 @@ namespace LoadingScreen
                 return base.ToString();
 
             return string.Format("{0} v.{1}", Mod.Title, Mod.ModInfo.ModVersion);
+        }
+
+        public void Toggle()
+        {
+            Toggle(!isEnabled);
         }
 
         public void Toggle(bool toggle)
@@ -184,6 +190,16 @@ namespace LoadingScreen
         internal void LogError(string format, params object[] args)
         {
             Debug.LogErrorFormat("{0}: {1}", this, string.Format(format, args));
+        }
+
+        /// <summary>
+        /// Simulate a loading screen.
+        /// </summary>
+        /// <param name="seconds">Time in seconds for a single loading screen.</param>
+        /// <param name="times">Number of loading screens.</param>
+        internal void Simulate(float seconds, int times = 1)
+        {
+            StartCoroutine(DoSimulation(seconds, times));
         }
 
         #endregion
@@ -336,6 +352,40 @@ namespace LoadingScreen
             window.Enabled = false;
             window.Panel.OnEndDeathScreen();
             AudioListener.pause = false;
+        }
+
+        /// <summary>
+        /// Simulate a loading screen.
+        /// </summary>
+        /// <param name="seconds">Time in seconds for a single loading screen.</param>
+        /// <param name="times">Number of loading screens.</param>
+        private IEnumerator DoSimulation(float seconds, int times)
+        {
+            GameManager.Instance.PauseGame(true, true);
+
+            for (int i = 0; i < times; i++)
+            {
+                window.Panel.OnLoadingScreen(new PlayerEnterExit.TransitionEventArgs());
+                window.Enabled = true;
+
+                float time = seconds;
+                while ((time -= Time.unscaledDeltaTime) > 0)
+                {
+                    window.Panel.UpdateScreen();
+                    yield return null;
+                }
+
+                if (pressAnyKey)
+                {
+                    window.Panel.OnEndScreen();
+                    while (!Input.anyKey)
+                        yield return null;
+                }
+
+                window.Enabled = false;
+            }
+
+            GameManager.Instance.PauseGame(false);
         }
 
         private bool ShowOnTransitionType(TransitionType transition)
