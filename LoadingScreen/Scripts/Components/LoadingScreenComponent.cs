@@ -21,13 +21,12 @@ namespace LoadingScreen.Components
     {
         #region Fields & Properties
 
-        private readonly Rect relRect;
-
         protected bool enabled = true;
         protected Rect rect;
         protected GUIStyle style;
 
-        int referenceFontSize = -1;
+        readonly Rect relRect;
+        readonly int referenceFontSize = -1;
 
         /// <summary>
         /// Show or hide the component.
@@ -65,6 +64,8 @@ namespace LoadingScreen.Components
             get { return style.normal.textColor; }
             set { style.normal.textColor = value; }
         }
+
+        public LoadingScreenPanel Parent { get; set; }
 
         #endregion
 

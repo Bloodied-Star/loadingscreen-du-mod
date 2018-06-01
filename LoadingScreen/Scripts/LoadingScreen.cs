@@ -27,8 +27,6 @@ namespace LoadingScreen
 
         bool dungeons;
         bool buildings;
-        bool useLocation;
-        bool useSeason;
         float minimumWait;
         bool pressAnyKey;
         bool deathScreen;
@@ -221,11 +219,6 @@ namespace LoadingScreen
             minimumWait = settings.GetFloat(generalSection, "ShowForMinimum");
             pressAnyKey = settings.GetBool(generalSection, "PressAnyKey");
 
-            // Background
-            const string backgroundSection = "Background";
-            useLocation = settings.GetBool(backgroundSection, "UseLocation");
-            useSeason = settings.GetBool(backgroundSection, "UseSeason");
-
             // Death Screen
             const string deathScreenSection = "DeathScreen";
             deathScreen = settings.GetBool(deathScreenSection, "Enable");
@@ -238,11 +231,9 @@ namespace LoadingScreen
         /// <summary>
         /// Start showing loading screen.
         /// </summary>
-        private void StartLoadingScreen(int loadingType = LoadingType.Default)
+        private void StartLoadingScreen()
         {
-            window.Panel.SetBackground(loadingType, useSeason);
-            window.Enabled = true;
-            isLoading = true;
+            isLoading = window.Enabled = true;
             StartCoroutine(DoLoadingScreen());
         }
 
@@ -441,8 +432,7 @@ namespace LoadingScreen
         private void SaveLoadManager_OnStartLoad(SaveData_v1 saveData)
         {
             window.Panel.OnLoadingScreen(saveData);
-            int loadingType = useLocation ? LoadingType.Get(saveData.playerData.playerPosition) : LoadingType.Default;
-            StartLoadingScreen(loadingType);
+            StartLoadingScreen();
         }
 
         // End of save loading
@@ -457,8 +447,7 @@ namespace LoadingScreen
             if (ShowOnTransitionType(args.TransitionType))
             {
                 window.Panel.OnLoadingScreen(args);
-                int loadingType = useLocation ? LoadingType.Get(args.TransitionType) : LoadingType.Default;
-                StartLoadingScreen(loadingType);
+                StartLoadingScreen();
             }
         }
 

@@ -64,6 +64,12 @@ namespace LoadingScreen
             get { return components; }
         }
 
+        public bool UseLocation { get; set; }
+
+        public bool UseSeason { get; set; }
+
+        public int CurrentLoadingType { get; private set; }
+
         #endregion
 
         #region Public Methods
@@ -95,7 +101,9 @@ namespace LoadingScreen
         /// <param name="saveData">Save being loaded.</param>
         public virtual void OnLoadingScreen(SaveData_v1 saveData)
         {
+            CurrentLoadingType = LoadingType.Get(saveData.playerData.playerPosition);
             RefreshRect();
+            RefreshBackground();
 
             foreach (LoadingScreenComponent component in components)
             {
@@ -110,7 +118,9 @@ namespace LoadingScreen
         /// <param name="args">Transition parameters.</param>
         public virtual void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
+            CurrentLoadingType = LoadingType.Get(args.TransitionType);
             RefreshRect();
+            RefreshBackground();
 
             foreach (LoadingScreenComponent component in components)
             {
@@ -171,13 +181,10 @@ namespace LoadingScreen
         public void AddValidComponent(LoadingScreenComponent component)
         {
             if (component)
+            {
+                component.Parent = this;
                 components.Add(component);
-        }
-
-        public void SetBackground(int loadingType, bool useSeason)
-        {
-            string folder = GetSplashFolder(loadingType, useSeason);
-            background = LoadSplash(Path.Combine(imagesPath, folder));
+            }
         }
 
         #endregion
@@ -194,15 +201,22 @@ namespace LoadingScreen
             }
         }
 
-        private static string GetSplashFolder(int loadingType, bool useSeason)
+        private void RefreshBackground()
         {
+            background = LoadSplash(Path.Combine(imagesPath, GetSplashFolder()));
+        }
+
+        private string GetSplashFolder()
+        {
+            int loadingType = UseLocation ? CurrentLoadingType : LoadingType.Default;
+
             if (loadingType == LoadingType.Building)
                 return "Building";
 
             if (loadingType == LoadingType.Dungeon)
                 return "Dungeon";
 
-            if (useSeason)
+            if (UseSeason)
             {
                 if (GameManager.Instance.PlayerGPS.ClimateSettings.ClimateType == DFLocation.ClimateBaseType.Desert)
                     return "Desert";

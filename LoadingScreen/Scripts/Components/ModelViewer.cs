@@ -18,19 +18,48 @@ namespace LoadingScreen.Components
     /// </summary>
     public class ModelViewer : LoadingScreenComponent
     {
-        /// <summary>
-        /// Whitelist of models to use.
-        /// </summary>
-        static readonly uint[] modelIDs = new uint[]
+        #region ModelIDs
+
+        private static class ModelIDs
         {
-            905, 21203, 41001, 41004, 41048, 41021, 41027, 41120, 41215, 41222, 41123, 41241,
-            41303, 41402, 41407, 41501, 43022, 43085, 43206, 43307, 43728, 62324, 74224
-        };
+            static readonly uint[] Exterior = new uint[]
+            {
+                21203, 41215, 41222, 41241, 41501, 43022, 43085, 43206, 43307, 43728
+            };
+
+            static readonly uint[] Building = new uint[]
+            {
+                41001, 41004, 41027, 41120
+            };
+
+            static readonly uint[] Dungeon = new uint[]
+            {
+                41048, 41021, 41123, 41303, 41402, 41407, 62324, 74224
+            };
+
+            public static uint[] Get(int loadingType)
+            {
+                switch (loadingType)
+                {
+                    case LoadingType.Building:  return Exterior;
+                    case LoadingType.Dungeon:   return Dungeon;
+                    default:                    return Exterior;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Fields
 
         readonly GameObject modelViewerGo;
         readonly Texture2D texture;
 
         float horizontalPosition = 0.5f;
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Horizontal position of model in range 0-1.
@@ -40,6 +69,10 @@ namespace LoadingScreen.Components
             get { return horizontalPosition; }
             set { horizontalPosition = Mathf.Clamp01(value); }
         }
+
+        #endregion
+
+        #region Constructors
 
         public ModelViewer(Rect virtualRect)
             :base(virtualRect)
@@ -53,6 +86,10 @@ namespace LoadingScreen.Components
             camera.targetTexture = null;
             Camera.main.cullingMask = Camera.main.cullingMask & ~(1 << modelViewerGo.layer);
         }
+
+        #endregion
+
+        #region Public Methods
 
         public override void Draw()
         {
@@ -68,6 +105,10 @@ namespace LoadingScreen.Components
         {
             MakeTexture();
         }
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Make a screenshot of a random model defined in <see cref="modelIDs"/>.
@@ -137,17 +178,22 @@ namespace LoadingScreen.Components
             DestroyGameObject(go);
         }
 
-        private static Camera GetCamera(GameObject go)
+        private GameObject LoadModel(Transform parent)
         {
-            return go.transform.FindChild("Camera").GetComponent<Camera>();
-        }
-
-        private static GameObject LoadModel(Transform parent)
-        {
+            uint[] modelIDs = ModelIDs.Get(Parent.CurrentLoadingType);
             uint modelID = modelIDs[Random.Range(0, modelIDs.Length)];
 
             return MeshReplacement.ImportCustomGameobject(modelID, parent, Matrix4x4.identity) ??
                 GameObjectHelper.CreateDaggerfallMeshGameObject(modelID, parent);
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        private static Camera GetCamera(GameObject go)
+        {
+            return go.transform.FindChild("Camera").GetComponent<Camera>();
         }
 
         private static void DestroyGameObject(GameObject go)
@@ -157,5 +203,7 @@ namespace LoadingScreen.Components
 
             GameObject.Destroy(go);
         }
+
+        #endregion
     }
 }

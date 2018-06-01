@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: ParticleSmokeWhite
+  m_Name: Mist
   m_Shader: {fileID: 4800000, guid: e846ffc7b8846f64eadb76c6ff5ab23d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5

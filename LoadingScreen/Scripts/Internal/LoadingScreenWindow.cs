@@ -48,6 +48,11 @@ namespace LoadingScreen
         /// </summary>
         public LoadingScreenWindow(ModSettings settings)
         {
+            // Setup panel
+            const string backgroundSection = "Background";
+            panel.UseLocation = settings.GetBool(backgroundSection, "UseLocation");
+            panel.UseSeason = settings.GetBool(backgroundSection, "UseSeason");
+
             // Setup components. This is the draw order.
             panel.AddValidComponent(MakeModelViewer(settings));
             panel.AddValidComponent(MakeEnemyPreview(settings));
