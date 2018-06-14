@@ -287,7 +287,7 @@ namespace LoadingScreen
             window.Enabled = false;
             if (fadeFromBlack)
             {
-                DaggerfallUI.Instance.FadeHUDFromBlack(0.5f);
+                DaggerfallUI.Instance.FadeBehaviour.FadeHUDFromBlack(0.5f);
                 yield return new WaitForSeconds(0.5f);
                 fadeFromBlack = false;
             }
