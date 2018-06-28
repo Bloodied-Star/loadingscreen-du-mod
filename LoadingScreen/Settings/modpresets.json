@@ -28,6 +28,9 @@
             },
             "EnemyPreview": {
                 "Enable": "False"
+            },
+            "ModelViewer": {
+                "Enable": "False"
             }
         },
         "$version": "v1"
@@ -72,6 +75,9 @@
             },
             "EnemyPreview": {
                 "Enable": "False"
+            },
+            "ModelViewer": {
+                "Enable": "False"
             }
         },
         "$version": "v1"
@@ -106,10 +112,11 @@
                 "Size": "20,4"
             },
             "EnemyPreview": {
+                "Enable": "False"
+            },
+            "ModelViewer": {
                 "Enable": "True",
-                "Position": "1,1",
-                "Size": "60,98",
-                "Background": "False"
+                "HorizontalPosition": "0.25"
             }
         },
         "$version": "v1"
@@ -138,6 +145,9 @@
                 "Enable": "False"
             },
             "EnemyPreview": {
+                "Enable": "False"
+            },
+            "ModelViewer": {
                 "Enable": "False"
             }
         },

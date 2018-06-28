@@ -193,9 +193,13 @@ namespace LoadingScreen
 
         private ModelViewer MakeModelViewer(ModSettings settings)
         {
+            const string modelViewerSection = "ModelViewer";
+            if (!settings.GetBool(modelViewerSection, "Enable"))
+                return null;
+
             return new ModelViewer(new Rect(0, 0, 100, 100))
             {
-                HorizontalPosition = 0.25f
+                HorizontalPosition = settings.GetFloat(modelViewerSection, "HorizontalPosition")
             };
         }
 
