@@ -24,7 +24,7 @@ namespace LoadingScreen.Components
         {
             static readonly uint[] Exterior = new uint[]
             {
-                21203, 41215, 41222, 41241, 41501, 43022, 43085, 43206, 43307, 43728
+                21203, 41215, 41222, 41241, 43022, 43085, 43206, 43307, 43728
             };
 
             static readonly uint[] Building = new uint[]
