@@ -156,7 +156,7 @@ namespace LoadingScreen.Components
                 model.transform.position = pos;
 
                 // Do mist. Shader must use ColorMask RGBA, otherwise the final color on render texture is (r*0, g*0, b*0).
-                Transform mist = go.transform.FindChild("Mist");
+                Transform mist = go.transform.Find("Mist");
                 Vector3 mistPos = mist.position;
                 mistPos.z = pos.z;
                 mist.position = mistPos;
@@ -193,7 +193,7 @@ namespace LoadingScreen.Components
 
         private static Camera GetCamera(GameObject go)
         {
-            return go.transform.FindChild("Camera").GetComponent<Camera>();
+            return go.transform.Find("Camera").GetComponent<Camera>();
         }
 
         private static void DestroyGameObject(GameObject go)
