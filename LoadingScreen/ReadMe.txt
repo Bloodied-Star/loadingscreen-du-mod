@@ -74,6 +74,9 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* Unreleased
+- Compatibility upgrade for Pre-Alpha 0.7.
+
 * 2.2
 - Added ModelViewer
 - Compatiblity upgrade for Legacy Stable 0.5.

@@ -216,7 +216,7 @@ namespace LoadingScreen
             const string generalSection = "General";
             dungeons = settings.GetBool(generalSection, "Dungeons");
             buildings = settings.GetBool(generalSection, "Buildings");
-            minimumWait = settings.GetFloat(generalSection, "ShowForMinimum");
+            minimumWait = settings.GetInt(generalSection, "ShowForMinimum");
             pressAnyKey = settings.GetBool(generalSection, "PressAnyKey");
 
             // Death Screen
