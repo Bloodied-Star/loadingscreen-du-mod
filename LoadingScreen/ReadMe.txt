@@ -1,4 +1,4 @@
-﻿LOADING SCREEN
+LOADING SCREEN
 
 Version: 2.2.1
 
@@ -15,19 +15,11 @@ Installation
 1. Move 'LoadingScreen' folder inside 'StreamingAssets/Mods'.
 2. Pick the correct 'loadingscreen.dfmod' for your OS and place it inside the 'LoadingScreen' folder.
 
-Customization
+Background
 -------------
-This mod randomly picks any .png image found inside this folder and uses it as splash screen:
-
-- \StreamingAssets\Mods\LoadingScreen\Images
-
-Alternatively, enable 'UseSeason' inside the mod settings and place textures in the appropriate folders:
-
-- Images\Desert
-- Images\Summer
-- Images\Winter
-
-You can also enable 'UseLocation' to use 'Images\Building' and 'Images\Dungeon' when entering one.
+The default background is full black. If a custom image is wanted, .png textures can be placed inside the folder 'StreamingAssets\Textures\Splash';
+one of them is randomly picked every time. Optionally, subfolders can be used to provide images for specific situations:
+'Building', 'Dungeon', 'Desert', 'Winter' and 'Summer'.
 
 Settings
 --------

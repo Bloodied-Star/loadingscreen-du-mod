@@ -69,28 +69,6 @@
             "$version": "v1"
         },
         {
-            "Name": "Background",
-            "Description": "Options for loading screen background.",
-            "IsAdvanced": false,
-            "Keys": [
-                {
-                    "Value": true,
-                    "Name": "UseLocation",
-                    "Description": "Use different splash screens when entering buildings/dungeons",
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
-                },
-                {
-                    "Value": true,
-                    "Name": "UseSeason",
-                    "Description": "Use different splash screens according to season",
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
-                }
-            ],
-            "$version": "v1"
-        },
-        {
             "Name": "DeathScreen",
             "Description": null,
             "IsAdvanced": false,
@@ -140,7 +118,7 @@
                             "Oblivion",
                             "PlaneWalker"
                         ],
-                        "$id": "25"
+                        "$id": "21"
                     },
                     "Value": 6,
                     "Name": "Font",
@@ -177,7 +155,7 @@
                             "Italic",
                             "BoldAndItalic"
                         ],
-                        "$id": "29"
+                        "$id": "25"
                     },
                     "Value": 1,
                     "Name": "FontStyle",
@@ -240,7 +218,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "25"
+                        "$ref": "21"
                     },
                     "Value": 6,
                     "Name": "Font",
@@ -262,7 +240,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "29"
+                        "$ref": "25"
                     },
                     "Value": 3,
                     "Name": "FontStyle",
@@ -314,7 +292,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "25"
+                        "$ref": "21"
                     },
                     "Value": 7,
                     "Name": "Font",
@@ -336,7 +314,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "29"
+                        "$ref": "25"
                     },
                     "Value": 2,
                     "Name": "FontStyle",
@@ -388,7 +366,7 @@
                 },
                 {
                     "Options": {
-                        "$ref": "25"
+                        "$ref": "21"
                     },
                     "Value": 3,
                     "Name": "Font",

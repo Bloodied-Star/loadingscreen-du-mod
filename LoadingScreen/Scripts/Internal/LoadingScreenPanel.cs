@@ -60,10 +60,6 @@ namespace LoadingScreen
             get { return components; }
         }
 
-        public bool UseLocation { get; set; }
-
-        public bool UseSeason { get; set; }
-
         public int CurrentLoadingType { get; private set; }
 
         #endregion
@@ -202,42 +198,34 @@ namespace LoadingScreen
         /// </summary>
         private void RefreshBackground()
         {
-            if (!TryLoadSplash(GetSplashFolder(), out background))
+            if (!TryLoadSplash(GetSplashFolder(), out background) && !TryLoadSplash("", out background))
                 background = LoadingScreen.Mod.GetAsset<Texture2D>("defaultBackground");
         }
 
         /// <summary>
         /// Gets the name of the folder with the background textures for current state.
-        /// This is an empty string if folder is root.
         /// </summary>
         private string GetSplashFolder()
         {
-            int loadingType = UseLocation ? CurrentLoadingType : LoadingType.Default;
-
-            if (loadingType == LoadingType.Building)
+            if (CurrentLoadingType == LoadingType.Building)
                 return "Building";
 
-            if (loadingType == LoadingType.Dungeon)
+            if (CurrentLoadingType == LoadingType.Dungeon)
                 return "Dungeon";
 
-            if (UseSeason)
-            {
-                if (GameManager.Instance.PlayerGPS.ClimateSettings.ClimateType == DFLocation.ClimateBaseType.Desert)
-                    return "Desert";
+            if (GameManager.Instance.PlayerGPS.ClimateSettings.ClimateType == DFLocation.ClimateBaseType.Desert)
+                return "Desert";
 
-                if (DaggerfallUnity.Instance.WorldTime.Now.SeasonValue == DaggerfallDateTime.Seasons.Winter)
-                    return "Winter";
+            if (DaggerfallUnity.Instance.WorldTime.Now.SeasonValue == DaggerfallDateTime.Seasons.Winter)
+                return "Winter";
 
-                return "Summer";
-            }
-
-            return string.Empty;
+            return "Summer";
         }
 
         /// <summary>
         /// Tries to load a random custom background from loose files.
         /// </summary>
-        /// <param name="folder">Name of folder.</param>
+        /// <param name="folder">Name of folder or empty string for root.</param>
         /// <param name="tex">Imported texture or null.</param>
         /// <returns>True if a texture has been found.</returns>
         private static bool TryLoadSplash(string folder, out Texture2D tex)
