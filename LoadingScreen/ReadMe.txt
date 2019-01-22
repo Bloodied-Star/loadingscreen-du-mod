@@ -74,6 +74,9 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* Unreleased
+- Splash textures are imported from StreamingAssets/Textures/Splash/. If no textures are found, the default black background is used without logging errors.
+
 * 2.2.1
 - Compatibility upgrade for Pre-Alpha 0.7.
 

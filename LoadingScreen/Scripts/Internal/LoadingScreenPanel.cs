@@ -40,7 +40,8 @@ namespace LoadingScreen
     {
         #region Fields
 
-        readonly static string imagesPath = Path.Combine(LoadingScreen.Mod.DirPath, "Images");
+        internal readonly static string ImagesPath = Path.Combine(TextureReplacement.TexturesPath, "Splash");
+        internal readonly static string ResourcesPath = Path.Combine(ImagesPath, "Resources");
 
         readonly List<LoadingScreenComponent> components = new List<LoadingScreenComponent>();
 
@@ -50,11 +51,6 @@ namespace LoadingScreen
         #endregion
 
         #region Properties
-
-        internal static string ImagesPath
-        {
-            get { return imagesPath; }
-        }
 
         /// <summary>
         /// Components of the loading screen.
@@ -201,11 +197,19 @@ namespace LoadingScreen
             }
         }
 
+        /// <summary>
+        /// Sets a custom background from loose files or silently fallbacks to default black screen.
+        /// </summary>
         private void RefreshBackground()
         {
-            background = LoadSplash(Path.Combine(imagesPath, GetSplashFolder()));
+            if (!TryLoadSplash(GetSplashFolder(), out background))
+                background = LoadingScreen.Mod.GetAsset<Texture2D>("defaultBackground");
         }
 
+        /// <summary>
+        /// Gets the name of the folder with the background textures for current state.
+        /// This is an empty string if folder is root.
+        /// </summary>
         private string GetSplashFolder()
         {
             int loadingType = UseLocation ? CurrentLoadingType : LoadingType.Default;
@@ -230,36 +234,27 @@ namespace LoadingScreen
             return string.Empty;
         }
 
-        private static Texture2D LoadSplash(string path)
-        {
-            if (!Directory.Exists(path))
-                return ManageSplashError("Path {0} is not a valid directory.", path);
-
-            string[] images = Directory.GetFiles(path, "*.png");
-            if (images.Length == 0)
-                return ManageSplashError("Failed to get any image from {0}.", path);
-
-            // Get random image
-            int index = Random.Range(0, images.Length);
-            path = Path.Combine(path, images[index]);
-
-            // Import image
-            Texture2D tex;
-            if (!TextureReplacement.TryImportTextureFromDisk(path, false, false, out tex))
-                return ManageSplashError("Failed to import {0} from {1}.", images[index], path);
-
-            return tex;
-        }
-
         /// <summary>
-        /// Print a log error and import fallback splash screen.
+        /// Tries to load a random custom background from loose files.
         /// </summary>
-        private static Texture2D ManageSplashError(string format, params object[] args)
+        /// <param name="folder">Name of folder.</param>
+        /// <param name="tex">Imported texture or null.</param>
+        /// <returns>True if a texture has been found.</returns>
+        private static bool TryLoadSplash(string folder, out Texture2D tex)
         {
-            LoadingScreen.Instance.LogError("{0}\nPlease place one or more images in png format inside this folder to be used as a background" +
-                "for the loading screen.\nAs a fallback, a black image is being used.", string.Format(format, args));;
+            string directory = Path.Combine(ImagesPath, folder);
+            if (Directory.Exists(directory))
+            {
+                string[] images = Directory.GetFiles(directory, "*.png");
+                if (images.Length > 0)
+                {
+                    string path = Path.Combine(directory, images[Random.Range(0, images.Length)]);
+                    return TextureReplacement.TryImportTextureFromDisk(path, false, false, out tex);
+                }
+            }
 
-            return LoadingScreen.Mod.GetAsset<Texture2D>("defaultBackground");
+            tex = null;
+            return false;
         }
 
         #endregion

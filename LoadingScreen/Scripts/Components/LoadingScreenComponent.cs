@@ -188,9 +188,7 @@ namespace LoadingScreen.Components
         protected Texture2D ImportTexture(string name)
         {
             Texture2D tex;
-
-            string path = Path.Combine(Path.Combine(LoadingScreenPanel.ImagesPath, "resources"), name);
-            if (!TextureReplacement.TryImportTextureFromDisk(path, false, false, out tex))
+            if (!TextureReplacement.TryImportTextureFromDisk(Path.Combine(LoadingScreenPanel.ResourcesPath, name), false, false, out tex))
                 tex = LoadingScreen.Mod.GetAsset<Texture2D>(name);
 
             return tex;
