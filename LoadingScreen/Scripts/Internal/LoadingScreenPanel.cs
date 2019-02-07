@@ -237,7 +237,7 @@ namespace LoadingScreen
                 if (images.Length > 0)
                 {
                     string path = Path.Combine(directory, images[Random.Range(0, images.Length)]);
-                    return TextureReplacement.TryImportTextureFromDisk(path, false, false, out tex);
+                    return TextureReplacement.TryImportTextureFromLooseFiles(path, false, false, true, out tex);
                 }
             }
 
