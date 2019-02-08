@@ -20,6 +20,7 @@
         "Assets/Game/Addons/LoadingScreen/Scripts/Components/LoadingScreenComponent.cs",
         "Assets/Game/Addons/LoadingScreen/Scripts/Components/QuestsMessages.cs",
         "Assets/Game/Addons/LoadingScreen/Scripts/API/LoadingType.cs",
+        "Assets/Game/Addons/LoadingScreen/Resources/Tips.json",
         "Assets/Game/Addons/LoadingScreen/Resources/BarBackground.png",
         "Assets/Game/Addons/LoadingScreen/Resources/defaultBackground.png",
         "Assets/Game/Addons/LoadingScreen/Resources/BarProgress.png",

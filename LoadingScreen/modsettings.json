@@ -267,13 +267,6 @@
                     "Description": null,
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.TupleIntKey"
-                },
-                {
-                    "Value": "en",
-                    "Name": "Language",
-                    "Description": null,
-                    "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.TextKey"
                 }
             ],
             "$version": "v1"

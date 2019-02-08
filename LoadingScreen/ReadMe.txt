@@ -68,6 +68,7 @@ Changelog
 ---------
 * Unreleased
 - Splash textures are imported from StreamingAssets/Textures/Splash/. If no textures are found, the default black background is used without logging errors.
+- Tips file is now included with the mod for an easier installation. If you want to make a translation send me a PR!
 
 * 2.2.1
 - Compatibility upgrade for Pre-Alpha 0.7.

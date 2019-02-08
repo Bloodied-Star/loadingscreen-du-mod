@@ -112,10 +112,8 @@ namespace LoadingScreen
             Rect rect = GetRect(
                 settings.GetTupleInt(tipsSection, "Position"),
                 settings.GetTupleInt(tipsSection, "Size"));
-            string path = Path.Combine(LoadingScreen.Mod.DirPath, "Tips");
-            string language = settings.GetString(tipsSection, "Language");
 
-            return new DfTips(rect, path, language)
+            return new DfTips(rect)
             {
                 Font = settings.GetInt(tipsSection, "Font"),
                 FontStyle = (FontStyle)settings.GetInt(tipsSection, "FontStyle"),

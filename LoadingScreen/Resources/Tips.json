@@ -1,12 +1,4 @@
 {
-    "header": {
-        "project": "Loading Screen for Daggerfall Unity",
-        "webSite": "http://forums.dfworkshop.net/viewtopic.php?f=14&t=469",
-        "license": "MIT License (http://www.opensource.org/licenses/mit-license.php)",
-        "sourceCode": "https://github.com/TheLacus/loadingscreen-du-mod",
-        "contributors": "TheLacus, Jay_H, Tealy Wolf",
-        "translators": ""
-    },
     "generic": [
         "Ask people if you can't find your horse.",
         "Carts are cheaper alternatives to horses, buy one in a shop.",

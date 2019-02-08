@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -12,6 +12,7 @@ using FullSerializer;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 /*
  * TODO:
@@ -34,19 +35,12 @@ namespace LoadingScreen.Components
 
         class DaggerfallTips
         {
-            public Header header;
             public List<string> generic;
             public Location location;
             public Career career;
             public Character character;
             public Progress progress;
             public List<string> death;
-        }
-
-        class Header
-        {
-            public string
-                project, webSite, license, sourceCode, contributors, translators;
         }
 
         class Location
@@ -108,13 +102,11 @@ namespace LoadingScreen.Components
         /// <summary>
         /// Constructor for Daggerfall Tips.
         /// </summary>
-        /// <param name="path">Folder with language files.</param>
-        /// <param name="language">Name of language file without extension.</param>
-        public DfTips(Rect rect, string path, string language)
+        public DfTips(Rect rect)
             :base(rect, 9)
         {
             this.style.wordWrap = true;
-            this.enabled = ParseTips(path, language);
+            ParseTips();
         }
 
         public override void Draw()
@@ -375,35 +367,16 @@ namespace LoadingScreen.Components
         #region Helpers
 
         /// <summary>
-        /// Load tips from file on disk.
-        /// English file is used as fallback.
+        /// Loads and parses tips from resources.
         /// </summary>
-        /// <param name="path">Folder with language files.</param>
-        /// <param name="language">Name of language file without extension.</param>
-        /// <returns>True if tips can be used.</returns>
-        private bool ParseTips(string path, string language)
+        private void ParseTips()
         {
-            try
-            {
-                var serializedData = File.ReadAllText(Path.Combine(path, language + ".json"));
-                fsData data = fsJsonParser.Parse(serializedData);
+            var textAsset = LoadingScreen.Mod.GetAsset<TextAsset>("Tips");
+            fsData data = fsJsonParser.Parse(textAsset.text);
 
-                if (new fsSerializer().TryDeserialize<DaggerfallTips>(data, ref tips).Succeeded)
-                    return true;
-
-                Debug.LogErrorFormat("Loading Screen: Failed to parse file for {0} tips, " +
-                "cannot display tips without this file!", language);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogErrorFormat("Loading Screen: Failed to parse file for {0} tips, " +
-                    "cannot display tips without this file!\n{1}", language, e.ToString());
-            }
-
-            if (language != "en")
-                return ParseTips(path, "en");
-
-            return false;
+            var result = ModManager._serializer.TryDeserialize(data, ref tips);
+            if (result.HasWarnings)
+                Debug.LogFormat("{0}: {1}", LoadingScreen.Mod.Title, result.FormattedMessages);
         }
 
         /// <summary>
