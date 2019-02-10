@@ -459,7 +459,7 @@
                 {
                     "Min": 0.0,
                     "Max": 1.0,
-                    "Value": 0.25,
+                    "Value": 0.3,
                     "Name": "HorizontalPosition",
                     "Description": null,
                     "$version": "v1",
