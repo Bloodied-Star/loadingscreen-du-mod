@@ -41,7 +41,7 @@ namespace LoadingScreen.Components
             {
                 switch (loadingType)
                 {
-                    case LoadingType.Building:  return Exterior;
+                    case LoadingType.Building:  return Building;
                     case LoadingType.Dungeon:   return Dungeon;
                     default:                    return Exterior;
                 }
