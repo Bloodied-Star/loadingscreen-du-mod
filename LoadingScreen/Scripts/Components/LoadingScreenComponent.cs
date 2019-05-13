@@ -11,6 +11,7 @@ using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 namespace LoadingScreen.Components
 {
@@ -123,6 +124,12 @@ namespace LoadingScreen.Components
         /// </summary>
         /// <param name="saveData">Save being loaded.</param>
         public abstract void OnLoadingScreen(SaveData_v1 saveData);
+
+        /// <summary>
+        /// Called during a fast travel.
+        /// </summary>
+        /// <param name="sender">Travel popup..</param>
+        public abstract void OnLoadingScreen(DaggerfallTravelPopUp sender);
 
         /// <summary>
         /// Called during transition (entering/exiting building).

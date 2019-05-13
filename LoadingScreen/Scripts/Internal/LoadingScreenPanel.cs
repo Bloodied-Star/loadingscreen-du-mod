@@ -17,6 +17,7 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using LoadingScreen.Components;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 namespace LoadingScreen
 {
@@ -27,6 +28,7 @@ namespace LoadingScreen
     {
         void Draw();
         void OnLoadingScreen(SaveData_v1 saveData);
+        void OnLoadingScreen(DaggerfallTravelPopUp source);
         void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args);
         void UpdateScreen();
         void OnEndScreen();
@@ -101,6 +103,23 @@ namespace LoadingScreen
             {
                 if (component.Enabled)
                     component.OnLoadingScreen(saveData);
+            }
+        }
+
+        /// <summary>
+        /// Called during a fast travel.
+        /// </summary>
+        /// <param name="sender">Travel popup.</param>
+        public virtual void OnLoadingScreen(DaggerfallTravelPopUp sender)
+        {
+            CurrentLoadingType = LoadingType.Default;
+            RefreshRect();
+            RefreshBackground();
+
+            foreach (LoadingScreenComponent component in components)
+            {
+                if (component.Enabled)
+                    component.OnLoadingScreen(sender);
             }
         }
 

@@ -13,6 +13,7 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 /*
  * TODO:
@@ -119,6 +120,11 @@ namespace LoadingScreen.Components
             tip = GetTip(saveData);
         }
 
+        public override void OnLoadingScreen(DaggerfallTravelPopUp sender)
+        {
+            tip = GetTip(sender);
+        }
+
         public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
             tip = GetTip(args.TransitionType);
@@ -155,6 +161,31 @@ namespace LoadingScreen.Components
                 case 4:
                     // Location
                     return RandomTip(LocationTips(saveData.playerData.playerPosition.insideDungeon));
+                default:
+                    // Generic tips
+                    return RandomTip(tips.generic);
+            }
+        }
+
+        /// <summary>
+        /// Gets a tip to show on screen for fast travel.
+        /// </summary>
+        /// <param name="sender">Travel popup.</param>
+        /// <returns>Tip</returns>
+        private string GetTip(DaggerfallTravelPopUp sender)
+        {
+            SetSeed();
+            switch (Random.Range(0, 5))
+            {
+                case 0:
+                case 1:
+                    // Scaled on level
+                    int playerLevel = GameManager.Instance.PlayerEntity.Level;
+                    return RandomTip(ScaledTips(playerLevel));
+                case 2:
+                case 3:
+                    // Location
+                    return RandomTip(LocationTips(false));
                 default:
                     // Generic tips
                     return RandomTip(tips.generic);

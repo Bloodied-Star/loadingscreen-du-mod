@@ -10,6 +10,7 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 namespace LoadingScreen.Components
 {
@@ -97,6 +98,11 @@ namespace LoadingScreen.Components
         }
 
         public override void OnLoadingScreen(SaveData_v1 saveData)
+        {
+            MakeTexture();
+        }
+
+        public override void OnLoadingScreen(DaggerfallTravelPopUp sender)
         {
             MakeTexture();
         }

@@ -117,6 +117,9 @@ namespace LoadingScreen
                 SaveLoadManager.OnStartLoad += SaveLoadManager_OnStartLoad;
                 SaveLoadManager.OnLoad += SaveLoadManager_OnLoad;
 
+                DaggerfallTravelPopUp.OnPreFastTravel += DaggerfallTravelPopUp_OnPreFastTravel;
+                DaggerfallTravelPopUp.OnPostFastTravel += DaggerfallTravelPopUp_OnPostFastTravel;
+
                 if (dungeons || buildings)
                 {
                     PlayerEnterExit.OnPreTransition += PlayerEnterExit_OnPreTransition;
@@ -143,6 +146,9 @@ namespace LoadingScreen
             {
                 SaveLoadManager.OnStartLoad -= SaveLoadManager_OnStartLoad;
                 SaveLoadManager.OnLoad -= SaveLoadManager_OnLoad;
+
+                DaggerfallTravelPopUp.OnPreFastTravel -= DaggerfallTravelPopUp_OnPreFastTravel;
+                DaggerfallTravelPopUp.OnPostFastTravel -= DaggerfallTravelPopUp_OnPostFastTravel;
 
                 if (dungeons || buildings)
                 {
@@ -437,6 +443,17 @@ namespace LoadingScreen
 
         // End of save loading
         private void SaveLoadManager_OnLoad(SaveData_v1 saveData)
+        {
+            isLoading = false;
+        }
+
+        private void DaggerfallTravelPopUp_OnPreFastTravel(DaggerfallTravelPopUp sender)
+        {
+            window.Panel.OnLoadingScreen(sender);
+            StartLoadingScreen();
+        }
+
+        private void DaggerfallTravelPopUp_OnPostFastTravel()
         {
             isLoading = false;
         }

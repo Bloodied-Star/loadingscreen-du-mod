@@ -1,4 +1,4 @@
-﻿// Project:         Loading Screen for Daggerfall Unity
+// Project:         Loading Screen for Daggerfall Unity
 // Web Site:        http://forums.dfworkshop.net/viewtopic.php?f=14&t=469
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/TheLacus/loadingscreen-du-mod
@@ -8,6 +8,7 @@
 using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 namespace LoadingScreen.Components
 {
@@ -35,6 +36,11 @@ namespace LoadingScreen.Components
         }
 
         public override void OnLoadingScreen(SaveData_v1 saveData)
+        {
+            label = loadingLabel;
+        }
+
+        public override void OnLoadingScreen(DaggerfallTravelPopUp sender)
         {
             label = loadingLabel;
         }

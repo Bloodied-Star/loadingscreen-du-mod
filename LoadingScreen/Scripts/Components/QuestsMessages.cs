@@ -12,6 +12,7 @@ using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 namespace LoadingScreen.Components
 {
@@ -48,6 +49,14 @@ namespace LoadingScreen.Components
             loadingSave = true;
 
             questMessage = GetQuestMessage();
+        }
+
+        public override void OnLoadingScreen(DaggerfallTravelPopUp sender)
+        {
+            loadingSave = false;
+
+            if (string.IsNullOrEmpty(questMessage = GetQuestMessage()))
+                questMessage = defaultquestMessage;
         }
 
         /// <summary>
