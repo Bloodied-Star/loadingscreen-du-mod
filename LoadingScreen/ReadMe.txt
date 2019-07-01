@@ -1,6 +1,6 @@
 LOADING SCREEN
 
-Version: 2.2.1
+Version: 2.3
 
 Description 
 -----------
@@ -65,7 +65,7 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
-* Unreleased
+* 2.3
 - Splash textures are imported from StreamingAssets/Textures/Splash/. If no textures are found, the default black background is used without logging errors.
 - Tips file is now included with the mod for an easier installation. If you want to make a translation send me a PR!
 - Fixed incorrect models used by Model Viewer for building transitions.
