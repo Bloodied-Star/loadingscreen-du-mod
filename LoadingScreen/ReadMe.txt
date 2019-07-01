@@ -12,8 +12,7 @@ Daggerfall Unity Pre-Alpha 0.7.
 
 Installation
 ------------
-1. Move 'LoadingScreen' folder inside 'StreamingAssets/Mods'.
-2. Pick the correct 'loadingscreen.dfmod' for your OS and place it inside the 'LoadingScreen' folder.
+Pick the correct 'loadingscreen.dfmod' for your OS and place it inside the 'StreamingAssets/Mods' folder.
 
 Background
 -------------
