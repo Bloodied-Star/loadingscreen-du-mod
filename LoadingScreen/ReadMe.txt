@@ -65,6 +65,9 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* Unreleased
+- Skyrim preset is now the default.
+
 * 2.3
 - Splash textures are imported from StreamingAssets/Textures/Splash/. If no textures are found, the default black background is used without logging errors.
 - Tips file is now included with the mod for an easier installation. If you want to make a translation send me a PR!
@@ -116,6 +119,6 @@ Changelog
 
 Credits
 -------
-TheLacus (TheLacus@yandex.com) - developer
+TheLacus - developer
 Jay_H - tips contributor
 Tealy Wolf - tips contributor

@@ -122,6 +122,46 @@
         "$version": "v1"
     },
     {
+        "Title": "Skyrim Sprites",
+        "Author": null,
+        "Description": "A loading screen inspired by Skyrim but with sprites.",
+        "SettingsVersion": "1.4",
+        "Values": {
+            "LoadingLabel": {
+                "Enable": "False"
+            },
+            "Tips": {
+                "Enable": "True",
+                "Font": "6",
+                "FontColor": "FFFFFFFF",
+                "FontStyle": "3",
+                "Position": "-4,-5",
+                "Size": "26,9"
+            },
+            "Quests": {
+                "Enable": "False"
+            },
+            "LevelProgress": {
+                "Enable": "True",
+                "Text": "Level %",
+                "Font": "3",
+                "FontColor": "FFFFFF55",
+                "Position": "-4,11",
+                "Size": "20,4"
+            },
+            "EnemyPreview": {
+                "Enable": "True",
+                "Position": "1,1",
+                "Size": "60,98",
+                "Background": "False"
+            },
+            "ModelViewer": {
+                "Enable": "False"
+            }
+        },
+        "$version": "v1"
+    },
+    {
         "Title": "Oblivion",
         "Author": null,
         "Description": "A loading screen inspired by Oblivion",
