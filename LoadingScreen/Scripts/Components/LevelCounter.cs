@@ -18,6 +18,8 @@ namespace LoadingScreen.Components
     /// </summary>
     public class LevelCounter : LoadingScreenComponent
     {
+        #region Fields
+
         readonly Texture2D barBackground;
         readonly Texture2D barForeGround;
 
@@ -30,11 +32,17 @@ namespace LoadingScreen.Components
         string label;
         string labelFormat;
 
+        #endregion
+
+        #region Properties
+
         public string LabelFormat
         {
             get { return labelFormat; }
             set { SetLabelFormat(value); }
         }
+
+        #endregion
 
         #region Public Methods
 
@@ -63,17 +71,18 @@ namespace LoadingScreen.Components
 
         public override void OnLoadingScreen(SaveData_v1 saveData)
         {
-            UpdateLevelCounter(saveData.playerData.playerEntity.level);
+            var playerEntity = saveData.playerData.playerEntity;
+            UpdateLevelCounter(playerEntity.level, playerEntity.startingLevelUpSkillSum, playerEntity.currentLevelUpSkillSum);
         }
 
         public override void OnLoadingScreen(DaggerfallTravelPopUp sender)
         {
-            UpdateLevelCounter(GameManager.Instance.PlayerEntity.Level);
+            UpdateLevelCounter();
         }
 
         public override void OnLoadingScreen(PlayerEnterExit.TransitionEventArgs args)
         {
-            UpdateLevelCounter(GameManager.Instance.PlayerEntity.Level);
+            UpdateLevelCounter();
         }
 
         public override void RefreshRect()
@@ -83,9 +92,21 @@ namespace LoadingScreen.Components
             SetRects();
         }
 
-        public void UpdateLevelCounter(int level)
+        /// <summary>
+        /// Updates level counter from current player entity.
+        /// </summary>
+        public void UpdateLevelCounter()
         {
-            progress = CalcProgress();
+            var playerEntity = GameManager.Instance.PlayerEntity;
+            UpdateLevelCounter(playerEntity.Level, playerEntity.StartingLevelUpSkillSum, playerEntity.CurrentLevelUpSkillSum);
+        }
+
+        /// <summary>
+        /// Updates level counter from given stats.
+        /// </summary>
+        public void UpdateLevelCounter(int level, int startingLevelUpSkillSum, int currentLevelUpSkillSum = 0)
+        {
+            progress = currentLevelUpSkillSum != 0 ? (currentLevelUpSkillSum - startingLevelUpSkillSum + 28f) / 15f % 1 : 0;
             label = string.Format(LabelFormat, level);
             groupRect = new Rect(rect.x + rect.width * 0.5f, rect.y, rect.width * 0.5f * progress, rect.height);
         }
@@ -110,13 +131,6 @@ namespace LoadingScreen.Components
                 labelFormat = string.Format("{0} {1}", format, "{0}");
         }
 
-        private float CalcProgress()
-        {
-            PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
-            float currentLevel = (playerEntity.CurrentLevelUpSkillSum - playerEntity.StartingLevelUpSkillSum + 28f) / 15f;
-            return currentLevel % 1;
-        }
-        
         #endregion
     }
 }
