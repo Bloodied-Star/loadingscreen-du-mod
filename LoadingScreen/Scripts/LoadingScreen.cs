@@ -39,6 +39,11 @@ namespace LoadingScreen
         bool isLoading = false;
         bool fadeFromBlack = false;
 
+#if UNITY_EDITOR
+        [Tooltip("If not -1 this is the modelID used by ModelViewer.")]
+        public int OverrideModelID = -1;
+#endif
+
         #endregion
 
         #region Properties

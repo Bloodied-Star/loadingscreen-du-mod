@@ -68,6 +68,7 @@ Changelog
 * Unreleased
 - Skyrim preset is now the default.
 - Fixed level progress bar that was incorrect when loading a new save.
+- Fixed rotation for a few models.
 
 * 2.3
 - Splash textures are imported from StreamingAssets/Textures/Splash/. If no textures are found, the default black background is used without logging errors.

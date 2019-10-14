@@ -126,9 +126,10 @@ namespace LoadingScreen.Components
             Camera camera = GetCamera(go);
 
             // Load model
-            GameObject model = LoadModel(go.transform);
+            uint modelID = GetModelID();
+            GameObject model = LoadModel(go.transform, modelID);
             model.layer = go.layer;
-            model.transform.Rotate(Vector3.up, 135, Space.Self);
+            model.transform.Rotate(Vector3.up, 135 + GetRotation(modelID), Space.Self);
             Renderer renderer = model.GetComponent<Renderer>();
             if (renderer)
             {
@@ -184,11 +185,19 @@ namespace LoadingScreen.Components
             DestroyGameObject(go);
         }
 
-        private GameObject LoadModel(Transform parent)
+        private uint GetModelID()
         {
-            uint[] modelIDs = ModelIDs.Get(Parent.CurrentLoadingType);
-            uint modelID = modelIDs[Random.Range(0, modelIDs.Length)];
+#if UNITY_EDITOR
+            if (LoadingScreen.Instance.OverrideModelID != -1)
+                return (uint)LoadingScreen.Instance.OverrideModelID;
+#endif
 
+            uint[] modelIDs = ModelIDs.Get(Parent.CurrentLoadingType);
+            return modelIDs[Random.Range(0, modelIDs.Length)];
+        }
+
+        private GameObject LoadModel(Transform parent, uint modelID)
+        {
             return MeshReplacement.ImportCustomGameobject(modelID, parent, Matrix4x4.identity) ??
                 GameObjectHelper.CreateDaggerfallMeshGameObject(modelID, parent);
         }
@@ -208,6 +217,21 @@ namespace LoadingScreen.Components
                 DestroyGameObject(transform.gameObject);
 
             GameObject.Destroy(go);
+        }
+
+        private static int GetRotation(uint modelID)
+        {
+            switch (modelID)
+            {
+                case 41001:
+                    return 90;
+
+                case 43307:
+                    return 180;
+
+                default:
+                    return 0;
+            }
         }
 
         #endregion
