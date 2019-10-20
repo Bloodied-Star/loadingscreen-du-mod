@@ -1,9 +1,9 @@
 {
     "ModTitle": "Loading Screen",
-    "ModVersion": "2.3",
+    "ModVersion": "2.4",
     "ModAuthor": "TheLacus",
     "ContactInfo": "",
-    "DFUnity_Version": "0.8.x",
+    "DFUnity_Version": "0.10.8",
     "ModDescription": "A customizable loading screen for Daggerfall Unity.",
     "GUID": "f9590cc9-4efc-4048-a370-1cfa99ba532d",
     "Files": [

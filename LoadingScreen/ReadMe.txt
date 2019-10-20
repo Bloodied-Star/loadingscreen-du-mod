@@ -1,6 +1,6 @@
 LOADING SCREEN
 
-Version: 2.3
+Version: 2.4
 
 Description 
 -----------
@@ -8,7 +8,7 @@ A customizable loading screen for Daggerfall Unity.
 
 Prerequisites
 -------------
-Daggerfall Unity Pre-Alpha 0.7.
+Daggerfall Unity 0.10.8.
 
 Installation
 ------------
@@ -65,7 +65,7 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
-* Unreleased
+* 2.4
 - Skyrim preset is now the default.
 - Fixed level progress bar that was incorrect when loading a new save.
 - Fixed rotation for a few models.
