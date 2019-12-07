@@ -128,6 +128,7 @@ namespace LoadingScreen
                 if (dungeons || buildings)
                 {
                     PlayerEnterExit.OnPreTransition += PlayerEnterExit_OnPreTransition;
+                    PlayerEnterExit.OnFailedTransition += PlayerEnterExit_OnFailedTransition;
 
                     if (dungeons)
                     {
@@ -158,6 +159,7 @@ namespace LoadingScreen
                 if (dungeons || buildings)
                 {
                     PlayerEnterExit.OnPreTransition -= PlayerEnterExit_OnPreTransition;
+                    PlayerEnterExit.OnFailedTransition += PlayerEnterExit_OnFailedTransition;
 
                     if (dungeons)
                     {
@@ -471,6 +473,11 @@ namespace LoadingScreen
                 window.Panel.OnLoadingScreen(args);
                 StartLoadingScreen();
             }
+        }
+
+        private void PlayerEnterExit_OnFailedTransition(PlayerEnterExit.TransitionEventArgs args)
+        {
+            isLoading = false;
         }
 
         // End of transition

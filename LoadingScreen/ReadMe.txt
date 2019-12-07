@@ -65,6 +65,10 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* Unreleased
+- Fixed an issue that caused an infinite loading screen when the game failed to layout transition target.
+  For example this happened when the game shows "This house has nothing of value.".
+
 * 2.4
 - Skyrim preset is now the default.
 - Fixed level progress bar that was incorrect when loading a new save.
