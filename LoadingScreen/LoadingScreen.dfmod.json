@@ -1,9 +1,9 @@
 {
     "ModTitle": "Loading Screen",
-    "ModVersion": "2.4",
+    "ModVersion": "2.4.1",
     "ModAuthor": "TheLacus",
     "ContactInfo": "",
-    "DFUnity_Version": "0.10.8",
+    "DFUnity_Version": "0.10.14",
     "ModDescription": "A customizable loading screen for Daggerfall Unity.",
     "GUID": "f9590cc9-4efc-4048-a370-1cfa99ba532d",
     "Files": [
@@ -28,5 +28,6 @@
         "Assets/Game/Mods/LoadingScreen/Scripts/Components/ModelViewer.cs",
         "Assets/Game/Mods/LoadingScreen/Resources/Particle Add (RGBA).shader",
         "Assets/Game/Mods/LoadingScreen/Scripts/External/LoadingScreenConsoleCommands.cs"
-    ]
+    ],
+    "Contributes": null
 }

@@ -21,8 +21,8 @@ bothering the player with notions that have already been found in game.
 + Import your own png images from disk
 
 ## Info
-+ Version: 2.3
-+ Daggerfall Unity Version: 0.10.8.
++ Version: 2.4.1
++ Daggerfall Unity Version: 0.10.14.
 + [LoadingScreen on Daggerfall Unity forums](http://forums.dfworkshop.net/viewtopic.php?f=14&t=469)
 + [Download](http://forums.dfworkshop.net/viewtopic.php?f=22&t=456)
 
