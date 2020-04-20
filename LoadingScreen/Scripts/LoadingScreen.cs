@@ -38,6 +38,8 @@ namespace LoadingScreen
         bool isEnabled = false;
         bool isLoading = false;
         bool fadeFromBlack = false;
+        bool listenForExternalErrors = false;
+        bool externalErrors = false;
 
 #if UNITY_EDITOR
         [Tooltip("If not -1 this is the modelID used by ModelViewer.")]
@@ -255,11 +257,13 @@ namespace LoadingScreen
         /// </summary>
         private IEnumerator DoLoadingScreen()
         {
+            ListenForExternalErrors(true);
+
             // Time spent on the loading screen
             float timeCounter = 0;
 
             // Wait for end of loading
-            while (isLoading)
+            while (isLoading && !externalErrors)
             {
                 window.Panel.UpdateScreen();
                 timeCounter += Time.deltaTime;
@@ -268,7 +272,7 @@ namespace LoadingScreen
 
             // Pause the game and wait for MinimumWait
             // If this is not required by settings, MinimumWait is zero
-            if (timeCounter < minimumWait)
+            if (timeCounter < minimumWait && !externalErrors)
             {
                 fadeFromBlack = true;
                 GameManager.Instance.PauseGame(true, true);
@@ -280,14 +284,14 @@ namespace LoadingScreen
             }
 
             // Pause the game and show 'press-any-key' screen (if required by settings)
-            if (pressAnyKey)
+            if (pressAnyKey && !externalErrors)
             {
                 fadeFromBlack = true;
                 window.Panel.OnEndScreen();
                 GameManager.Instance.PauseGame(true, true);
 
                 // Wait for imput
-                while (!Input.anyKey)
+                while (!Input.anyKey && !externalErrors)
                     yield return null;
             }
 
@@ -304,6 +308,8 @@ namespace LoadingScreen
                 yield return new WaitForSeconds(0.5f);
                 fadeFromBlack = false;
             }
+
+            ListenForExternalErrors(false);
         }
 
         /// <summary>
@@ -316,13 +322,15 @@ namespace LoadingScreen
         /// </remarks>
         private IEnumerator DoDeathScreen()
         {
+            ListenForExternalErrors(true);
+
             // Wait for user death
             var playerDeath = GameManager.Instance.PlayerDeath;
-            while (playerDeath.DeathInProgress)
+            while (playerDeath.DeathInProgress && !externalErrors)
                 yield return null;
 
             // Death video
-            if (!disableVideo)
+            if (!disableVideo && !externalErrors)
             {
                 // Let the video starts
                 yield return new WaitForSecondsRealtime(1);
@@ -337,7 +345,7 @@ namespace LoadingScreen
                 }
 
                 // Wait for end of video
-                while (player.IsPlaying)
+                while (player.IsPlaying && !externalErrors)
                     yield return null;
             }
 
@@ -349,13 +357,15 @@ namespace LoadingScreen
             window.Enabled = true;
 
             // Wait for imput
-            while (!Input.anyKey)
+            while (!Input.anyKey && !externalErrors)
                 yield return null;
 
             // Remove death screen
             window.Enabled = false;
             window.Panel.OnEndDeathScreen();
             AudioListener.pause = false;
+
+            ListenForExternalErrors(false);
         }
 
         /// <summary>
@@ -390,6 +400,30 @@ namespace LoadingScreen
             }
 
             GameManager.Instance.PauseGame(false);
+        }
+
+        /// <summary>
+        /// Checks log messages and terminates loading screen if an exception or error is logged.
+        /// This avoid the issue of "infinite loading screen" which can led people to believe
+        /// loading screen itself is the cause of problems originated by an exception thrown somewhere else.
+        /// </summary>
+        /// <param name="enabled">Starts or stops listening.</param>
+        private void ListenForExternalErrors(bool enabled)
+        {
+            if (enabled == listenForExternalErrors)
+                return;
+
+            if (enabled)
+            {
+                externalErrors = false;
+                Application.logMessageReceived += Application_LogMessageReceived;
+            }
+            else if (!externalErrors)
+            {
+                Application.logMessageReceived -= Application_LogMessageReceived;
+            }
+
+            listenForExternalErrors = enabled;
         }
 
         private bool ShowOnTransitionType(TransitionType transition)
@@ -489,6 +523,17 @@ namespace LoadingScreen
         private void PlayerDeath_OnPlayerDeath(object sender, System.EventArgs e)
         {
             StartCoroutine(DoDeathScreen());
+        }
+
+        private void Application_LogMessageReceived(string logString, string stackTrace, LogType type)
+        {
+            if (type == LogType.Exception || type == LogType.Error)
+            {
+                externalErrors = true;
+                Application.logMessageReceived -= Application_LogMessageReceived;
+                Debug.LogWarning("Loading Screen detected an outgoing error message via Unity API and terminated to avoid an infinite loading screen." +
+                    " Unless the log suggests otherwise, this is NOT an issue with Loading Screen itself nor a compatibility issue with Loading Screen.");
+            }
         }
 
         #endregion
