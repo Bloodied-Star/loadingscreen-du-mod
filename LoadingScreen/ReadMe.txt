@@ -1,6 +1,6 @@
 LOADING SCREEN
 
-Version: 2.4.1
+Version: 2.5.0
 
 Description 
 -----------
@@ -8,7 +8,7 @@ A customizable loading screen for Daggerfall Unity.
 
 Prerequisites
 -------------
-Daggerfall Unity 0.10.8.
+Daggerfall Unity 0.10.22.
 
 Installation
 ------------
@@ -65,7 +65,7 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
-* Unreleased
+* 2.5.0
 - Support live changes to mod settings.
 - Update presets.
 
