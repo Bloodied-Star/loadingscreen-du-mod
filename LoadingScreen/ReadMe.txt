@@ -65,6 +65,9 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* Unreleased
+- Support live changes to mod settings.
+
 * 2.4.1
 - Fixed an issue that caused an infinite loading screen when the game failed to layout transition target.
   For example this happened when the game shows "This house has nothing of value.".

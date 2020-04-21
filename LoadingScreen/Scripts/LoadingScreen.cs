@@ -12,6 +12,7 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using TransitionType = DaggerfallWorkshop.Game.PlayerEnterExit.TransitionType;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 
 namespace LoadingScreen
 {
@@ -83,7 +84,8 @@ namespace LoadingScreen
 
         void Awake()
         {
-            SetupMod();
+            Mod.LoadSettingsCallback = LoadSettings;
+            Mod.LoadSettings();
             Mod.MessageReceiver = MessageReceiver;
             LoadingScreenConsoleCommands.RegisterCommands();
         }
@@ -222,9 +224,8 @@ namespace LoadingScreen
         /// <summary>
         /// Load settings and init window.
         /// </summary>
-        private void SetupMod()
+        private void LoadSettings(ModSettings settings, ModSettingsChange change)
         {
-            var settings = Mod.GetSettings();
             guiDepth = settings.GetValue<int>("UiSettings", "GuiDepth");
 
             // General
