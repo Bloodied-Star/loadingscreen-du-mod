@@ -3,7 +3,7 @@
         "Title": "Big dots",
         "Author": null,
         "Description": "A simple and clean loading screen.",
-        "SettingsVersion": "1.4",
+        "SettingsVersion": "1.5",
         "Values": {
             "LoadingLabel": {
                 "Enable": "True",
@@ -39,7 +39,7 @@
         "Title": "Dishonored 2",
         "Author": null,
         "Description": "A loading screen inspired by Dishonored 2",
-        "SettingsVersion": "1.4",
+        "SettingsVersion": "1.5",
         "Values": {
             "LoadingLabel": {
                 "Enable": "True",
@@ -86,7 +86,7 @@
         "Title": "Skyrim",
         "Author": null,
         "Description": "A loading screen inspired by Skyrim",
-        "SettingsVersion": "1.4",
+        "SettingsVersion": "1.5",
         "Values": {
             "LoadingLabel": {
                 "Enable": "False"
@@ -125,7 +125,7 @@
         "Title": "Skyrim Sprites",
         "Author": null,
         "Description": "A loading screen inspired by Skyrim but with sprites.",
-        "SettingsVersion": "1.4",
+        "SettingsVersion": "1.5",
         "Values": {
             "LoadingLabel": {
                 "Enable": "False"
@@ -165,7 +165,7 @@
         "Title": "Oblivion",
         "Author": null,
         "Description": "A loading screen inspired by Oblivion",
-        "SettingsVersion": "1.4",
+        "SettingsVersion": "1.5",
         "Values": {
             "LoadingLabel": {
                 "Enable": "False"

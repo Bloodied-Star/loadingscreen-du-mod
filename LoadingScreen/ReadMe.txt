@@ -67,6 +67,7 @@ Changelog
 ---------
 * Unreleased
 - Support live changes to mod settings.
+- Update presets.
 
 * 2.4.1
 - Fixed an issue that caused an infinite loading screen when the game failed to layout transition target.
