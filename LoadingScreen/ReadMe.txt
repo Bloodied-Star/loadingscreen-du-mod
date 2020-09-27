@@ -65,6 +65,9 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
+* Unreleased
+- Compatibility upgrade.
+
 * 2.5.0
 - Support live changes to mod settings.
 - Update presets.

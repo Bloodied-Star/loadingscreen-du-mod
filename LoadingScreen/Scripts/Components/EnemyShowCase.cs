@@ -120,7 +120,7 @@ namespace LoadingScreen.Components
 
             // Set fields
             enemyTexture = ImageReader.GetTexture(fileName, record, frame, true);
-            enemyName = mobileEnemy.Name;
+            enemyName = TextManager.Instance.GetLocalizedEnemyName(mobileEnemy.ID);
         }
 
         private static Texture2D GetBackgroundTexture()
