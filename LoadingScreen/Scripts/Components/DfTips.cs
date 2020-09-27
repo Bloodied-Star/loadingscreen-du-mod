@@ -59,12 +59,6 @@ namespace LoadingScreen.Components
         class Character
         {
             public Dictionary<string, List<string>> race;
-            public Gender gender;
-        }
-
-        class Gender
-        {
-            public List<string> male, female;
         }
 
         class Progress
@@ -280,9 +274,6 @@ namespace LoadingScreen.Components
             // Race
             tips.AddRange(RaceTip((Races)data.raceTemplate.ID));
 
-            // Gender
-            tips.AddRange(GenderTip(data.gender));
-
             // Others
             HealthTips(tips, data.currentHealth, data.maxHealth);
             GoldTips(tips, data.goldPieces);
@@ -303,9 +294,6 @@ namespace LoadingScreen.Components
 
             // Race
             tips.AddRange(RaceTip((Races)player.RaceTemplate.ID));
-
-            // Gender
-            tips.AddRange(GenderTip(player.Gender));
 
             // Others
             HealthTips(tips, player.CurrentHealth, player.MaxHealth);
@@ -333,24 +321,6 @@ namespace LoadingScreen.Components
                 return RaceTip(Races.None);
 
             return fallbackTips;
-        }
-
-        /// <summary>
-        /// Gender-specific tips
-        /// </summary>
-        /// <param name="gender">Gender of charachter.</param>
-        /// <returns>Tip for gender</returns>
-        private List<string> GenderTip(Genders gender)
-        {
-            switch (gender)
-            {
-                case Genders.Male:
-                default:
-                    return tips.character.gender.male;
-
-                case Genders.Female:
-                    return tips.character.gender.female;
-            }
         }
 
         private void HealthTips(List<string> list, int current, int max)

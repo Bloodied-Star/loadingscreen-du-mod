@@ -114,15 +114,19 @@
     },
     "career": {
         "LOWHEALT": [
-            "You can restore health using spells, potions or resting."
+            "You can restore health using spells, potions or resting.",
+            "Visit a tavern to buy food and restore your health.",
+            "Health can be restored in a Temple for free under certain Circumstances."
         ],
         "LOWGOLD": [
             "Gold can be obtained from enemies, dungeons or by selling items.",
-            "Banks can give you a loan if you're short on money."
+            "Banks can give you a loan if you're short on money.",
+            "Reputation will drop if a loan is not paid back in time..."
         ],
         "HIGHGOLD": [
             "You can turn gold in Letters of Credit at banks.",
-            "Coins have a weight, consider converting money into letters of credit."
+            "Coins have a weight, consider converting money into letters of credit.",
+            "A letter of credit can be used to transfer money to another region."
         ],
         "LOWLEVEL": [
             "Practice your skills to increase level.",
@@ -154,7 +158,8 @@
             ],
             "Khajiit": [
                 "Khajiites are great climbers (and thieves).",
-                "Elsweyr is the homeland of the Khajiiti. They are known for being adept thieves."
+                "Elsweyr is the homeland of the Khajiiti. They are known for being adept thieves.",
+                "Khajiit paint their face to look like the cats of the desert.",
             ],
             "Nord": [
                 "Nords are strong and resistant to cold temperature.",
@@ -190,25 +195,17 @@
             "None": [
                 "There are eight races in Daggerfall..."
             ]
-        },
-        "gender": {
-            "male": [
-                "If you're wearing it, it's probably a male armor."
-            ],
-            "female": [
-                "If you're wearing it, it's probably a female armor."
-            ]
         }
     },
     "progress": {
         "basic": [
             "Try visiting a town in a different season, if you're not in the desert...",
-            "Eight Divines, eight temples",
+            "Eight Divines, eight temples.",
             "If you're lost, ask people in town for directions",
-            "People will react differently according to your reputation",
-            "Diagonal Slashes, Horizontal Slashes, Vertical Chops and Thrust Forward",
-            "Daggerfall horses make travel shorter and faster, even more than a cart",
-            "Improve your reputation doing quests",
+            "People will react differently according to your reputation.",
+            "Diagonal Slashes, Horizontal Slashes, Vertical Chops and Thrust Forward.",
+            "Daggerfall horses make travel shorter and faster, even more than a cart.",
+            "Reputation can be improved doing quests.",
             "If you need to make an expensive purchase, use a letter of credit instead of holding all the gold.",
             "You must wait for at least 6 hours after your last skill increase in order to level up.",
             "Leveling is based on increasing a mixture of your primary, major, and minor skills.",
@@ -217,8 +214,8 @@
         "advanced": [
             "Legends talk about an Order of the Lamp, but nobody can prove its existence...",
             "Horses can be even faster with levitation...",
-            "Levitation allows a ranged attack from the air",
-            "Unlike Fast Travel, Teleportation is instantaneous. It's magic after all",
+            "Levitation allows a ranged attack from the air.",
+            "Unlike Fast Travel, Teleportation is instantaneous. It's magic after all.",
             "Try backing off an enemy before he finishes an attack to dodge it.",
             "If you must get past an enemy and are having trouble killing it, lure it into a room to bypass it."
         ]
