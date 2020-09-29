@@ -128,7 +128,7 @@ namespace LoadingScreen.Components
             // Load model
             uint modelID = GetModelID();
             GameObject model = LoadModel(go.transform, modelID);
-            model.layer = go.layer;
+            SetLayer(model.transform, go.layer);
             model.transform.Rotate(Vector3.up, 135 + GetRotation(modelID), Space.Self);
             Renderer renderer = model.GetComponent<Renderer>();
             if (renderer)
@@ -209,6 +209,14 @@ namespace LoadingScreen.Components
         private static Camera GetCamera(GameObject go)
         {
             return go.transform.Find("Camera").GetComponent<Camera>();
+        }
+
+        private static void SetLayer(Transform transform, int layer)
+        {
+            transform.gameObject.layer = layer;
+            int childCount = transform.childCount;
+            for (int i = 0; i < childCount; i++)
+                SetLayer(transform.GetChild(i), layer);
         }
 
         private static void DestroyGameObject(GameObject go)
