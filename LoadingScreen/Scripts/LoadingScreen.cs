@@ -45,6 +45,9 @@ namespace LoadingScreen
 #if UNITY_EDITOR
         [Tooltip("If not -1 this is the modelID used by ModelViewer.")]
         public int OverrideModelID = -1;
+
+        [Tooltip("If not -1 this is the rotation used by ModelViewer.")]
+        public int OverrideModelRotation = -1;
 #endif
 
         #endregion

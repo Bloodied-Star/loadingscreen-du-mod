@@ -25,17 +25,19 @@ namespace LoadingScreen.Components
         {
             static readonly uint[] Exterior = new uint[]
             {
-                21203, 41215, 41222, 41241, 43022, 43085, 43206, 43307, 43728
+                21203, 41222, 41241, 43022, 43085, 43206, 43307, 43728, 43202, 43730, 462, 402, 430, 223, 300,
+                440, 62310, 845, 852, 20727, 305, 41235, 41501, 43045
             };
 
             static readonly uint[] Building = new uint[]
             {
-                41001, 41004, 41027, 41120
+                41001, 41004, 41027, 41120, 43732, 20620, 41117, 41003, 41017, 40719, 40721, 41009
             };
 
             static readonly uint[] Dungeon = new uint[]
             {
-                41048, 41021, 41123, 41303, 41402, 41407, 62324, 74224
+                41048, 41021, 41123, 41303, 41402, 41407, 62324, 74224, 41301, 74112, 56000, 61018, 60506, 61020,
+                41300, 41403
             };
 
             public static uint[] Get(int loadingType)
@@ -164,9 +166,9 @@ namespace LoadingScreen.Components
 
                 // Do mist. Shader must use ColorMask RGBA, otherwise the final color on render texture is (r*0, g*0, b*0).
                 Transform mist = go.transform.Find("Mist");
-                Vector3 mistPos = mist.position;
-                mistPos.z = pos.z;
-                mist.position = mistPos;
+                //Vector3 mistPos = mist.position;
+                //mistPos.z = pos.z;
+                //mist.position = mistPos;
                 mist.GetComponent<ParticleSystem>().Play();
             }
 
@@ -229,12 +231,35 @@ namespace LoadingScreen.Components
 
         private static int GetRotation(uint modelID)
         {
+#if UNITY_EDITOR
+            if (LoadingScreen.Instance.OverrideModelRotation != -1)
+                return LoadingScreen.Instance.OverrideModelRotation;
+#endif
+
             switch (modelID)
             {
+                case 56000:
+                case 305:
+                case 41235:
+                case 41501:
+                    return -90;
+
                 case 41001:
+                case 43202:
+                case 300:
+                case 440:
+                case 61020:
+                case 20727:
+                case 40721:
                     return 90;
 
                 case 43307:
+                case 223:
+                case 708:
+                case 74112:
+                case 61018:
+                case 845:
+                case 852:
                     return 180;
 
                 default:
