@@ -131,46 +131,11 @@ namespace LoadingScreen.Components
             uint modelID = GetModelID();
             GameObject model = LoadModel(go.transform, modelID);
             SetLayer(model.transform, go.layer);
-            model.transform.Rotate(Vector3.up, 135 + GetRotation(modelID), Space.Self);
-            Renderer renderer = model.GetComponent<Renderer>();
-            if (renderer)
-            {
-                Bounds bounds = renderer.bounds;
-                Vector3 pos = model.transform.position;
-                Vector3 size = bounds.size;
-                Vector3 center = bounds.center;
-                Vector3 extents = bounds.extents;
-                Vector3 offset = new Vector3(pos.x - center.x, pos.y - center.y, pos.z - center.z);
+            SetPosition(model.transform, modelID, camera, horizontalPosition);
 
-                // Calc position to fill camera frustum.
-                pos.y = pos.y + offset.y;
-                pos.z = size.y * 0.5f / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad) + (size.z * 0.5f + offset.z);
-                pos.x = camera.ScreenToWorldPoint(new Vector3(camera.pixelWidth * horizontalPosition, camera.pixelHeight * 0.5f, pos.z)).x + offset.x;                   
-
-                // Horizontally clamp on screen
-                if (horizontalPosition <= 0.5f)
-                {
-                    float leftOffset = camera.ScreenToWorldPoint(new Vector3(0, camera.pixelHeight * 0.5f, pos.z)).x - (pos.x - offset.x - extents.x);
-                    if (leftOffset > 0)
-                        pos.x += leftOffset;
-                }
-                else
-                { 
-                    float rightOffset =  (pos.x - offset.x + extents.x) - camera.ScreenToWorldPoint(new Vector3(camera.pixelWidth, camera.pixelHeight * 0.5f, pos.z)).x;
-                    if (rightOffset > 0)
-                        pos.x -= rightOffset;
-                }
-
-                // Assign position
-                model.transform.position = pos;
-
-                // Do mist. Shader must use ColorMask RGBA, otherwise the final color on render texture is (r*0, g*0, b*0).
-                Transform mist = go.transform.Find("Mist");
-                //Vector3 mistPos = mist.position;
-                //mistPos.z = pos.z;
-                //mist.position = mistPos;
-                mist.GetComponent<ParticleSystem>().Play();
-            }
+            // Do mist. Shader must use ColorMask RGBA, otherwise the final color on render texture is (r*0, g*0, b*0).
+            Transform mist = go.transform.Find("Mist");
+            mist.GetComponent<ParticleSystem>().Play();
 
             // Make texture
             RenderTexture renderTexture = RenderTexture.GetTemporary((int)rect.size.x, (int)rect.size.y, 16, RenderTextureFormat.Default, RenderTextureReadWrite.Default, 8);
@@ -183,7 +148,6 @@ namespace LoadingScreen.Components
             // Dispose components
             RenderTexture.active = null;
             RenderTexture.ReleaseTemporary(renderTexture);
-            renderTexture = null;
             DestroyGameObject(go);
         }
 
@@ -206,19 +170,62 @@ namespace LoadingScreen.Components
 
         #endregion
 
-        #region Static Methods
+        #region Public Helpers
 
-        private static Camera GetCamera(GameObject go)
-        {
-            return go.transform.Find("Camera").GetComponent<Camera>();
-        }
-
-        private static void SetLayer(Transform transform, int layer)
+        public static void SetLayer(Transform transform, int layer)
         {
             transform.gameObject.layer = layer;
             int childCount = transform.childCount;
             for (int i = 0; i < childCount; i++)
                 SetLayer(transform.GetChild(i), layer);
+        }
+
+        public static void SetPosition(Transform transform, uint modelID, Camera camera, float horizontalPosition, int rotation = -1)
+        {
+            if (rotation == -1)
+                rotation = GetRotation(modelID);
+            transform.Rotate(Vector3.up, 135 + rotation, Space.Self);
+            Renderer renderer = transform.GetComponent<Renderer>();
+            if (renderer)
+            {
+                Bounds bounds = renderer.bounds;
+                Vector3 pos = transform.position;
+                Vector3 size = bounds.size;
+                Vector3 center = bounds.center;
+                Vector3 extents = bounds.extents;
+                Vector3 offset = new Vector3(pos.x - center.x, pos.y - center.y, pos.z - center.z);
+
+                // Calc position to fill camera frustum.
+                pos.y = pos.y + offset.y;
+                pos.z = size.y * 0.5f / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad) + (size.z * 0.5f + offset.z);
+                pos.x = camera.ScreenToWorldPoint(new Vector3(camera.pixelWidth * horizontalPosition, camera.pixelHeight * 0.5f, pos.z)).x + offset.x;
+
+                // Horizontally clamp on screen
+                if (horizontalPosition <= 0.5f)
+                {
+                    float leftOffset = camera.ScreenToWorldPoint(new Vector3(0, camera.pixelHeight * 0.5f, pos.z)).x - (pos.x - offset.x - extents.x);
+                    if (leftOffset > 0)
+                        pos.x += leftOffset;
+                }
+                else
+                {
+                    float rightOffset = (pos.x - offset.x + extents.x) - camera.ScreenToWorldPoint(new Vector3(camera.pixelWidth, camera.pixelHeight * 0.5f, pos.z)).x;
+                    if (rightOffset > 0)
+                        pos.x -= rightOffset;
+                }
+
+                // Assign position
+                transform.position = pos;
+            }
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        private static Camera GetCamera(GameObject go)
+        {
+            return go.transform.Find("Camera").GetComponent<Camera>();
         }
 
         private static void DestroyGameObject(GameObject go)
@@ -232,7 +239,7 @@ namespace LoadingScreen.Components
         private static int GetRotation(uint modelID)
         {
 #if UNITY_EDITOR
-            if (LoadingScreen.Instance.OverrideModelRotation != -1)
+            if (LoadingScreen.Instance && LoadingScreen.Instance.OverrideModelRotation != -1)
                 return LoadingScreen.Instance.OverrideModelRotation;
 #endif
 
