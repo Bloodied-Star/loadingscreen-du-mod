@@ -27,6 +27,7 @@
         "Assets/Game/Mods/LoadingScreen/Resources/ModelViewer.prefab",
         "Assets/Game/Mods/LoadingScreen/Scripts/Components/ModelViewer.cs",
         "Assets/Game/Mods/LoadingScreen/Resources/Particle Add (RGBA).shader",
-        "Assets/Game/Mods/LoadingScreen/Scripts/External/LoadingScreenConsoleCommands.cs"
+        "Assets/Game/Mods/LoadingScreen/Scripts/External/LoadingScreenConsoleCommands.cs",
+        "Assets/Game/Mods/LoadingScreen/Resources/ModelViewerDatabase.json"
     ]
 }

@@ -11,6 +11,9 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
+using System.Collections.Generic;
+using DaggerfallWorkshop.Game.Utility.ModSupport;
+using FullSerializer;
 
 namespace LoadingScreen.Components
 {
@@ -19,41 +22,9 @@ namespace LoadingScreen.Components
     /// </summary>
     public class ModelViewer : LoadingScreenComponent
     {
-        #region ModelIDs
-
-        private static class ModelIDs
-        {
-            static readonly uint[] Exterior = new uint[]
-            {
-                21203, 41222, 41241, 43022, 43085, 43206, 43307, 43728, 43202, 43730, 462, 402, 430, 223, 300,
-                440, 62310, 845, 852, 20727, 305, 41235, 41501, 43045
-            };
-
-            static readonly uint[] Building = new uint[]
-            {
-                41001, 41004, 41027, 41120, 43732, 20620, 41117, 41003, 41017, 40719, 40721, 41009
-            };
-
-            static readonly uint[] Dungeon = new uint[]
-            {
-                41048, 41021, 41123, 41303, 41402, 41407, 62324, 74224, 41301, 74112, 56000, 61018, 60506, 61020,
-                41300, 41403
-            };
-
-            public static uint[] Get(int loadingType)
-            {
-                switch (loadingType)
-                {
-                    case LoadingType.Building:  return Building;
-                    case LoadingType.Dungeon:   return Dungeon;
-                    default:                    return Exterior;
-                }
-            }
-        }
-
-        #endregion
-
         #region Fields
+
+        readonly Dictionary<string, (uint[] IDs, int[] Rotations)> modelDatabase = new Dictionary<string, (uint[], int[])>();
 
         readonly GameObject modelViewerGo;
         readonly Texture2D texture;
@@ -88,6 +59,11 @@ namespace LoadingScreen.Components
             camera.renderingPath = Camera.main.renderingPath;
             camera.targetTexture = null;
             Camera.main.cullingMask = Camera.main.cullingMask & ~(1 << modelViewerGo.layer);
+
+            var databaseAsset = LoadingScreen.Mod.GetAsset<TextAsset>("ModelViewerDatabase");
+            fsResult fsResult = ModManager._serializer.TryDeserialize(fsJsonParser.Parse(databaseAsset.text), ref modelDatabase);
+            if (!fsResult.Succeeded)
+                Debug.LogError($"LoadingScreen: Failed to deserialize ModelViewerDatabase:\n{fsResult.FormattedMessages}");
         }
 
         #endregion
@@ -128,10 +104,10 @@ namespace LoadingScreen.Components
             Camera camera = GetCamera(go);
 
             // Load model
-            uint modelID = GetModelID();
-            GameObject model = LoadModel(go.transform, modelID);
+            (uint id, int rotation) = GetModelInfo();
+            GameObject model = LoadModel(go.transform, id);
             SetLayer(model.transform, go.layer);
-            SetPosition(model.transform, modelID, camera, horizontalPosition);
+            SetPosition(model.transform, rotation, camera, horizontalPosition);
 
             // Do mist. Shader must use ColorMask RGBA, otherwise the final color on render texture is (r*0, g*0, b*0).
             Transform mist = go.transform.Find("Mist");
@@ -151,15 +127,26 @@ namespace LoadingScreen.Components
             DestroyGameObject(go);
         }
 
-        private uint GetModelID()
+        private (uint ID, int Rotation) GetModelInfo()
         {
 #if UNITY_EDITOR
-            if (LoadingScreen.Instance.OverrideModelID != -1)
-                return (uint)LoadingScreen.Instance.OverrideModelID;
+            if (LoadingScreen.Instance.OverrideModelID != -1 && LoadingScreen.Instance.OverrideModelRotation != -1)
+                return ((uint)LoadingScreen.Instance.OverrideModelID, LoadingScreen.Instance.OverrideModelRotation);
 #endif
 
-            uint[] modelIDs = ModelIDs.Get(Parent.CurrentLoadingType);
-            return modelIDs[Random.Range(0, modelIDs.Length)];
+            (uint[] ids, int[] rotations) = GetModelInfoItems(Parent.CurrentLoadingType);
+            int index = Random.Range(0, ids.Length);
+            return (ids[index], rotations[index]);
+        }
+
+        private (uint[] IDs, int[] Rotations) GetModelInfoItems(int loadingType)
+        {
+            switch (loadingType)
+            {
+                case LoadingType.Building: return modelDatabase["Building"];
+                case LoadingType.Dungeon: return modelDatabase["Dungeon"];
+                default: return modelDatabase["Exterior"];
+            }
         }
 
         private GameObject LoadModel(Transform parent, uint modelID)
@@ -180,10 +167,8 @@ namespace LoadingScreen.Components
                 SetLayer(transform.GetChild(i), layer);
         }
 
-        public static void SetPosition(Transform transform, uint modelID, Camera camera, float horizontalPosition, int rotation = -1)
+        public static void SetPosition(Transform transform, int rotation, Camera camera, float horizontalPosition)
         {
-            if (rotation == -1)
-                rotation = GetRotation(modelID);
             transform.Rotate(Vector3.up, 135 + rotation, Space.Self);
             Renderer renderer = transform.GetComponent<Renderer>();
             if (renderer)
@@ -234,44 +219,6 @@ namespace LoadingScreen.Components
                 DestroyGameObject(transform.gameObject);
 
             GameObject.Destroy(go);
-        }
-
-        private static int GetRotation(uint modelID)
-        {
-#if UNITY_EDITOR
-            if (LoadingScreen.Instance && LoadingScreen.Instance.OverrideModelRotation != -1)
-                return LoadingScreen.Instance.OverrideModelRotation;
-#endif
-
-            switch (modelID)
-            {
-                case 56000:
-                case 305:
-                case 41235:
-                case 41501:
-                    return -90;
-
-                case 41001:
-                case 43202:
-                case 300:
-                case 440:
-                case 61020:
-                case 20727:
-                case 40721:
-                    return 90;
-
-                case 43307:
-                case 223:
-                case 708:
-                case 74112:
-                case 61018:
-                case 845:
-                case 852:
-                    return 180;
-
-                default:
-                    return 0;
-            }
         }
 
         #endregion
