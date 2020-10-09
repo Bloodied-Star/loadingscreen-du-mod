@@ -1,6 +1,6 @@
 LOADING SCREEN
 
-Version: 2.5.1
+Version: 2.6.0
 
 Description 
 -----------
@@ -65,7 +65,7 @@ The first six digits affects RGB, the last two affect alpha; 00 is full transpar
 
 Changelog
 ---------
-* Unreleased
+* 2.6.0
 - Improvements to Model Viewer.
 
 * 2.5.1
