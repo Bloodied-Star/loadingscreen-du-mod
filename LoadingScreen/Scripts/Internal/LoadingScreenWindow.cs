@@ -192,7 +192,8 @@ namespace LoadingScreen
 
             return new ModelViewer(new Rect(0, 0, 100, 100))
             {
-                HorizontalPosition = settings.GetFloat(modelViewerSection, "HorizontalPosition")
+                HorizontalPosition = settings.GetFloat(modelViewerSection, "HorizontalPosition"),
+                FilmicTonemapping = settings.GetBool(modelViewerSection, "FilmicTonemapping")
             };
         }
 

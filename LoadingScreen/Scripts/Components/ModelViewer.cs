@@ -14,6 +14,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using System.Collections.Generic;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using FullSerializer;
+using UnityEngine.PostProcessing;
 
 namespace LoadingScreen.Components
 {
@@ -28,6 +29,7 @@ namespace LoadingScreen.Components
 
         readonly GameObject modelViewerGo;
         readonly Texture2D texture;
+        readonly PostProcessingBehaviour postProcessingBehaviour;
 
         float horizontalPosition = 0.5f;
 
@@ -42,6 +44,11 @@ namespace LoadingScreen.Components
         {
             get { return horizontalPosition; }
             set { horizontalPosition = Mathf.Clamp01(value); }
+        }
+
+        public bool FilmicTonemapping
+        {
+            set { postProcessingBehaviour.profile.colorGrading.enabled = value; }
         }
 
         #endregion
@@ -59,6 +66,8 @@ namespace LoadingScreen.Components
             camera.renderingPath = Camera.main.renderingPath;
             camera.targetTexture = null;
             Camera.main.cullingMask = Camera.main.cullingMask & ~(1 << modelViewerGo.layer);
+
+            postProcessingBehaviour = camera.GetComponent<PostProcessingBehaviour>();
 
             var databaseAsset = LoadingScreen.Mod.GetAsset<TextAsset>("ModelViewerDatabase");
             fsResult fsResult = ModManager._serializer.TryDeserialize(fsJsonParser.Parse(databaseAsset.text), ref modelDatabase);
