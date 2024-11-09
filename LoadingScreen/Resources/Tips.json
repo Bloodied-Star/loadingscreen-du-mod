@@ -9,7 +9,7 @@
         "If you're interested in the job of mercenary, you can join the Fighters Guild.",
         "The Mages Guild is the best place to study the world of magicka.",
         "Burglars, prostitutes, professional criminals, you can find them all in the Thieves Guild.",
-        "If you are interested in thief, try something little and you will be rewarded eventually...",
+        "If you are interested in theft, try something little and you will be rewarded eventually...",
         "The members of the Dark Brotherhood are said to be Daedra worshipper.",
         "The Dark Brotherhood has been declared illegal by many, yet persists...",
         "Templar Knightly Orders are associated with the worshipper of the Eight Divine.",
@@ -114,6 +114,7 @@
             "Humanoids are the most likely to poison you.",
             "Animals carry nasty diseases and are most the likely to give you a disease.",
             "Werewolves and Wereboar have a 0.6 percent chance to give you lycanthropy with each attack!",
+            "Vampires have a 0.6 percent chance to give you lycanthropy with each attack!",
             "The critical strike skill can help you do more damage with weapon attacks.",
             "Some enemies drain your fatigue instead of health with their attacks.",
             "Watch your step. Falling from great heights or into hidden traps can be fatal.",
@@ -133,7 +134,7 @@
             "Reputation will drop if a loan is not paid back in time..."
         ],
         "HIGHGOLD": [
-            "You can turn gold in Letters of Credit at banks.",
+            "You can turn gold into Letters of Credit at banks.",
             "Coins have a weight, consider converting money into letters of credit.",
             "A letter of credit can be used to transfer money to another region."
         ],
@@ -182,18 +183,22 @@
             "Vampire": [
                 "In order to hit a vampire, a weapon must be, at least, made of silver.",
                 "Becoming a vampire is much like being born again.",
+                "Vampires get +20 to every attribute except Intelligence.",
+                "Not all vampires are created equally. There are nine different Vampire bloodlines, each with different bloodline gifts.",
                 "Vampires cannot bear holy places and sunlight.",
                 "Vampires can't rest if not fed properly every day."
             ],
             "Wereboar": [
                 "People are afraid of Werewolves and Wereboars.",
                 "Lycanthropes feel the urge to kill innocents people...",
+                "Wereboars get +40 to all physical attributes.",
                 "Wereboars are immune to diseases and many weapons but not spells and hand-to-hand",
                 "A cure for lycanthropy may exists..."
             ],
             "Werewolf": [
                 "People are afraid of Werewolves and Wereboars.",
                 "Lycanthropes feel the urge to kill innocents people...",
+                "Werewolves get +40 to all physical attributes.",
                 "Werewolves are immune to diseases and many weapons but not spells and hand-to-hand",
                 "A cure for lycanthropy may exists..."
             ],
