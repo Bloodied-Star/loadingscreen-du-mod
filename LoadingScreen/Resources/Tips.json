@@ -225,7 +225,7 @@
             "Horses can be even faster with levitation...",
             "Levitation allows a ranged attack from the air.",
             "Spell durations are measured in rounds, each round is 5 seconds.",
-            "Chance refers to the likelyhood of a spell succedding, the number listed is the percentage out of one hundred.",
+            "Chance refers to the likelyhood of a spell succeeding, the number listed is the percentage out of one hundred.",
             "When a spell with magnitude takes effect, a random number is chosen between each pair of numbers, then adds them all together.",
             "Unlike Fast Travel, Teleportation is instantaneous. It's magic after all.",
             "Try backing off an enemy before he finishes an attack to dodge it.",
