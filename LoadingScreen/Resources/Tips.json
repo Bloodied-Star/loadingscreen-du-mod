@@ -27,6 +27,18 @@
         "Guilds will accept you into higher ranks as you increase your skills and do more quests.",
         "Banks offer ships, houses, and loans.",
         "Some very few people have found witch covens. The quests and summonings they offer are serious matters."
+        "If you've earned more gold than you can carry from a sale, you are given a letter of credit instead.",
+        "You can convert gold into a letter of credit at a bank at the cost of a 1% surcharge.",
+        "The gold in your bank account does not transfer between regions.",
+        "Failing quests lowers your reputation with the respective organization.",     
+        "Gold has weight. Drop off what gold you don't need at the bank to save space.",
+        "Different types of shops sell and buy different types of equipment.",
+        "Higher quality shops have better wares but at a higher cost. Lower quality shops give better prices.",
+        "High-ranking mages can create custom magic items and receive teleportation and Daedra summoning services.",
+        "Members of the Fighters Guild are given free room and board within any of their guild halls.",
+        "Knights of a region get free inn rooms in that region. High-ranking knights get free rooms everywhere.",
+        "If you are diseased, you can get cured at a temple for a fee.",
+        "Rumors say the Thieves Guild and Dark Brotherhood require a special initiation process to become members.",
     ],
     "location": {
         "exterior": [
